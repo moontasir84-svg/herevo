@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     # Embeddings: "voyage" in production, "hash" for offline tests and local dev
     embeddings_provider: str = "hash"
     voyage_api_key: str = ""
-    voyage_model: str = "voyage-3.5"
+    voyage_model: str = "voyage-4"
     embedding_dim: int = 1024
 
     # Retrieval
