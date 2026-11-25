@@ -1,0 +1,130 @@
+from app import db
+from app.packs import load_pack
+from app.pipeline import detect_language, handle
+from app.retrieval import retrieve
+
+
+def _uid(name="rina"):
+    uid = db.user_id_for("test", name)
+    db.upsert_user(uid, "test", "BD", "bn")
+    return uid
+
+
+def test_pack_is_valid_and_ingested():
+    pack = load_pack("BD")
+    assert pack["country"] == "BD"
+    with db.pool().connection() as conn:
+        n = conn.execute("SELECT count(*) AS n FROM pack_chunks WHERE country='BD'").fetchone()["n"]
+    assert n == len(pack["entries"])
+    assert any(c["phone"] == "109" for c in db.contacts("BD"))
+
+
+def test_retrieval_finds_widow_inheritance_in_bangla():
+    hits = retrieve("BD", "স্বামী মারা যাওয়ার পর দেবর বলছে জমি আমার না")
+    assert hits[0]["id"].startswith("bd-rights-inheritance")
+
+
+def test_retrieval_finds_rice_advice():
+    hits = retrieve("BD", "আমার ধানের পাতা হলুদ হয়ে যাচ্ছে")
+    assert hits[0]["id"] == "bd-farm-rice-yellowing#0"
+
+
+def test_language_detection():
+    assert detect_language("জমি আমার না") == "bn"
+    assert detect_language("Mwajiri wangu hajanilipa mshahara") == "sw"
+    assert detect_language("¿Cómo consigo un préstamo?") == "es"
+    assert detect_language("How do I save money?") == "en"
+
+
+def test_safety_escalates_before_any_ai_call(fake_llm, recorder):
+    uid = _uid()
+    r = handle(uid=uid, channel="test", text="দেবর হুমকি দিচ্ছে আমাকে বাড়ি থেকে বের করে দেবে।", district="Rangpur")
+    assert r.safety == "ESCALATE" and r.intent == "SAFETY" and r.answered_by == "safety_rule"
+    assert "১০৯" in r.reply and "999" in r.reply_en
+    assert fake_llm.calls == []                      # Claude never saw it
+    assert recorder.sent and "safety case #1" in recorder.sent[0][1] and "Rangpur" in recorder.sent[0][1]
+    assert db.escalation(r.escalation_id)["status"] == "open"
+    assert db.evidence() == [{"country": "BD", "gap": "safety_threats", "n": 1}]
+
+
+def test_grounded_answer_drops_invented_citations_and_logs_case(fake_llm, recorder):
+    uid = _uid()
+    r = handle(uid=uid, channel="test", text="স্বামী মারা যাওয়ার পর দেবর বলছে জমি আমার না।")
+    assert r.answered_by == "claude" and r.intent == "RIGHTS" and r.safety == "OK"
+    assert [c.id for c in r.citations] and "made-up-id" not in [c.id for c in r.citations]
+    assert r.citations[0].review_status == "draft"
+    assert db.evidence() == [{"country": "BD", "gap": "land_inheritance", "n": 1}]
+    assert recorder.sent == []
+
+
+def test_model_can_escalate_too(fake_llm, recorder):
+    fake_llm.next = {"intent": "ADVICE", "confidence": 0.6, "safety": "ESCALATE", "covered": False,
+                     "answer": "…", "answer_en": "…", "cited_ids": []}
+    r = handle(uid=_uid(), channel="test", text="আমি আর পারছি না, কেউ সাহায্য করুন")
+    assert r.safety == "ESCALATE" and r.escalation_id == 1 and recorder.sent
+
+
+def test_invalid_model_output_falls_back(fake_llm, recorder):
+    fake_llm.next = {"intent": "SOMETHING", "answer": ""}
+    r = handle(uid=_uid(), channel="test", text="জমির নামজারি কীভাবে করব?")
+    assert r.answered_by == "fallback" and r.intent == "RIGHTS"
+    assert "১৬৪৩০" in r.reply
+
+
+def test_model_error_falls_back(fake_llm, recorder):
+    fake_llm.next = RuntimeError("API down")
+    r = handle(uid=_uid(), channel="test", text="সঞ্চয় কীভাবে করব?")
+    assert r.answered_by == "fallback"
+
+
+def test_sale_is_recorded(fake_llm, recorder):
+    uid = _uid()
+    r = handle(uid=uid, channel="test", text="আজ ৪০ কেজি ধান বিক্রি করেছি, ১২০০ টাকা।")
+    assert r.intent == "EARN" and r.sale["amount"] == 1200
+    rows = db.ledger(uid)
+    assert len(rows) == 1 and float(rows[0]["amount"]) == 1200 and rows[0]["product"] == "rice"
+
+
+def test_sale_fallback_without_claude(recorder):
+    uid = _uid()
+    r = handle(uid=uid, channel="test", text="আজ ধান বিক্রি করেছি ১২০০ টাকা")
+    assert r.answered_by == "fallback" and r.intent == "EARN"
+    assert float(db.ledger(uid)[0]["amount"]) == 1200
+    assert "১,২০০" in r.reply and "1,200" in r.reply_en
+
+
+def test_every_turn_is_audited(fake_llm, recorder):
+    uid = _uid()
+    handle(uid=uid, channel="test", text="ধানের পাতা হলুদ")
+    with db.pool().connection() as conn:
+        t = conn.execute("SELECT * FROM turns").fetchone()
+    assert t["answered_by"] == "claude" and t["model"] == "fake-claude" and t["latency_ms"] >= 0
+
+
+def test_delete_user_removes_her_data(fake_llm, recorder):
+    uid = _uid()
+    handle(uid=uid, channel="test", text="আজ ৪০ কেজি ধান বিক্রি করেছি, ১২০০ টাকা।")
+    db.delete_user(uid)
+    assert db.ledger(uid) == [] and db.get_user(uid) is None
+
+
+def test_all_three_countries_ingested():
+    from app.packs import available_countries
+    assert available_countries() == ["BD", "KE", "MX"]
+
+
+def test_kenya_and_mexico_retrieval():
+    assert retrieve("KE", "Mwajiri wangu hajanilipa mshahara kwa miezi miwili")[0]["id"] == "ke-rights-wages-domestic#0"
+    assert retrieve("MX", "Mi expareja no paga la pensión de mis hijos")[0]["id"] == "mx-rights-child-support#0"
+
+
+def test_kenya_escalation_message_in_swahili(fake_llm, recorder):
+    uid = db.user_id_for("test", "amina")
+    db.upsert_user(uid, "test", "KE", "sw")
+    r = handle(uid=uid, channel="test", text="Mwajiri wangu ananipiga na kunitishia.", country="KE")
+    assert r.safety == "ESCALATE" and "1195" in r.reply and r.reply.startswith("Hauko peke yako")
+
+
+def test_fallback_rights_case_uses_top_passage_category(recorder):
+    handle(uid=_uid(), channel="test", text="স্বামী মারা যাওয়ার পর দেবর বলছে জমি আমার না।")
+    assert db.evidence() == [{"country": "BD", "gap": "land_inheritance", "n": 1}]

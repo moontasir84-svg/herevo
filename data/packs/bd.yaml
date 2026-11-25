@@ -1,0 +1,253 @@
+# HerEvo country pack: Bangladesh (v1)
+# Every statement carries its source. review_status "draft" means: written by the team from the cited
+# public source and NOT yet checked by a lawyer / agriculture officer / clinician. Do not mark
+# "reviewed" until a named expert has checked it (record who in reviewed_by).
+country: BD
+name: Bangladesh
+version: "2026-11-25"
+languages: [bn, en]
+currency: BDT
+reviewed_by: null
+
+messages:
+  escalate:
+    bn: "আপনি একা নন। আমি এখনই একজন প্রশিক্ষিত সহায়তাকর্মীকে জানাচ্ছি, তিনি এই চ্যাটে আপনার সাথে যোগাযোগ করবেন। এখনই বিপদে থাকলে ৯৯৯ নম্বরে কল করুন। নারী ও শিশু নির্যাতন প্রতিরোধ হেল্পলাইন ১০৯ (টোল-ফ্রি)।"
+    en: "You are not alone. I am alerting a trained helper right now, who will contact you in this chat. If you are in danger now, call 999. Helpline for violence against women and children: 109 (toll-free)."
+  not_covered:
+    bn: "এই প্রশ্নের নির্ভরযোগ্য উত্তর আমার কাছে এখনো নেই। বিনামূল্যে আইনি সহায়তার জন্য জাতীয় আইনগত সহায়তা হেল্পলাইন ১৬৪৩০ নম্বরে কল করুন।"
+    en: "I don't have a reliable answer to this yet. For free legal help, call the National Legal Aid helpline 16430."
+  sale_recorded:
+    bn: "লিখে রাখলাম: {amount} টাকা। আপনার আয়ের হিসাবে যোগ হলো।"
+    en: "Recorded: {amount} taka. It is added to your income history."
+  welcome:
+    bn: "আসসালামু আলাইকুম, আমি HerEvo। জমি, ফসল, আয়, অধিকার বা নিরাপত্তা নিয়ে যেকোনো প্রশ্ন বাংলায় লিখুন বা বলুন। আপনার নাম বা ফোন নম্বর আমরা সংরক্ষণ করি না। চালিয়ে যেতে 'হ্যাঁ' লিখুন।"
+    en: "Hello, I am HerEvo. Ask any question about land, crops, income, rights or safety, in Bangla. We do not store your name or phone number. Type 'yes' to continue."
+
+contacts:
+  - id: bd-999
+    kind: emergency
+    name: National Emergency Service
+    phone: "999"
+    free: true
+    source: "Government of Bangladesh, National Emergency Service 999"
+  - id: bd-109
+    kind: helpline
+    name: National Helpline Centre for Violence Against Women and Children
+    phone: "109"
+    free: true
+    source: "Ministry of Women and Children Affairs (mowca.gov.bd)"
+  - id: bd-16430
+    kind: legal_aid
+    name: National Legal Aid Helpline (NLASO)
+    phone: "16430"
+    free: true
+    source: "National Legal Aid Services Organisation (nlaso.gov.bd)"
+  - id: bd-dlac
+    kind: legal_aid
+    name: District Legal Aid Office (in every district judge court, e.g. Rangpur)
+    phone: null
+    area: every district
+    free: true
+    source: "Legal Aid Act 2000; NLASO (nlaso.gov.bd)"
+  - id: bd-16123
+    kind: agriculture
+    name: Krishi Call Centre (Agriculture Information Service)
+    phone: "16123"
+    free: false
+    source: "Agriculture Information Service, Ministry of Agriculture (ais.gov.bd)"
+  - id: bd-16263
+    kind: health
+    name: Shasthyo Batayon national health call centre
+    phone: "16263"
+    free: false
+    source: "Directorate General of Health Services (dghs.gov.bd)"
+
+entries:
+  # ---------------- RIGHTS ----------------
+  - id: bd-rights-inheritance-widow
+    module: rights
+    topic: inheritance
+    gap: land_inheritance
+    title: A Muslim widow's share of her husband's property
+    text: >-
+      Under Muslim personal law as applied in Bangladesh, a widow inherits one-eighth of her husband's
+      estate if he left children, and one-quarter if he left none. If there are several wives, they share
+      that portion equally. Her share includes land. No relative can lawfully take it from her. Hindu,
+      Christian and Buddhist personal laws give different shares, so she should ask free legal aid.
+    keywords: জমি সম্পত্তি উত্তরাধিকার বিধবা স্বামী মারা গেছে ভাগ অংশ দেবর ভাসুর শ্বশুর জমি নিয়ে নিচ্ছে
+    source: "Muslim Personal Law (Shariat) Application Act 1937 (bdlaws.minlaw.gov.bd); World Bank Women, Business and the Law 2026, Assets"
+    source_url: https://wbl.worldbank.org/
+  - id: bd-rights-inheritance-daughter
+    module: rights
+    topic: inheritance
+    gap: land_inheritance
+    title: A daughter's share under Muslim law
+    text: >-
+      Under Muslim personal law in Bangladesh, a daughter inherits from her parents. When there are sons,
+      each daughter gets half of a son's share. A single daughter with no sons gets one-half of the estate;
+      two or more daughters with no sons share two-thirds. Brothers cannot lawfully deny a sister her share.
+    keywords: মেয়ে কন্যা বাবার সম্পত্তি ভাই ভাগ দিচ্ছে না উত্তরাধিকার জমি
+    source: "Muslim Personal Law (Shariat) Application Act 1937 (bdlaws.minlaw.gov.bd)"
+    source_url: http://bdlaws.minlaw.gov.bd/
+  - id: bd-rights-dower
+    module: rights
+    topic: dower
+    gap: family_support
+    title: Dower (denmohor) is the wife's right
+    text: >-
+      Dower (denmohor) promised at marriage belongs to the wife. If it was not paid, it remains a debt the
+      husband owes her, also after divorce. If the husband dies, unpaid dower must be paid from his estate
+      before the inheritance is divided. She can claim it in the Family Court.
+    keywords: দেনমোহর মোহরানা কাবিন তালাক স্বামী দেয়নি পাওনা
+    source: "Family Courts Ordinance 1985; Muslim Family Laws Ordinance 1961 (bdlaws.minlaw.gov.bd)"
+    source_url: http://bdlaws.minlaw.gov.bd/
+  - id: bd-rights-maintenance
+    module: rights
+    topic: maintenance
+    gap: family_support
+    title: Maintenance for a wife and children
+    text: >-
+      A Muslim husband must maintain his wife during the marriage and pay maintenance during the waiting
+      period (iddat) after divorce. A father must maintain his children. If he does not, the wife can apply
+      to the chairman of the Union Parishad (Arbitration Council) or file a case in the Family Court for
+      maintenance. Free legal aid can file it for her.
+    keywords: ভরণপোষণ খোরপোশ সন্তানের খরচ স্বামী টাকা দেয় না তালাক বাচ্চা
+    source: "Muslim Family Laws Ordinance 1961, section 9; Family Courts Ordinance 1985 (bdlaws.minlaw.gov.bd)"
+    source_url: http://bdlaws.minlaw.gov.bd/
+  - id: bd-rights-dowry
+    module: rights
+    topic: dowry
+    gap: safety_threats
+    title: Demanding dowry is a crime
+    text: >-
+      Demanding, giving or taking dowry is a criminal offence in Bangladesh under the Dowry Prohibition Act
+      2018. A woman pressured or harmed for dowry can report it to the police, call 109, or get free legal aid.
+    keywords: যৌতুক টাকা চাইছে শ্বশুরবাড়ি নির্যাতন
+    source: "Dowry Prohibition Act 2018 (bdlaws.minlaw.gov.bd)"
+    source_url: http://bdlaws.minlaw.gov.bd/
+  - id: bd-rights-child-marriage
+    module: rights
+    topic: child_marriage
+    gap: safety_threats
+    title: Minimum age of marriage
+    text: >-
+      In Bangladesh the minimum age of marriage is 18 for women and 21 for men. Arranging a child marriage
+      is an offence under the Child Marriage Restraint Act 2017. It can be reported to the Upazila Nirbahi
+      Officer, the police, or the 109 helpline.
+    keywords: বাল্যবিবাহ মেয়ের বিয়ে বয়স কম ১৮ জোর করে বিয়ে
+    source: "Child Marriage Restraint Act 2017 (bdlaws.minlaw.gov.bd)"
+    source_url: http://bdlaws.minlaw.gov.bd/
+  - id: bd-rights-domestic-violence
+    module: safety
+    topic: domestic_violence
+    gap: safety_threats
+    title: Protection from domestic violence
+    text: >-
+      The Domestic Violence (Prevention and Protection) Act 2010 lets a woman ask a court for a protection
+      order and a residence order, which protects her right to stay in the shared home. Physical, mental,
+      sexual and economic abuse are covered. Help: 109 helpline, police, or free legal aid.
+    keywords: মারধর নির্যাতন স্বামী মারে বাড়ি থেকে বের করে দেবে হুমকি ভয় পারিবারিক সহিংসতা
+    source: "Domestic Violence (Prevention and Protection) Act 2010 (bdlaws.minlaw.gov.bd)"
+    source_url: http://bdlaws.minlaw.gov.bd/
+  - id: bd-rights-legal-aid
+    module: rights
+    topic: legal_aid
+    gap: null
+    title: Free legal aid
+    text: >-
+      People who cannot afford a lawyer can get free legal aid from the government. Every district has a
+      District Legal Aid Office at the district judge court. The national legal aid helpline is 16430
+      (toll-free). Legal aid can give advice, mediate, and file cases at no cost.
+    keywords: উকিল আইনি সহায়তা বিনামূল্যে মামলা টাকা নেই লিগ্যাল এইড
+    source: "Legal Aid Act 2000; National Legal Aid Services Organisation (nlaso.gov.bd)"
+    source_url: https://nlaso.gov.bd/
+  - id: bd-rights-land-mutation
+    module: rights
+    topic: land_records
+    gap: land_inheritance
+    title: Putting inherited land in her own name (mutation)
+    text: >-
+      After inheriting land, the heir should apply for mutation (namjari) so the land record shows her name.
+      Applications go to the Assistant Commissioner (Land) office of the upazila and can also be made online
+      (e-mutation) through the government land service. A record in her own name protects her claim.
+    keywords: নামজারি খারিজ খতিয়ান জমির কাগজ নিজের নামে এসি ল্যান্ড অনলাইন
+    source: "Ministry of Land e-mutation service (land.gov.bd)"
+    source_url: https://land.gov.bd/
+  - id: bd-rights-domestic-workers
+    module: rights
+    topic: wages
+    gap: unpaid_wages
+    title: Domestic workers' wages
+    text: >-
+      Domestic workers in Bangladesh are covered by the Domestic Workers Protection and Welfare Policy 2015,
+      which says wages should be agreed and paid on time and that domestic workers must not be abused. It is
+      a policy, not a law, so for unpaid wages she should contact free legal aid (16430) or a workers'
+      organisation.
+    keywords: বেতন মজুরি টাকা দিচ্ছে না গৃহকর্মী কাজের বুয়া মালিক
+    source: "Domestic Workers Protection and Welfare Policy 2015, Ministry of Labour and Employment"
+    source_url: https://mole.gov.bd/
+  # ---------------- FARM ----------------
+  - id: bd-farm-rice-yellowing
+    module: farm
+    topic: rice
+    gap: null
+    title: Rice leaves turning yellow
+    text: >-
+      When the older, lower rice leaves turn yellow first, the most common cause is a lack of nitrogen.
+      Yellowing can also come from disease or waterlogging, so before adding fertilizer she should show the
+      field to the Sub-Assistant Agriculture Officer (SAAO) of her union or call the Krishi Call Centre 16123.
+      HerEvo never gives fertilizer or pesticide doses.
+    keywords: ধান পাতা হলুদ সার ইউরিয়া চারা রোগ ফসল
+    source: "Department of Agricultural Extension; Agriculture Information Service (ais.gov.bd)"
+    source_url: https://ais.gov.bd/
+  - id: bd-farm-extension
+    module: farm
+    topic: extension
+    gap: null
+    title: Free farm advice from the government
+    text: >-
+      Every union has a Sub-Assistant Agriculture Officer (SAAO) who gives free advice on crops, seeds and
+      pests, and the Upazila Agriculture Office runs trainings and input support. The Krishi Call Centre is
+      16123.
+    keywords: কৃষি অফিসার পরামর্শ বীজ পোকা ফসল কৃষি অফিস
+    source: "Department of Agricultural Extension (dae.gov.bd); Agriculture Information Service (ais.gov.bd)"
+    source_url: https://dae.gov.bd/
+  # ---------------- MONEY ----------------
+  - id: bd-money-savings
+    module: money
+    topic: savings
+    gap: null
+    title: Saving money safely
+    text: >-
+      She can save small amounts regularly in a mobile financial service account such as bKash or Nagad,
+      a bank or post office savings account, or a savings group run by a registered organisation. Keeping a
+      record of her sales in HerEvo helps show her income later.
+    keywords: সঞ্চয় টাকা জমানো বিকাশ নগদ সমিতি ব্যাংক
+    source: "Bangladesh Bank, mobile financial services (bb.org.bd)"
+    source_url: https://www.bb.org.bd/
+  - id: bd-money-loans
+    module: money
+    topic: loans
+    gap: null
+    title: Borrowing safely
+    text: >-
+      Before taking a loan she should check that the microfinance institution is licensed by the Microcredit
+      Regulatory Authority (MRA), ask for the total cost and the instalment amount in writing, and avoid
+      private moneylenders. A sales record helps show a lender she can repay.
+    keywords: ঋণ লোন কিস্তি এনজিও সুদ মহাজন
+    source: "Microcredit Regulatory Authority (mra.gov.bd)"
+    source_url: https://mra.gov.bd/
+  # ---------------- HEALTH (v0, awaiting clinician review) ----------------
+  - id: bd-health-pregnancy-danger-signs
+    module: health
+    topic: pregnancy
+    gap: null
+    title: "Pregnancy danger signs: go to a health facility now"
+    text: >-
+      During pregnancy, go to the nearest health facility immediately (Union Health and Family Welfare
+      Centre, Upazila Health Complex or hospital) for: vaginal bleeding, severe headache or blurred vision,
+      fits, fever, severe belly pain, fast or difficult breathing, or the baby moving less. HerEvo does not
+      diagnose. The national health call centre is 16263.
+    keywords: গর্ভবতী রক্তপাত মাথাব্যথা খিঁচুনি জ্বর পেট ব্যথা বাচ্চা নড়ছে না প্রসব
+    source: "WHO recommendations on antenatal care; DGHS Shasthyo Batayon 16263 (dghs.gov.bd)"
+    source_url: https://www.who.int/

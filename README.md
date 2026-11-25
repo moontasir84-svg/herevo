@@ -3,39 +3,67 @@
 **Her land. Her harvest. Her money. Her health. Her safety.**
 HerEvo brings expert help for all of it into one AI system that works on any phone, even offline, and turns her voice into the evidence that changes laws and services.
 
-Built for the International AI Builders Congress 2026.
+Finalist, International AI Builders Congress 2026 · Team Headless Chickens
+
+## What is in this repo
+
+| Folder | What it is |
+|---|---|
+| [`backend/`](backend/) | The HerEvo API (Python, FastAPI, PostgreSQL + pgvector, Claude). Safety screen, hybrid retrieval, grounded answers, income records, evidence map, Telegram bot with voice notes. [Setup and deploy guide](backend/README.md). |
+| [`data/packs/`](data/packs/) | Country packs: reviewed knowledge for Bangladesh, Kenya and Mexico, every statement with its source. A new country is a new pack, not new code. |
+| [`web/`](web/) | The web app. Served by the backend, every message goes through the real system; opened anywhere else, it runs as a scripted demo. |
+| [`mcp/`](mcp/) | `herevo-country-packs` MCP server: the same packs and safety screen, so NGOs and other AI assistants can reuse HerEvo's verified content. |
+| [`eval/`](eval/) | Evaluation set (50 questions) and its latest report. |
+| [`docs/`](docs/) | Architecture. |
+
+## How one message is handled
+
+```
+her message (Telegram text or voice note, web, later SMS and phone calls)
+  → speech to text (voice notes)
+  → SAFETY SCREEN (rules, before any AI) ── threat? → trained human helper alerted, case opened
+  → hybrid retrieval from her country pack (pgvector + keyword search, rank fusion)
+  → one Claude call → structured, validated answer that may only use the retrieved passages
+  → (invalid or unavailable AI → rules + pre-checked text, never an unchecked answer)
+  → reply in her language (text, and a voice note if she spoke)
+  → records: income (if a sale), anonymized case for the evidence map, audit log
+```
+
+## Evaluation (latest run)
+
+50 questions (Bangla and English): 12 safety, 16 rights, 6 farm, 6 money, 4 health, 6 sales. Offline mode (no Claude key yet).
+
+| Metric | Result |
+|---|---|
+| Safety recall (threats escalated to a human) | **12 / 12 (100%)** |
+| False escalations | **0 / 38 (0%)** |
+| Right knowledge in the top 3 | **100%** |
+| Right knowledge first | 84% |
+| Sale amounts recorded correctly | **6 / 6** |
+
+The questions were written by the team; the next version adds real questions from field interviews. Run it yourself: see [backend/README.md](backend/README.md#evaluation).
 
 ## Live demo
-https://claude.ai/artifact/SCWQpdJRjA2xrUhPNR2WMN
-Pick a caller (Rina in Bangladesh, Amina in Kenya, Lucía in Mexico), then tap what she says.
 
-## What the prototype shows
-- Land & harvest: farm advice from local guidance
-- Money & work: a spoken sale becomes an income record (shared only with her consent)
-- Rights: answers from her country's actual law, plus the nearest free legal aid
-- Safety: threats go straight to a trained human; the AI never handles violence alone
-- Evidence: every case adds an anonymized point to a map of where laws and services fail women
-- Next: Health (maternal and menstrual, led by our NRB medical lead) and Learning
-
-## How it works
-Any phone → speech to text → safety screen (always first) → intent router (RIGHTS / EARN / ADVICE / SAFETY) → Claude answers only from a verified country pack → spoken reply → anonymized evidence map.
-Every answer shows its intent, confidence and source. Invalid model output falls back to a rule-based multilingual router.
-
-## MCP server
-`mcp/herevo_mcp.py` exposes HerEvo's reviewed country packs as an MCP server (stdio) with 5 tools: list_countries, get_rights, find_legal_aid, get_farm_advice, safety_check.
-Run: `pip install -r mcp/requirements.txt` then `python mcp/herevo_mcp.py`
-
-## Run the demo
-HerEvo.html is a single self-contained file. Open it in any browser; no build step or install needed.
-
-## Stack
-HTML, CSS, JavaScript · jsVectorMap 1.5.3 · Claude (Anthropic) · Claude Artifacts runtime · MCP Python SDK · Web Speech API · Playwright (testing) · Kokoro-82M + FFmpeg (pitch video)
+- Prototype (scripted, on Claude): https://claude.ai/artifact/SCWQpdJRjA2xrUhPNR2WMN
+- Live system: deployed from this repo (see [backend/README.md](backend/README.md#deploy))
 
 ## Cost
+
 About USD 0.10 per 3-minute call; about USD 2.30 per woman per year. Free for women, paid by programmes, lenders and mobile operators.
 
-## Data
-Public: World Bank Women, Business and the Law 2026, FAO, ILO, WHO, GSMA. Callers, sales and map counts are synthetic sample data. Rights answers are general information, not legal advice.
+## Data and safety
+
+Country packs use public sources (World Bank Women, Business and the Law 2026, national laws, government services). Every statement is marked **draft** until a named lawyer, agriculture officer or clinician reviews it. HerEvo gives general information, not legal or medical advice. No names or phone numbers are stored; users are identified by a salted hash, and `/delete` erases her data.
 
 ## Team
-Six members, three of them women, including an NRB medical lead.
+
+Five members, two of them women, including our NRB medical lead.
+
+| Member | Role |
+|---|---|
+| Md. Moontasir Arafat | Team lead, backend |
+| Md. Fahad Sarker | Full-stack developer |
+| Jannatul Ferdous Mredula | Product and UX designer |
+| Kazi Zubayer Ahmad | AI/ML engineer |
+| Meftahul Jannat | NRB domain expert, health lead |

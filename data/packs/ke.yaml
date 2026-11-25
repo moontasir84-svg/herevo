@@ -1,0 +1,101 @@
+# HerEvo country pack: Kenya (v1, draft: needs review by a Kenyan lawyer and native Swahili speakers)
+country: KE
+name: Kenya
+version: "2026-11-25"
+languages: [sw, en]
+currency: KES
+reviewed_by: null
+
+messages:
+  escalate:
+    sw: "Hauko peke yako. Ninamjulisha mhudumu aliyefunzwa sasa hivi, atawasiliana nawe hapa. Ukiwa hatarini sasa, piga 999 au 112. Simu ya msaada wa ukatili wa kijinsia: 1195 (bure)."
+    en: "You are not alone. I am alerting a trained helper right now, who will contact you here. If you are in danger now, call 999 or 112. Gender-based violence helpline: 1195 (free)."
+  not_covered:
+    sw: "Sina jibu la uhakika kwa swali hili bado. Kwa msaada wa kisheria bila malipo, wasiliana na Huduma ya Kitaifa ya Msaada wa Kisheria (NLAS) au FIDA Kenya."
+    en: "I don't have a reliable answer to this yet. For free legal help, contact the National Legal Aid Service (NLAS) or FIDA Kenya."
+  sale_recorded:
+    sw: "Nimeandika: shilingi {amount}. Imeongezwa kwenye historia ya mapato yako."
+    en: "Recorded: {amount} shillings. It is added to your income history."
+  welcome:
+    sw: "Habari, mimi ni HerEvo. Uliza swali lolote kuhusu kazi, pesa, haki au usalama. Hatuhifadhi jina wala nambari yako ya simu. Andika 'ndiyo' kuendelea."
+    en: "Hello, I am HerEvo. Ask any question about work, money, rights or safety. We do not store your name or phone number. Type 'yes' to continue."
+
+contacts:
+  - {id: ke-999, kind: emergency, name: Police emergency, phone: "999 / 112", free: true, source: "National Police Service, Kenya"}
+  - {id: ke-1195, kind: helpline, name: National Gender-Based Violence Helpline, phone: "1195", free: true, source: "State Department for Gender and Affirmative Action, Kenya"}
+  - {id: ke-nlas, kind: legal_aid, name: National Legal Aid Service (NLAS), phone: null, free: true, source: "Legal Aid Act 2016; nlas.go.ke"}
+  - {id: ke-fida, kind: legal_aid, name: FIDA Kenya (Federation of Women Lawyers), phone: null, free: true, source: "fidakenya.org"}
+  - {id: ke-labour, kind: legal_aid, name: County Labour Office, phone: null, area: every county, free: true, source: "Ministry of Labour and Social Protection, Kenya"}
+
+entries:
+  - id: ke-rights-wages-domestic
+    module: rights
+    topic: wages
+    gap: unpaid_wages
+    title: Domestic workers must be paid
+    text: >-
+      Kenya's Employment Act 2007 covers domestic workers. An employer must pay the wages that are due, and
+      unpaid wages can be reported free of charge to the County Labour Office, which can call the employer
+      to a meeting. The domestic workers' union is KUDHEIHA. General information, not legal advice.
+    keywords: mshahara kazi mwajiri hajanilipa mfanyakazi wa nyumbani house help wages salary unpaid employer
+    source: "Employment Act 2007 (kenyalaw.org); World Bank Women, Business and the Law 2026, Pay"
+    source_url: http://kenyalaw.org/
+  - id: ke-rights-land-equality
+    module: rights
+    topic: inheritance
+    gap: land_inheritance
+    title: Women's equal right to land and inheritance
+    text: >-
+      The Constitution of Kenya 2010 requires the elimination of gender discrimination in law, customs and
+      practices related to land and property (Article 60). Under the Law of Succession Act, daughters and
+      sons inherit equally, and a surviving spouse is protected. Relatives cannot lawfully take a widow's
+      home or land. She can get free help from NLAS or FIDA Kenya.
+    keywords: ardhi shamba urithi mjane mume amefariki mali land inheritance widow property husband died
+    source: "Constitution of Kenya 2010, Article 60; Law of Succession Act, Cap 160 (kenyalaw.org)"
+    source_url: http://kenyalaw.org/
+  - id: ke-rights-child-support
+    module: rights
+    topic: maintenance
+    gap: family_support
+    title: Both parents must support their children
+    text: >-
+      Under Kenya's Children Act 2022, both parents share parental responsibility, including paying for the
+      child's food, school and health, whether or not they were married. A mother can apply to the
+      Children's Court for maintenance. FIDA Kenya and NLAS give free legal help.
+    keywords: matunzo mtoto baba hatoi pesa watoto child support maintenance father children
+    source: "Children Act 2022 (kenyalaw.org)"
+    source_url: http://kenyalaw.org/
+  - id: ke-safety-domestic-violence
+    module: safety
+    topic: domestic_violence
+    gap: safety_threats
+    title: Protection from domestic violence
+    text: >-
+      The Protection Against Domestic Violence Act 2015 lets a woman ask a court for a protection order
+      against a person who abuses her, including physical, sexual, emotional and economic abuse. Help: GBV
+      helpline 1195, police 999 or 112.
+    keywords: ukatili kupigwa vitisho unyanyasaji violence abuse beaten protection order
+    source: "Protection Against Domestic Violence Act 2015 (kenyalaw.org)"
+    source_url: http://kenyalaw.org/
+  - id: ke-money-savings
+    module: money
+    topic: savings
+    gap: null
+    title: Saving money safely
+    text: >-
+      She can save small amounts regularly in a registered chama (savings group) or a mobile savings account
+      such as M-Shwari. Keeping a record of her sales in HerEvo helps show her income later.
+    keywords: akiba kuweka pesa chama mshwari m-pesa savings save money
+    source: "Central Bank of Kenya, financial inclusion (centralbank.go.ke)"
+    source_url: https://www.centralbank.go.ke/
+  - id: ke-money-loans
+    module: money
+    topic: loans
+    gap: null
+    title: Borrowing safely
+    text: >-
+      Before borrowing she should use a lender licensed by the Central Bank of Kenya, ask for the total cost
+      of the loan in writing, and be careful with unlicensed digital lenders that charge very high fees.
+    keywords: mkopo kukopa riba loan borrow lender interest
+    source: "Central Bank of Kenya, licensed digital credit providers (centralbank.go.ke)"
+    source_url: https://www.centralbank.go.ke/

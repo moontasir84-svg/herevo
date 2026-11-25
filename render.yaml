@@ -1,0 +1,31 @@
+# Render blueprint: New > Blueprint > pick this repo. Secrets are entered in the Render dashboard.
+services:
+  - type: web
+    name: herevo-api
+    runtime: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: .
+    plan: free
+    region: singapore
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: CLAUDE_MODEL
+        value: claude-haiku-5-5
+      - key: EMBEDDINGS_PROVIDER
+        value: hash
+      - key: VOYAGE_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_WEBHOOK_SECRET
+        generateValue: true
+      - key: HELPER_CHAT_ID
+        sync: false
+      - key: ID_SALT
+        generateValue: true
+      - key: DEFAULT_COUNTRY
+        value: BD

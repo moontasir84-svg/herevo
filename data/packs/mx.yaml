@@ -1,0 +1,102 @@
+# HerEvo country pack: Mexico (v1, draft: needs review by a Mexican lawyer and native speakers)
+country: MX
+name: Mexico
+version: "2026-11-25"
+languages: [es, en]
+currency: MXN
+reviewed_by: null
+
+messages:
+  escalate:
+    es: "No está sola. Estoy avisando ahora mismo a una persona capacitada, que la contactará aquí. Si está en peligro ahora, llame al 911. Para denuncias anónimas: 089."
+    en: "You are not alone. I am alerting a trained helper right now, who will contact you here. If you are in danger now, call 911. For anonymous reports: 089."
+  not_covered:
+    es: "Todavía no tengo una respuesta confiable para esta pregunta. Para asesoría legal gratuita, acuda a la Defensoría Pública de su estado."
+    en: "I don't have a reliable answer to this yet. For free legal advice, go to your state's Public Defender's Office (Defensoría Pública)."
+  sale_recorded:
+    es: "Anotado: {amount} pesos. Ya está en su historial de ingresos."
+    en: "Recorded: {amount} pesos. It is now in your income history."
+  welcome:
+    es: "Hola, soy HerEvo. Pregunte lo que necesite sobre su trabajo, dinero, derechos o seguridad. No guardamos su nombre ni su número de teléfono. Escriba 'sí' para continuar."
+    en: "Hello, I am HerEvo. Ask anything about work, money, rights or safety. We do not store your name or phone number. Type 'yes' to continue."
+
+contacts:
+  - {id: mx-911, kind: emergency, name: Emergencias, phone: "911", free: true, source: "Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública"}
+  - {id: mx-089, kind: helpline, name: Denuncia anónima, phone: "089", free: true, source: "Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública"}
+  - {id: mx-defensoria, kind: legal_aid, name: Defensoría Pública del estado (e.g. Oaxaca), phone: null, area: every state, free: true, source: "State public defender offices"}
+  - {id: mx-dif, kind: legal_aid, name: "DIF: Procuraduría de Protección de Niñas, Niños y Adolescentes", phone: null, free: true, source: "Sistema Nacional DIF (gob.mx/difnacional)"}
+
+entries:
+  - id: mx-rights-child-support
+    module: rights
+    topic: maintenance
+    gap: family_support
+    title: Child support (pensión alimenticia)
+    text: >-
+      In Mexico both parents are legally obliged to provide child support (pensión alimenticia), covering
+      food, housing, school and health, whether or not they were married. A mother can claim it before a
+      family judge, and the state Public Defender's Office (Defensoría Pública) or the DIF can help her
+      for free. General information, not legal advice.
+    keywords: pensión alimenticia hijos expareja no paga manutención alimentos child support
+    source: "State civil codes (e.g. Código Civil para el Estado de Oaxaca); World Bank Women, Business and the Law 2026, Parenthood"
+    source_url: https://wbl.worldbank.org/
+  - id: mx-rights-domestic-workers
+    module: rights
+    topic: wages
+    gap: unpaid_wages
+    title: Domestic workers' rights
+    text: >-
+      Since the 2019 reform of the Federal Labour Law, domestic workers in Mexico have the right to a written
+      contract, set working hours, rest days, paid vacation, the Christmas bonus (aguinaldo) and social
+      security through IMSS. Unpaid wages can be taken to the Federal Labour Defence Office (PROFEDET) or the
+      state labour authorities for free.
+    keywords: trabajadora del hogar salario no me paga patrona contrato imss aguinaldo wages domestic worker
+    source: "Ley Federal del Trabajo, reform of 2 July 2019 (gob.mx)"
+    source_url: https://www.gob.mx/profedet
+  - id: mx-rights-inheritance
+    module: rights
+    topic: inheritance
+    gap: land_inheritance
+    title: Inheritance when there is no will
+    text: >-
+      When a person dies without a will in Mexico, the civil codes name the heirs: the surviving spouse or
+      partner (concubina) and the children are among the first heirs, and daughters inherit equally with
+      sons. Relatives cannot lawfully take her share. The Defensoría Pública can explain her case for free.
+    keywords: herencia intestado esposo murió terreno casa hijas viuda inheritance widow
+    source: "Código Civil Federal, Book III (successions); state civil codes"
+    source_url: https://www.gob.mx/
+  - id: mx-safety-violence
+    module: safety
+    topic: domestic_violence
+    gap: safety_threats
+    title: Protection from violence
+    text: >-
+      Mexico's General Law on Women's Access to a Life Free of Violence (2007) allows authorities to issue
+      protection orders (órdenes de protección) quickly when a woman is at risk. Help: 911 in an emergency,
+      089 for anonymous reports, and the state women's institute.
+    keywords: violencia amenaza golpes orden de protección violence threat protection order
+    source: "Ley General de Acceso de las Mujeres a una Vida Libre de Violencia (diputados.gob.mx)"
+    source_url: https://www.diputados.gob.mx/
+  - id: mx-money-loans
+    module: money
+    topic: loans
+    gap: null
+    title: Getting a loan for a small business
+    text: >-
+      A record of regular sales helps show income to a lender such as Banco del Bienestar or a registered
+      microfinance institution. Before signing, compare the total annual cost (CAT) and check that the lender
+      is registered with CONDUSEF.
+    keywords: préstamo crédito puesto negocio banco del bienestar CAT condusef loan stall
+    source: "CONDUSEF (gob.mx/condusef)"
+    source_url: https://www.gob.mx/condusef
+  - id: mx-money-savings
+    module: money
+    topic: savings
+    gap: null
+    title: Saving money safely
+    text: >-
+      She can save small amounts regularly in a bank account such as Banco del Bienestar or a registered
+      savings cooperative, and avoid informal schemes that promise high returns.
+    keywords: ahorro ahorrar dinero cuenta tanda cooperativa savings
+    source: "CONDUSEF (gob.mx/condusef)"
+    source_url: https://www.gob.mx/condusef

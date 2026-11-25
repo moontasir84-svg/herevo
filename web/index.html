@@ -1,0 +1,577 @@
+<title>HerEvo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,400..600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Bengali:wght@400;600&display=swap">
+<style>
+/* Layout: a live call on the left, the AI's visible reasoning and her records on the right; stacks on phones. */
+:root{
+  --bg:#F3F5F0; --surface:#FFFFFF; --sunk:#E9EDE6; --ink:#1D231F; --muted:#5B675F; --line:#D7DED5;
+  --accent:#B87D07; --accent-soft:rgba(201,138,11,.14); --accent-ink:#7A5200;
+  --leaf:#2E6A4E; --leaf-soft:rgba(46,106,78,.12); --alert:#B3261E; --alert-soft:rgba(179,38,30,.10);
+  --call:#16201B; --call-ink:#E9F0EA; --call-muted:#9FB2A6;
+  --display:"Fraunces", Georgia, "Times New Roman", serif;
+  --body:"Inter", "Noto Sans Bengali", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#111513; --surface:#1A1F1C; --sunk:#151A17; --ink:#E6EBE6; --muted:#9CA89F; --line:#2B3430;
+  --accent:#E3A92B; --accent-soft:rgba(227,169,43,.16); --accent-ink:#F2C766;
+  --leaf:#72C29A; --leaf-soft:rgba(114,194,154,.14); --alert:#F28B82; --alert-soft:rgba(242,139,130,.14);
+  --call:#0B100D; --call-ink:#E9F0EA; --call-muted:#8FA297; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#111513; --surface:#1A1F1C; --sunk:#151A17; --ink:#E6EBE6; --muted:#9CA89F; --line:#2B3430;
+  --accent:#E3A92B; --accent-soft:rgba(227,169,43,.16); --accent-ink:#F2C766;
+  --leaf:#72C29A; --leaf-soft:rgba(114,194,154,.14); --alert:#F28B82; --alert-soft:rgba(242,139,130,.14);
+  --call:#0B100D; --call-ink:#E9F0EA; --call-muted:#8FA297; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--ink); font-family:var(--body); font-size:15px; line-height:1.5;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); padding-block:24px 48px}
+.wrap{max-width:1180px; margin:0 auto; display:flex; flex-direction:column; gap:24px}
+header{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px}
+h1{margin:0; line-height:1}
+.brand{display:inline-flex; align-items:center; gap:14px}
+.mark{width:clamp(44px,6vw,56px); height:auto; flex:none; display:block; border-radius:28%; box-shadow:0 6px 18px -8px rgba(31,77,56,.55)}
+.wordmark{font-family:var(--display); font-size:clamp(34px,5.4vw,50px); font-optical-sizing:auto; letter-spacing:-.025em; line-height:1}
+.wordmark .her{font-style:italic; font-weight:500; color:var(--ink)}
+.wordmark .evo{font-weight:800; background:linear-gradient(100deg,var(--accent) 10%,var(--leaf) 120%); -webkit-background-clip:text; background-clip:text; color:transparent; padding-right:.04em}
+@media (forced-colors:active){ .wordmark .evo{color:CanvasText; background:none} }
+.tag{color:var(--muted); max-width:56ch; margin:8px 0 0; text-wrap:balance}
+.mode{font-family:var(--mono); font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--muted); white-space:nowrap}
+.mode b{color:var(--leaf); font-weight:500}
+.grid{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:24px; align-items:start}
+@media (max-width:860px){ .grid{grid-template-columns:minmax(0,1fr)} }
+h2{font-family:var(--display); font-weight:600; font-size:18px; margin:0}
+.label{font-family:var(--mono); font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+
+/* Caller picker */
+.callers{display:flex; gap:8px; flex-wrap:wrap}
+.caller{flex:1 1 200px; text-align:left; border:1px solid var(--line); background:var(--surface); color:var(--ink); border-radius:12px; padding:12px 14px; cursor:pointer; font:inherit}
+.caller[aria-pressed="true"]{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); background:var(--accent-soft)}
+.caller strong{display:block; font-weight:600}
+.caller span{color:var(--muted); font-size:13px}
+
+/* Call panel */
+.call{background:var(--call); color:var(--call-ink); border-radius:20px; overflow:hidden; display:flex; flex-direction:column}
+.callbar{display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid rgba(255,255,255,.08); gap:12px}
+.callbar .who{font-weight:600}
+.callbar .meta{font-family:var(--mono); font-size:12px; color:var(--call-muted)}
+.dot{display:inline-block; width:8px; height:8px; border-radius:50%; background:#5BD08F; margin-right:6px; vertical-align:1px}
+.thread{padding:18px; display:flex; flex-direction:column; gap:14px; min-height:340px; max-height:520px; overflow-y:auto}
+.empty{color:var(--call-muted); font-size:14px; margin:auto 0; text-align:center; padding:24px}
+.turn{display:flex; flex-direction:column; gap:4px; max-width:88%}
+.turn.her{align-self:flex-end; align-items:flex-end}
+.bubble{padding:10px 14px; border-radius:16px; font-size:15px; line-height:1.45}
+.her .bubble{background:#2B3A31; border-bottom-right-radius:4px}
+.ai .bubble{background:#F5EBD3; color:#2A2109; border-bottom-left-radius:4px}
+.ai.esc .bubble{background:#F7D9D6; color:#3B0D09}
+.gloss{font-size:12.5px; color:var(--call-muted); padding:0 4px}
+.ai-row{display:flex; align-items:center; gap:8px}
+.speak{background:none; border:1px solid rgba(255,255,255,.18); color:var(--call-ink); border-radius:999px; font:inherit; font-size:12px; padding:3px 10px; cursor:pointer}
+.speak:focus-visible,.chip:focus-visible,.caller:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.say{border-top:1px solid rgba(255,255,255,.08); padding:14px 18px 18px; display:flex; flex-direction:column; gap:10px}
+.chips{display:flex; flex-wrap:wrap; gap:8px}
+.chip{background:rgba(255,255,255,.06); color:var(--call-ink); border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:7px 12px; font:inherit; font-size:13px; cursor:pointer}
+.chip:hover{border-color:var(--accent)}
+.chip b{color:#F2C766; font-weight:600; margin-right:4px}
+.free{display:flex; gap:8px}
+.free input{flex:1; min-width:0; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); color:var(--call-ink); border-radius:12px; padding:10px 12px; font:inherit}
+.free input::placeholder{color:var(--call-muted)}
+.btn{border:0; border-radius:12px; padding:10px 14px; font:inherit; font-weight:600; cursor:pointer; background:#E3A92B; color:#1E1600}
+.btn.ghost{background:rgba(255,255,255,.08); color:var(--call-ink); border:1px solid rgba(255,255,255,.16); font-weight:500}
+.btn:disabled{opacity:.5; cursor:default}
+.hint{font-size:12px; color:var(--call-muted); margin:0}
+
+/* Side panels */
+.side{display:flex; flex-direction:column; gap:20px; min-width:0}
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:12px; min-width:0}
+.panel-head{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap}
+.trace{display:grid; grid-template-columns:auto 1fr; gap:8px 14px; font-size:14px; margin:0}
+.trace dt{font-family:var(--mono); font-size:12px; color:var(--muted); padding-top:2px}
+.trace dd{margin:0; min-width:0}
+.pill{display:inline-block; font-family:var(--mono); font-size:12px; padding:2px 8px; border-radius:999px; background:var(--sunk); border:1px solid var(--line)}
+.pill.advice{background:var(--leaf-soft); border-color:transparent; color:var(--leaf)}
+.pill.earn,.pill.rights{background:var(--accent-soft); border-color:transparent; color:var(--accent-ink)}
+.pill.safety,.pill.esc{background:var(--alert-soft); border-color:transparent; color:var(--alert)}
+.pill.ok{background:var(--leaf-soft); border-color:transparent; color:var(--leaf)}
+.bar{height:6px; background:var(--sunk); border-radius:3px; overflow:hidden; margin-top:6px; max-width:220px}
+.bar i{display:block; height:100%; background:var(--accent)}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+table{width:100%; border-collapse:collapse; font-size:14px; font-variant-numeric:tabular-nums}
+th{text-align:left; font-weight:500; color:var(--muted); font-size:12.5px; padding:6px 8px; border-bottom:1px solid var(--line)}
+td{padding:8px; border-bottom:1px solid var(--line)}
+td.num,th.num{text-align:right}
+tr.new td{background:var(--accent-soft)}
+.scroll{overflow-x:auto}
+.heat td.cell{text-align:center; font-family:var(--mono); font-size:13px; border-radius:6px}
+.heat td.bump{outline:2px solid var(--accent); outline-offset:-2px}
+.consent{display:flex; gap:8px; align-items:center; font-size:13px; color:var(--muted)}
+.foot{color:var(--muted); font-size:12.5px; max-width:80ch}
+.mapwrap{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:20px; align-items:start}
+@media (max-width:860px){ .mapwrap{grid-template-columns:minmax(0,1fr)} }
+#worldmap{height:340px; width:100%; background:var(--sunk); border-radius:12px; position:relative}
+@media (max-width:600px){ #worldmap{height:220px} }
+.jvm-container{touch-action:none;position:relative;overflow:hidden;height:100%;width:100%}
+.jvm-tooltip{border-radius:6px;background:var(--ink);color:var(--bg);font-family:var(--body);font-size:12.5px;padding:4px 8px;white-space:nowrap;position:absolute;display:none;z-index:5}
+.jvm-tooltip.active{display:block}
+.legend{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted)}
+.legend i{display:inline-block; width:18px; height:10px; border-radius:2px}
+.pin{color:#5BD08F}
+.channels{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.ch{display:flex; flex-direction:column; gap:2px; padding:8px 12px; border-radius:12px; border:1px solid var(--line); background:var(--surface); min-width:0}
+.ch strong{font-size:13.5px; font-weight:600}
+.ch span{font-size:12px; color:var(--muted)}
+.ch.live{border-color:var(--leaf); box-shadow:inset 0 0 0 1px var(--leaf)}
+.ch em{font-style:normal; font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--muted)}
+.ch.live em{color:var(--leaf)}
+@media (prefers-reduced-motion:no-preference){ .turn{animation:rise .25s ease-out both} @keyframes rise{from{transform:translateY(6px); opacity:.4} to{transform:none; opacity:1}} }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1 class="brand" aria-label="HerEvo">
+        <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
+          <defs><linearGradient id="mk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F7352"/><stop offset="1" stop-color="#163D2B"/></linearGradient></defs>
+          <rect width="48" height="48" rx="13" fill="url(#mk)"/>
+          <circle cx="24" cy="14.5" r="6.6" fill="none" stroke="#F2B33D" stroke-width="3.4"/>
+          <path d="M24 21.5V40" stroke="#E8F3EC" stroke-width="3.2" stroke-linecap="round"/>
+          <path d="M24 33.5C19 33.4 14.2 30.2 12.6 24.6C18.2 24.4 22.6 27.8 24 33.5Z" fill="#9FD9B8"/>
+          <path d="M24 33.5C29 33.4 33.8 30.2 35.4 24.6C29.8 24.4 25.4 27.8 24 33.5Z" fill="#9FD9B8"/>
+        </svg>
+        <span class="wordmark" aria-hidden="true"><span class="her">Her</span><span class="evo">Evo</span></span>
+      </h1>
+      <p class="tag">Her land. Her harvest. Her money. Her health. Her safety. One AI system for all of it, on any phone, even offline, turning her voice into the evidence that changes laws and services.</p>
+    </div>
+    <div class="mode" id="mode">Scripted demo</div>
+  </header>
+
+  <section aria-label="Ways she can reach HerEvo" class="channels">
+    <span class="label" style="margin-right:4px">Reach her anywhere</span>
+    <div class="ch live"><em>In this demo</em><strong>Voice call</strong><span>Any phone, no internet</span></div>
+    <div class="ch"><em>Planned</em><strong>SMS</strong><span>Offline</span></div>
+    <div class="ch"><em>Planned</em><strong>Offline-first app</strong><span>On-device AI, syncs later</span></div>
+    <div class="ch"><em>Planned</em><strong>WhatsApp</strong><span>Online, photos and documents</span></div>
+    <div class="ch"><em>Planned</em><strong>Community champion</strong><span>No phone needed</span></div>
+  </section>
+  <section aria-label="What she can bring to HerEvo" class="channels">
+    <span class="label" style="margin-right:4px">Every need, one system</span>
+    <div class="ch live"><em>In this demo</em><strong>Land &amp; harvest</strong><span>Farm advice from local guides</span></div>
+    <div class="ch live"><em>In this demo</em><strong>Money &amp; work</strong><span>Income record, savings, loans</span></div>
+    <div class="ch live"><em>In this demo</em><strong>Rights</strong><span>Her country's law, free legal aid</span></div>
+    <div class="ch live"><em>In this demo</em><strong>Safety</strong><span>Straight to a trained human</span></div>
+    <div class="ch"><em>Next</em><strong>Health</strong><span>Maternal and menstrual care</span></div>
+    <div class="ch"><em>Next</em><strong>Learning</strong><span>Skills and literacy by voice</span></div>
+  </section>
+
+  <section aria-label="Choose a caller" class="callers" id="callers"></section>
+
+  <div class="grid">
+    <section class="call" aria-label="The call">
+      <div class="callbar">
+        <div><span class="dot"></span><span class="who" id="who">Rina</span> <span class="meta" id="place"></span></div>
+        <div class="meta"><span class="pin">PIN verified</span> · nothing saved on this phone · <span id="timer">00:00</span></div>
+      </div>
+      <div class="thread" id="thread" aria-live="polite"></div>
+      <div class="say">
+        <div class="label" style="color:var(--call-muted)">What she says</div>
+        <div class="chips" id="chips"></div>
+        <form class="free" id="free" autocomplete="off">
+          <input id="freeText" aria-label="Type what she says" placeholder="Or type her words in any language">
+          <button type="button" class="btn ghost" id="mic" hidden>Speak</button>
+          <button class="btn" id="send">Send</button>
+        </form>
+        <p class="hint" id="hint">Tap a line above to play the call.</p>
+      </div>
+    </section>
+
+    <div class="side">
+      <section class="panel" aria-label="What the AI did">
+        <div class="panel-head"><h2>What the AI did</h2><span class="label">last turn</span></div>
+        <dl class="trace" id="trace">
+          <dt>Waiting</dt><dd class="muted small">Each answer shows its intent, the knowledge it used and the safety check, so judges and users can see why it answered as it did.</dd>
+        </dl>
+      </section>
+
+      <section class="panel" aria-label="Her income history">
+        <div class="panel-head"><h2>Her income history</h2><span class="label" id="ledgerCount"></span></div>
+        <div class="scroll"><table><thead><tr><th>Date</th><th>Earned</th><th class="num">Amount</th></tr></thead><tbody id="ledger"></tbody></table></div>
+        <label class="consent"><input type="checkbox" id="consent"> <span id="consentText">Share with a lender only when she says yes on the call</span></label>
+      </section>
+
+    </div>
+  </div>
+
+  <section class="panel" aria-label="Where women's rights fail in practice">
+    <div class="panel-head"><h2>Where women's rights fail in practice</h2><span class="label">sample data · anonymized</span></div>
+    <p class="small muted" style="margin:0;max-width:72ch">Every rights or safety call adds an anonymized report to its country. Laws on paper say one thing; these reports show where women still lose land, wages, family support and safety. Ask a rights or safety question in the call above and watch its country update.</p>
+    <div class="mapwrap">
+      <div>
+        <div id="worldmap" role="img" aria-label="World map shaded by number of rights-gap reports per country"></div>
+        <div class="legend" style="margin-top:8px"><span>Fewer reports</span><i id="lg1"></i><i id="lg2"></i><i id="lg3"></i><i id="lg4"></i><span>More</span></div>
+      </div>
+      <div class="scroll"><table class="heat" id="heat"></table></div>
+    </div>
+  </section>
+
+  <p class="foot">Demo for the International AI Builders Congress 2026. Callers, earnings and the map counts are sample data. Channels marked Planned are part of the build plan, not this demo. Rights answers are general information based on national law and the World Bank Women, Business and the Law data (as of 1 Oct 2025), not legal advice. Legal aid organisations named here must be confirmed as partners before any pilot.</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/js/jsvectormap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/maps/world.js"></script>
+<script>
+const CALLERS = {
+  bd: { key:'bd', name:'Rina', role:'Widow and farmer', place:'Rangpur, Bangladesh', lang:'bn', langName:'Bangla', country:'Bangladesh', cur:'Tk',
+    ledger:[{d:'12 Nov', item:'Potatoes, 25 kg', amt:600},{d:'16 Nov', item:'Eggs, 30', amt:390}],
+    kb:'Farming: yellowing of older, lower rice leaves first usually means nitrogen deficiency; check with the local Sub-Assistant Agriculture Officer before applying fertilizer; give no fertilizer doses. Rights: under Muslim inheritance law in Bangladesh a widow receives one-eighth of her husband\'s estate if there are children and one-quarter if there are none; Hindu and other personal laws differ. Legal aid: Rangpur District Legal Aid Office (National Legal Aid Services Organisation), BLAST, Ain o Salish Kendra.',
+    script:[
+      {intent:'RIGHTS', conf:.91, chip:'Land after husband died',
+        says:'স্বামী মারা যাওয়ার পর দেবর বলছে জমি আমার না।', saysEn:'Since my husband died, my brother-in-law says the land is not mine.',
+        reply:'মুসলিম উত্তরাধিকার আইনে সন্তান থাকলে স্ত্রী স্বামীর সম্পত্তির আট ভাগের এক ভাগ পান, সন্তান না থাকলে চার ভাগের এক ভাগ। এটা সাধারণ তথ্য, আইনি পরামর্শ নয়। বিনামূল্যে সাহায্যের জন্য রংপুর জেলা লিগ্যাল এইড অফিসে যোগাযোগ করুন।',
+        replyEn:'Under Muslim inheritance law, a wife receives one-eighth of her husband\'s estate if there are children, and one-quarter if there are none. This is general information, not legal advice. For free help, contact the Rangpur District Legal Aid Office.',
+        source:'Muslim personal law (inheritance) · WBL 2026: Assets', aid:'Rangpur District Legal Aid Office (free) · BLAST', gap:'Land & inheritance'},
+      {intent:'EARN', conf:.97, chip:'Log a sale',
+        says:'আজ ৪০ কেজি ধান বিক্রি করেছি, ১২০০ টাকা।', saysEn:'I sold 40 kg of rice today for 1,200 taka.',
+        reply:'লিখে রাখলাম: ৪০ কেজি ধান, ১,২০০ টাকা। আপনার আয়ের হিসাবে এটা যোগ হলো।',
+        replyEn:'Recorded: 40 kg rice, 1,200 taka. It is added to your income history.',
+        source:'Sale extractor · structured record', sale:{item:'Rice, 40 kg', amt:1200}},
+      {intent:'ADVICE', conf:.94, chip:'Rice leaves yellowing',
+        says:'আমার ধানের পাতা হলুদ হয়ে যাচ্ছে, কী করব?', saysEn:'My rice leaves are turning yellow. What should I do?',
+        reply:'নিচের পুরনো পাতা আগে হলুদ হলে সাধারণত নাইট্রোজেনের ঘাটতি হয়। সার দেওয়ার আগে আপনার এলাকার উপসহকারী কৃষি কর্মকর্তার সাথে কথা বলুন।',
+        replyEn:'If the older, lower leaves yellow first, it is usually a lack of nitrogen. Talk to your local agriculture officer before adding fertilizer.',
+        source:'Farm advice pack · Bangladesh · rice'},
+      {intent:'SAFETY', conf:.96, chip:'Threatened with eviction',
+        says:'দেবর হুমকি দিচ্ছে আমাকে বাড়ি থেকে বের করে দেবে।', saysEn:'My brother-in-law is threatening to throw me out of the house.',
+        source:'Safety screen → human helper', gap:'Safety threats'}
+    ],
+    escalate:'আপনি একা নন। আমি এখনই একজন প্রশিক্ষিত সহায়তাকর্মীর সাথে আপনাকে যুক্ত করছি।',
+    escalateEn:'You are not alone. I am connecting you to a trained helper right now.'
+  },
+  ke: { key:'ke', name:'Amina', role:'Domestic worker', place:'Nairobi, Kenya', lang:'sw', langName:'Swahili', country:'Kenya', cur:'KSh',
+    ledger:[{d:'08 Nov', item:'Laundry work, 2 days', amt:1200},{d:'15 Nov', item:'Mandazi, 35', amt:700}],
+    kb:'Rights: Kenya\'s Employment Act (2007) covers domestic workers; an employer must pay wages that are due; unpaid wages can be reported free of charge to the County Labour Office; the domestic workers\' union is KUDHEIHA. Money: saving through a registered chama (savings group) or a mobile savings account such as M-Shwari; save small amounts regularly. Legal aid: National Legal Aid Service (NLAS), FIDA Kenya.',
+    script:[
+      {intent:'RIGHTS', conf:.93, chip:'Wages unpaid for two months',
+        says:'Mwajiri wangu hajanilipa mshahara kwa miezi miwili.', saysEn:'My employer has not paid my salary for two months.',
+        reply:'Sheria ya Ajira ya Kenya inawalinda wafanyakazi wa nyumbani, na mwajiri lazima akulipe mshahara unaodaiwa. Unaweza kuripoti bure kwa Ofisi ya Kazi ya Kaunti, au kupata msaada kutoka chama cha wafanyakazi KUDHEIHA. Hii ni taarifa ya jumla, si ushauri wa kisheria.',
+        replyEn:'Kenya\'s Employment Act protects domestic workers, and your employer must pay the wages you are owed. You can report it for free to the County Labour Office, or get help from the KUDHEIHA workers\' union. This is general information, not legal advice.',
+        source:'Employment Act 2007 · WBL 2026: Pay', aid:'County Labour Office, Nairobi (free) · KUDHEIHA union', gap:'Unpaid wages'},
+      {intent:'EARN', conf:.95, chip:'Log weekend sales',
+        says:'Wikendi niliuza maandazi 40 kwa shilingi 800.', saysEn:'At the weekend I sold 40 mandazi for 800 shillings.',
+        reply:'Nimeandika: maandazi 40, shilingi 800. Imeongezwa kwenye historia ya mapato yako.',
+        replyEn:'Recorded: 40 mandazi, 800 shillings. It is added to your income history.',
+        source:'Sale extractor · structured record', sale:{item:'Mandazi, 40', amt:800}},
+      {intent:'ADVICE', conf:.9, chip:'How to save safely',
+        says:'Nawezaje kuweka akiba kwa usalama?', saysEn:'How can I save money safely?',
+        reply:'Unaweza kujiunga na chama kilichosajiliwa, au kufungua akaunti ya akiba kwenye simu kama M-Shwari. Weka kiasi kidogo kila wiki, hata shilingi hamsini.',
+        replyEn:'You can join a registered chama, or open a mobile savings account such as M-Shwari. Put away a small amount every week, even fifty shillings.',
+        source:'Money skills pack · Kenya'},
+      {intent:'SAFETY', conf:.96, chip:'Employer hits and threatens her',
+        says:'Mwajiri wangu ananipiga na kunitishia.', saysEn:'My employer hits me and threatens me.',
+        source:'Safety screen → human helper', gap:'Safety threats'}
+    ],
+    escalate:'Hauko peke yako. Ninakuunganisha sasa hivi na mhudumu aliyefunzwa.',
+    escalateEn:'You are not alone. I am connecting you right now to a trained helper.'
+  },
+  mx: { key:'mx', name:'Lucía', role:'Market vendor and mother', place:'Oaxaca, Mexico', lang:'es', langName:'Spanish', country:'Mexico', cur:'MXN',
+    ledger:[{d:'14 Nov', item:'Tlayudas, market stall', amt:950},{d:'17 Nov', item:'Tlayudas, market stall', amt:1100}],
+    kb:'Rights: in Mexico both parents are legally obliged to provide child support (pensión alimenticia); a mother can claim it before a family judge; the Defensoría Pública of Oaxaca gives free legal advice. Money: a record of regular sales helps show income to lenders such as Banco del Bienestar or registered microfinance institutions; compare the interest rate before signing. Legal aid: Defensoría Pública de Oaxaca, DIF.',
+    script:[
+      {intent:'RIGHTS', conf:.92, chip:'Ex-partner not paying child support',
+        says:'Mi expareja no paga la pensión de mis hijos.', saysEn:'My ex-partner does not pay child support for my children.',
+        reply:'En México, ambos padres están obligados por ley a dar pensión alimenticia a sus hijos. Puede pedirla ante un juez de lo familiar, y la Defensoría Pública de Oaxaca la asesora gratis. Esto es información general, no asesoría legal.',
+        replyEn:'In Mexico both parents are legally required to pay child support. You can claim it before a family judge, and the Oaxaca Public Defender\'s Office advises you for free. This is general information, not legal advice.',
+        source:'Civil law: pensión alimenticia · WBL 2026: Parenthood', aid:'Defensoría Pública, Oaxaca (free) · DIF', gap:'Family support'},
+      {intent:'EARN', conf:.96, chip:'Log today\'s sales',
+        says:'Hoy vendí 1,200 pesos de tlayudas en el mercado.', saysEn:'Today I sold 1,200 pesos of tlayudas at the market.',
+        reply:'Anotado: tlayudas, 1,200 pesos. Ya está en su historial de ingresos.',
+        replyEn:'Recorded: tlayudas, 1,200 pesos. It is now in your income history.',
+        source:'Sale extractor · structured record', sale:{item:'Tlayudas, market stall', amt:1200}},
+      {intent:'ADVICE', conf:.91, chip:'Loan for her stall',
+        says:'¿Cómo consigo un préstamo para mi puesto?', saysEn:'How do I get a loan for my stall?',
+        reply:'Con su historial de ventas puede mostrar sus ingresos a un prestamista. Pregunte en el Banco del Bienestar o en una microfinanciera registrada, y compare la tasa de interés antes de firmar.',
+        replyEn:'With your sales history you can show a lender your income. Ask at Banco del Bienestar or a registered microfinance institution, and compare the interest rate before signing.',
+        source:'Money skills pack · Mexico'},
+      {intent:'SAFETY', conf:.95, chip:'Ex-partner threatens her',
+        says:'Mi expareja me amenaza cuando voy al mercado.', saysEn:'My ex-partner threatens me when I go to the market.',
+        source:'Safety screen → human helper', gap:'Safety threats'}
+    ],
+    escalate:'No está sola. La estoy comunicando ahora mismo con una persona capacitada para ayudarla.',
+    escalateEn:'You are not alone. I am connecting you right now with a trained person who can help you.'
+  }
+};
+
+const GAP_COLS = ['Land & inheritance','Unpaid wages','Family support','Safety threats'];
+const gaps = {
+  'Bangladesh':{code:'BD', v:[22,14,9,11]}, 'Kenya':{code:'KE', v:[15,19,8,12]}, 'Mexico':{code:'MX', v:[9,10,16,13]},
+  'Nigeria':{code:'NG', v:[24,12,10,15]}, 'India':{code:'IN', v:[27,18,12,14]}, 'Pakistan':{code:'PK', v:[19,11,9,13]},
+  'Ethiopia':{code:'ET', v:[17,9,7,8]}, 'Peru':{code:'PE', v:[8,7,9,6]}, 'Guatemala':{code:'GT', v:[10,6,8,9]}
+};
+const PINS = [{name:'Rina · Rangpur', coords:[25.75, 89.25]},{name:'Amina · Nairobi', coords:[-1.29, 36.82]},{name:'Lucía · Oaxaca', coords:[17.06, -96.72]}];
+
+let current = 'bd', turnsBy = {bd:[], ke:[], mx:[]}, lastBump = null, started = Date.now();
+let sample = null, tts = null, dictation = null, busy = false;
+/* Live backend mode: when this page is served by the HerEvo API, every message goes to the real system
+   (safety screen, country-pack retrieval, Claude, records). */
+let api = false;
+const GAP_NAME = {land_inheritance:'Land & inheritance', unpaid_wages:'Unpaid wages', family_support:'Family support', safety_threats:'Safety threats'};
+function sessionFor(key){
+  let base = null;
+  try{ base = localStorage.getItem('herevo-session'); }catch(e){}
+  if (!base){ base = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()); try{ localStorage.setItem('herevo-session', base); }catch(e){} }
+  return base + '-' + key;
+}
+const $ = id => document.getElementById(id);
+
+function el(tag, cls, text){ const e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; }
+
+function renderCallers(){
+  const box = $('callers'); box.textContent = '';
+  for (const c of Object.values(CALLERS)){
+    const b = el('button','caller'); b.type = 'button'; b.setAttribute('aria-pressed', String(c.key === current));
+    b.append(el('strong',null,`${c.name} · ${c.role}`), el('span',null,`${c.place} · ${c.langName}`));
+    b.onclick = () => { current = c.key; render(); };
+    box.append(b);
+  }
+}
+
+function renderChips(){
+  const c = CALLERS[current], box = $('chips'); box.textContent = '';
+  for (const t of c.script){
+    const b = el('button','chip'); b.type = 'button';
+    b.append(el('b',null,t.intent.charAt(0) + t.intent.slice(1).toLowerCase()), document.createTextNode(t.chip));
+    b.onclick = () => playScripted(t);
+    box.append(b);
+  }
+}
+
+function renderThread(){
+  const c = CALLERS[current], box = $('thread'); box.textContent = '';
+  $('who').textContent = c.name; $('place').textContent = '· ' + c.place;
+  const turns = turnsBy[current];
+  if (!turns.length){ box.append(el('div','empty',`${c.name} has called HerEvo from a basic phone. Pick what she says below.`)); return; }
+  for (const t of turns){
+    const her = el('div','turn her'); her.append(el('div','bubble',t.says)); if (t.saysEn) her.append(el('div','gloss',t.saysEn)); box.append(her);
+    const ai = el('div','turn ai' + (t.safety === 'ESCALATE' ? ' esc' : ''));
+    ai.append(el('div','bubble',t.reply));
+    const row = el('div','ai-row'); if (t.replyEn) row.append(el('div','gloss',t.replyEn));
+    const sp = el('button','speak','Play'); sp.type = 'button'; sp.setAttribute('aria-label','Play this answer aloud'); sp.onclick = () => speak(t.reply, c.lang);
+    row.append(sp); ai.append(row); box.append(ai);
+  }
+  box.scrollTop = box.scrollHeight;
+}
+
+function renderTrace(t){
+  const d = $('trace'); d.textContent = '';
+  if (!t){ d.append(el('dt',null,'Waiting'), el('dd','muted small','Each answer shows its intent, the knowledge it used and the safety check, so judges and users can see why it answered as it did.')); return; }
+  const add = (k, node) => { d.append(el('dt',null,k)); const dd = el('dd'); dd.append(node); d.append(dd); };
+  const intent = el('div'); intent.append(el('span','pill ' + t.intent.toLowerCase(), t.intent));
+  const conf = el('div','bar'); const fill = el('i'); fill.style.width = Math.round((t.conf||0)*100) + '%'; conf.append(fill);
+  intent.append(el('span','small muted',`  confidence ${Math.round((t.conf||0)*100)}%`), conf);
+  add('Intent', intent);
+  add('Language', el('span',null,`${CALLERS[current].langName} in, ${CALLERS[current].langName} out`));
+  add('Grounded in', el('span',null,t.source || 'Approved knowledge base'));
+  if (t.aid) add('Nearest legal aid', el('span',null,t.aid + ' (demo directory)'));
+  const s = el('span','pill ' + (t.safety === 'ESCALATE' ? 'esc' : 'ok'), t.safety === 'ESCALATE' ? 'ESCALATE → human helper' : 'OK');
+  add('Safety', s);
+  if (t.safety === 'ESCALATE') add('Handed to', el('span',null,(t.escalationId ? `Helper alerted on Telegram · case #${t.escalationId}. ` : '') + 'Trained helper at a partner hotline, who can also refer her to the nearest clinic or police women\'s desk. The AI does not counsel.'));
+  add('Answered by', el('span','small', t.api ? `HerEvo backend · ${({claude:'Claude, grounded in the country pack', fallback:'rules + pre-checked text', safety_rule:'safety rule (no AI)'})[t.answeredBy] || t.answeredBy}${t.latency != null ? ` · ${t.latency} ms` : ''}` : (t.live ? 'Claude, live (quick tier)' : 'Scripted demo answer')));
+}
+
+function renderLedger(){
+  const c = CALLERS[current], body = $('ledger'); body.textContent = '';
+  for (const r of c.ledger){
+    const tr = el('tr', r.fresh ? 'new' : null);
+    tr.append(el('td',null,r.d), el('td',null,r.item), el('td','num',`${c.cur} ${r.amt.toLocaleString('en-US')}`));
+    body.append(tr);
+  }
+  const total = c.ledger.reduce((s,r)=>s+r.amt,0);
+  $('ledgerCount').textContent = `${c.ledger.length} sales · ${c.cur} ${total.toLocaleString('en-US')}`;
+  $('consentText').textContent = $('consent').checked
+    ? `${c.name} agreed on the call: this history can be shared once with a lender`
+    : 'Share with a lender only when she says yes on the call';
+}
+
+function isDark(){
+  const t = document.documentElement.getAttribute('data-theme');
+  if (t) return t === 'dark';
+  return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches;
+}
+let map = null;
+function renderMap(){
+  const box = $('worldmap'); if (!box || typeof jsVectorMap === 'undefined') { if (box) box.hidden = true; return; }
+  const dark = isDark();
+  const levels = dark ? ['#3A3424','#6B5520','#A87A1E','#E3A92B'] : ['#F1E2BC','#E2C27A','#C9930F','#8A5E00'];
+  ['lg1','lg2','lg3','lg4'].forEach((id,i) => $(id).style.background = levels.at(i));
+  const totals = {}; for (const g of Object.values(gaps)) totals[g.code] = g.v.reduce((a,b)=>a+b,0);
+  const vals = Object.values(totals), lo = Math.min(...vals), hi = Math.max(...vals);
+  const values = {}; for (const [code, n] of Object.entries(totals)) values[code] = 'l' + Math.min(3, Math.floor((n - lo) / (hi - lo + 1) * 4));
+  box.textContent = '';
+  try{
+    map = new jsVectorMap({
+      selector:'#worldmap', map:'world', zoomButtons:false, zoomOnScroll:false, draggable:false,
+      regionStyle:{ initial:{ fill: dark ? '#2B3430' : '#DCE2DA', stroke: dark ? '#111513' : '#F3F5F0', strokeWidth:0.5 }, hover:{ fillOpacity:.85 } },
+      series:{ regions:[{ attribute:'fill', scale:{l0:levels.at(0), l1:levels.at(1), l2:levels.at(2), l3:levels.at(3)}, values }] },
+      markers: PINS,
+      markerStyle:{ initial:{ fill: dark ? '#72C29A' : '#2E6A4E', stroke: dark ? '#111513' : '#FFFFFF', strokeWidth:2, r:6 } },
+      onRegionTooltipShow(event, tooltip, code){
+        try{ if (totals[code] != null) tooltip.text(`${tooltip.text()}: ${totals[code]} reports (sample)`); }catch(e){}
+      }
+    });
+  }catch(e){ box.hidden = true; }
+}
+
+function renderHeat(){
+  renderMap();
+  const t = $('heat'); t.textContent = '';
+  const head = el('tr'); head.append(el('th',null,'Country')); GAP_COLS.forEach(h => head.append(el('th','num',h)));
+  const thead = el('thead'); thead.append(head); t.append(thead);
+  const max = Math.max(...Object.values(gaps).map(g => g.v).flat());
+  const tb = el('tbody');
+  for (const [country, g] of Object.entries(gaps)){
+    const tr = el('tr'); tr.append(el('td',null,country));
+    g.v.forEach((v,i) => {
+      const td = el('td','cell',String(v));
+      td.style.background = `color-mix(in srgb, var(--accent) ${Math.round(8 + 52*v/max)}%, transparent)`;
+      if (lastBump && lastBump[0] === country && lastBump[1] === i) td.classList.add('bump');
+      tr.append(td);
+    });
+    tb.append(tr);
+  }
+  t.append(tb);
+}
+
+function render(){ renderCallers(); renderChips(); renderThread(); renderLedger(); renderHeat(); const tt = turnsBy[current]; renderTrace(tt[tt.length-1]); }
+
+function addSale(sale){
+  const c = CALLERS[current]; c.ledger.forEach(r => r.fresh = false);
+  c.ledger.push({d:'20 Nov', item:sale.item, amt:Number(sale.amt)||0, fresh:true});
+}
+function bumpGap(name){
+  const i = GAP_COLS.indexOf(name), country = CALLERS[current].country; if (i < 0) return;
+  gaps[country].v[i] += 1; lastBump = [country, i];
+}
+
+function commit(t){
+  const c = CALLERS[current];
+  if (t.intent === 'SAFETY' || t.safety === 'ESCALATE'){ t.safety = 'ESCALATE'; if (!t.api){ t.reply = c.escalate; t.replyEn = c.escalateEn; } }
+  else t.safety = t.safety || 'OK';
+  if (t.sale) addSale(t.sale);
+  if (t.gap) bumpGap(t.gap);
+  turnsBy[current].push(t);
+  render();
+}
+
+function playScripted(s){ if (busy) return; if (api) return askApi(s.says, s.saysEn); commit({...s, live:false}); }
+
+async function askApi(text, saysEn){
+  const c = CALLERS[current];
+  busy = true; $('send').disabled = true; $('hint').textContent = 'HerEvo is thinking…';
+  try{
+    const res = await fetch('/v1/ask', {method:'POST', headers:{'content-type':'application/json'},
+      body: JSON.stringify({session_id: sessionFor(c.key), text, country: c.country === 'Bangladesh' ? 'BD' : c.country === 'Kenya' ? 'KE' : 'MX',
+                            district: c.place.split(',')[0]})});
+    if (res.status === 429){ $('hint').textContent = 'Too many messages. Please wait a few minutes.'; return; }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const r = await res.json();
+    const cites = (r.citations || []).map(x => `${x.title} (${x.source}${x.review_status === 'draft' ? ', awaiting expert review' : ''})`).join('; ');
+    commit({intent: r.intent, conf: r.confidence ?? 0.7, says: text, saysEn: saysEn || '', reply: r.reply, replyEn: r.reply_en,
+      source: cites || ({fallback:'Pre-checked fallback message (AI unavailable)', safety_rule:'Safety rule, before any AI'})[r.answered_by] || 'Country pack',
+      safety: r.safety, sale: r.sale ? {item: r.sale.product || 'Sale', amt: r.sale.amount} : null,
+      gap: GAP_NAME[r.gap] || null, live: true, api: true, answeredBy: r.answered_by, escalationId: r.escalation_id, latency: r.latency_ms});
+    $('freeText').value = ''; $('hint').textContent = `Answered by the HerEvo backend in ${r.latency_ms} ms.`;
+  }catch(err){
+    offline(text); $('hint').textContent = 'Backend unreachable, so this answer came from the scripted demo.';
+  }finally{ busy = false; $('send').disabled = false; }
+}
+
+/* Offline router for typed words when live AI is not available */
+function route(text){
+  const s = text.toLowerCase();
+  if (/(threat|beat|hit|hurt|throw me out|evict|হুমকি|মার|বের করে|tishia|piga|fukuza|amenaz|golpe|pega|sacarme|correr)/.test(s)) return 'SAFETY';
+  if (/(land|inherit|title|property|জমি|সম্পত্তি|উত্তরাধিকার|ardhi|shamba|urithi|tierra|parcela|ejido|herencia|hered|terreno|wage|salary|paid|mshahara|sueldo|pensión|pension|support|child|মজুরি|বেতন|তালাক|খোরপোশ)/.test(s)) return 'RIGHTS';
+  if (/(sold|sell|price|taka|shilling|বিক্রি|টাকা|uza|bei|shilingi|vend|precio|pesos)/.test(s)) return 'EARN';
+  return 'ADVICE';
+}
+
+async function askLive(text){
+  const c = CALLERS[current];
+  const prompt = `You are HerEvo, an AI ally for women who call from basic or shared phones about any problem: rights, money, work, farming or safety. Rules: reply in ${c.langName} in 2 or 3 short spoken sentences with no lists or symbols; use ONLY the knowledge below; if it does not cover the question, say so and name who can help; never give legal advice, only general rights information plus a legal aid contact; never give pesticide, fertilizer or medicine doses; if the caller mentions violence, threats, eviction or fear for safety, set safety to ESCALATE.
+
+Caller: ${c.name}, ${c.place}.
+Knowledge: ${c.kb}
+
+Caller says: "${text}"
+
+Reply with only JSON: {"intent":"RIGHTS|EARN|ADVICE|SAFETY","confidence":0.0-1.0,"safety":"OK|ESCALATE","source":"short name of the knowledge used","says_en":"English translation of what the caller said","reply":"your answer in ${c.langName}","reply_en":"English translation of your answer","sale":null or {"item":"product and quantity in English","amount":number}}`;
+  return sample.json(prompt, {modelTier:'quick'});
+}
+
+async function onFree(e){
+  e.preventDefault();
+  const text = $('freeText').value.trim(); if (!text || busy) return;
+  const c = CALLERS[current];
+  if (api) return askApi(text, '');
+  if (sample){
+    busy = true; $('send').disabled = true; $('hint').textContent = 'Thinking…';
+    try{
+      const r = await askLive(text);
+      const intent = ['RIGHTS','EARN','ADVICE','SAFETY'].includes(r?.intent) ? r.intent : route(text);
+      commit({intent, conf:Number(r?.confidence)||.8, says:text, saysEn:r?.says_en || '', reply:String(r?.reply || ''), replyEn:r?.reply_en || '',
+        source:r?.source || 'Approved knowledge base', safety:r?.safety === 'ESCALATE' ? 'ESCALATE' : 'OK',
+        sale: r?.sale && r.sale.amount ? {item:String(r.sale.item||'Sale'), amt:r.sale.amount} : null,
+        gap: intent === 'SAFETY' ? 'Safety threats' : (intent === 'RIGHTS' ? ({bd:'Land & inheritance', ke:'Unpaid wages', mx:'Family support'})[current] : null), live:true});
+      $('freeText').value = ''; $('hint').textContent = 'Answered live by Claude.';
+    }catch(err){
+      if (err && (err.code === 'not_granted' || err.code === 'sampling_disabled')){ sample = null; setMode(); }
+      offline(text); $('hint').textContent = 'Live AI unavailable here, so this answer came from the scripted demo.';
+    }finally{ busy = false; $('send').disabled = false; }
+  } else { offline(text); }
+}
+function offline(text){
+  const intent = route(text), base = CALLERS[current].script.find(s => s.intent === intent);
+  commit({...base, says:text, saysEn:'', conf:.7, live:false});
+  $('freeText').value = '';
+}
+
+async function speak(text, lang){
+  if (tts){ try{ await tts.speak(text, {language:lang}); return; }catch(e){ /* fall back below */ } }
+  try{ if ('speechSynthesis' in window){ speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = {bn:'bn-BD', sw:'sw-KE', es:'es-MX'}[lang] || 'en'; speechSynthesis.speak(u); } }catch(e){}
+}
+
+function setMode(){
+  const m = $('mode'); m.textContent = '';
+  if (api){ m.append(el('b',null,'● Live backend'), document.createTextNode(' · every message goes through the real HerEvo system')); return; }
+  if (sample){ m.append(el('b',null,'● Live AI'), document.createTextNode(' · typed questions answered by Claude')); }
+  else m.textContent = 'Scripted demo · typed questions use the offline router';
+}
+
+setInterval(() => { const s = Math.floor((Date.now()-started)/1000); $('timer').textContent = `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }, 1000);
+$('free').addEventListener('submit', onFree);
+$('consent').addEventListener('change', renderLedger);
+render(); setMode();
+
+(async () => {
+  if (!/^https?:$/.test(location.protocol)) return;
+  try{
+    const r = await fetch('/health', {cache:'no-store'});
+    const h = r.ok ? await r.json() : null;
+    if (h && h.ok && Array.isArray(h.countries)){ api = true; setMode(); }
+  }catch(e){ /* not served by the backend: keep the scripted / Claude demo */ }
+})();
+
+(async () => {
+  if (!window.claude?.use) return;
+  try{ sample = await claude.use('sample'); }catch(e){ sample = null; }
+  try{ tts = await claude.use('tts'); }catch(e){ tts = null; }
+  try{ dictation = await claude.use('dictation'); }catch(e){ dictation = null; }
+  setMode();
+  if (dictation){
+    const mic = $('mic'); mic.hidden = false; let on = false;
+    dictation.onFinal(({text}) => { $('freeText').value = ($('freeText').value + ' ' + text).trim(); });
+    dictation.onState(({state}) => { on = state === 'listening'; mic.textContent = on ? 'Stop' : 'Speak'; });
+    mic.onclick = () => { if (on) dictation.stop().catch(()=>{}); else dictation.start().catch(e => { if (e?.code === 'not_granted') mic.hidden = true; }); };
+  }
+})();
+</script>
