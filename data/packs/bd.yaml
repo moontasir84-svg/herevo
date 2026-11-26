@@ -126,41 +126,53 @@ entries:
     module: rights
     topic: dower
     gap: family_support
-    title: Dower (denmohor) is the wife's right
+    title: "Dower (denmohor) is the wife's right"
     text: >-
-      Dower (denmohor) promised at marriage belongs to the wife. If it was not paid, it remains a debt the
-      husband owes her, also after divorce. If the husband dies, unpaid dower must be paid from his estate
-      before the inheritance is divided. She can claim it in the Family Court.
+      Dower (denmohor) promised at marriage belongs to the wife. If it was not paid, it stays a debt the
+      husband owes her, also after divorce, and unpaid dower is payable when she asks for it. If the
+      husband dies, unpaid dower must be paid from his estate before the inheritance is divided. She can
+      claim it in the Family Court under the Family Courts Act 2023; the court fee is Tk 200, and free
+      legal aid can file the case for her at no cost. She should bring the kabin-nama (marriage
+      registration paper), which shows the dower amount, or get a certified copy from the marriage
+      registrar (kazi).
     keywords: দেনমোহর মোহরানা কাবিন তালাক স্বামী দেয়নি পাওনা
     local:
       bn:
         title: "দেনমোহর স্ত্রীর অধিকার"
         text: >-
           বিয়ের সময় প্রতিশ্রুত দেনমোহর স্ত্রীর প্রাপ্য। তা পরিশোধ না হলে তালাকের পরেও এটি স্বামীর কাছে
-          স্ত্রীর পাওনা ঋণ হিসেবে থেকে যায়। স্বামী মারা গেলে উত্তরাধিকার ভাগ করার আগে তাঁর সম্পত্তি থেকে
-          বকেয়া দেনমোহর পরিশোধ করতে হয়। স্ত্রী পারিবারিক আদালতে দেনমোহর দাবি করতে পারেন।
-    source: "Family Courts Ordinance 1985; Muslim Family Laws Ordinance 1961 (bdlaws.minlaw.gov.bd)"
+          স্ত্রীর পাওনা ঋণ হিসেবে থেকে যায়, এবং বকেয়া দেনমোহর স্ত্রী চাইলেই পরিশোধযোগ্য। স্বামী মারা গেলে
+          উত্তরাধিকার ভাগের আগে তাঁর সম্পত্তি থেকে বকেয়া দেনমোহর দিতে হয়। পারিবারিক আদালত আইন ২০২৩ অনুযায়ী
+          তিনি পারিবারিক আদালতে দেনমোহর দাবি করতে পারেন; কোর্ট ফি ২০০ টাকা, এবং বিনামূল্যে আইনি সহায়তা বিনা
+          খরচে তাঁর হয়ে মামলা করে দিতে পারে। সঙ্গে কাবিননামা (বিয়ের নিবন্ধন কাগজ) আনতে হবে, যাতে দেনমোহরের
+          পরিমাণ লেখা আছে, অথবা কাজির কাছ থেকে সত্যায়িত কপি তুলতে হবে।
+    source: "Family Courts Act 2023 (court fee Tk 200, The Daily Star); Muslim Family Laws Ordinance 1961 (bdlaws.minlaw.gov.bd)"
     source_url: http://bdlaws.minlaw.gov.bd/
   - id: bd-rights-maintenance
     module: rights
     topic: maintenance
     gap: family_support
-    title: Maintenance for a wife and children
+    title: "Maintenance for a wife and children"
     text: >-
       A Muslim husband must maintain his wife during the marriage and pay maintenance during the waiting
-      period (iddat) after divorce. A father must maintain his children. If he does not, the wife can apply
-      to the chairman of the Union Parishad (Arbitration Council) or file a case in the Family Court for
-      maintenance. Free legal aid can file it for her.
+      period (iddat) after divorce, and a father must maintain his children. If he does not, the wife can
+      apply to the chairman of her Union Parishad (or the mayor in a municipality). The chairman sets up
+      an Arbitration Council, which can issue a certificate fixing the amount the husband must pay (Muslim
+      Family Laws Ordinance 1961). She can also file a maintenance case in the Family Court; the court fee
+      is Tk 200 and free legal aid can file it for her. It helps to write down since when he has not paid
+      and what the children need each month.
     keywords: ভরণপোষণ খোরপোশ সন্তানের খরচ স্বামী টাকা দেয় না তালাক বাচ্চা
     local:
       bn:
         title: "স্ত্রী ও সন্তানের ভরণপোষণ"
         text: >-
-          মুসলিম স্বামীকে বিয়ে চলাকালীন স্ত্রীর ভরণপোষণ দিতে হয় এবং তালাকের পর ইদ্দতকালীন ভরণপোষণ দিতে হয়।
-          বাবাকে সন্তানদের ভরণপোষণ দিতে হয়। তিনি না দিলে স্ত্রী ইউনিয়ন পরিষদের চেয়ারম্যানের কাছে (সালিশি
-          পরিষদ) আবেদন করতে পারেন অথবা পারিবারিক আদালতে ভরণপোষণের মামলা করতে পারেন। বিনামূল্যে আইনি সহায়তা
-          তাঁর হয়ে মামলা করে দিতে পারে।
-    source: "Muslim Family Laws Ordinance 1961, section 9; Family Courts Ordinance 1985 (bdlaws.minlaw.gov.bd)"
+          মুসলিম স্বামীকে বিয়ে চলাকালীন স্ত্রীর ভরণপোষণ এবং তালাকের পর ইদ্দতকালীন ভরণপোষণ দিতে হয়, আর বাবাকে
+          সন্তানদের ভরণপোষণ দিতে হয়। তিনি না দিলে স্ত্রী নিজের ইউনিয়ন পরিষদের চেয়ারম্যানের কাছে (পৌরসভায়
+          মেয়রের কাছে) আবেদন করতে পারেন। চেয়ারম্যান সালিশি পরিষদ গঠন করেন, যা স্বামীকে কত টাকা দিতে হবে তা
+          ঠিক করে সার্টিফিকেট দিতে পারে (মুসলিম পারিবারিক আইন অধ্যাদেশ ১৯৬১)। তিনি পারিবারিক আদালতেও ভরণপোষণের
+          মামলা করতে পারেন; কোর্ট ফি ২০০ টাকা, আর বিনামূল্যে আইনি সহায়তা তাঁর হয়ে মামলা করে দিতে পারে। কবে
+          থেকে টাকা দিচ্ছে না এবং সন্তানদের মাসে কত খরচ লাগে, তা লিখে রাখলে সুবিধা হয়।
+    source: "Muslim Family Laws Ordinance 1961; Family Courts Act 2023 (bdlaws.minlaw.gov.bd; The Daily Star)"
     source_url: http://bdlaws.minlaw.gov.bd/
   - id: bd-rights-dowry
     module: rights
@@ -202,59 +214,86 @@ entries:
     module: safety
     topic: domestic_violence
     gap: safety_threats
-    title: Protection from domestic violence
+    title: "Protection from domestic violence"
     text: >-
-      The Domestic Violence (Prevention and Protection) Act 2010 lets a woman ask a court for a protection
-      order and a residence order, which protects her right to stay in the shared home. Physical, mental,
-      sexual and economic abuse are covered. Help: 109 helpline, police, or free legal aid.
+      The Domestic Violence (Prevention and Protection) Act 2010 covers physical, mental, sexual and
+      economic abuse. She, or someone for her, can apply to the magistrate's court where she lives, where
+      the abuser lives, or where she is staying now. The court must fix a hearing within 7 working days
+      and can give an interim protection order at once; it can also order that she may stay in the shared
+      home (residence order), compensation and custody of children. Breaking a protection order can be
+      punished with up to 6 months in prison or a fine of up to Tk 10,000. The Upazila Women Affairs
+      Office and free legal aid (16430) can help her apply. In danger now: 999; helpline 109.
     keywords: মারধর নির্যাতন স্বামী মারে বাড়ি থেকে বের করে দেবে হুমকি ভয় পারিবারিক সহিংসতা
     local:
       bn:
         title: "পারিবারিক সহিংসতা থেকে সুরক্ষা"
         text: >-
-          পারিবারিক সহিংসতা (প্রতিরোধ ও সুরক্ষা) আইন ২০১০ অনুযায়ী একজন নারী আদালতের কাছে সুরক্ষা আদেশ এবং
-          বসবাস আদেশ চাইতে পারেন; বসবাস আদেশ যৌথ বাড়িতে থাকার অধিকার রক্ষা করে। শারীরিক, মানসিক, যৌন ও আর্থিক
-          নির্যাতন এই আইনের আওতায় পড়ে। সাহায্য: ১০৯ হেল্পলাইন, পুলিশ অথবা বিনামূল্যে আইনি সহায়তা।
-    source: "Domestic Violence (Prevention and Protection) Act 2010 (bdlaws.minlaw.gov.bd)"
+          পারিবারিক সহিংসতা (প্রতিরোধ ও সুরক্ষা) আইন ২০১০-এ শারীরিক, মানসিক, যৌন ও আর্থিক নির্যাতন সবই
+          অন্তর্ভুক্ত। তিনি নিজে, অথবা তাঁর হয়ে অন্য কেউ, যেখানে তিনি থাকেন, যেখানে নির্যাতনকারী থাকে, অথবা
+          এখন যেখানে আছেন সেখানকার ম্যাজিস্ট্রেট আদালতে আবেদন করতে পারেন। আদালতকে ৭ কর্মদিবসের মধ্যে শুনানির
+          তারিখ দিতে হয় এবং আদালত সঙ্গে সঙ্গে অন্তর্বর্তী সুরক্ষা আদেশ দিতে পারে; যৌথ বাড়িতে থাকার অধিকার
+          (বসবাস আদেশ), ক্ষতিপূরণ ও সন্তানের হেফাজতের আদেশও দিতে পারে। সুরক্ষা আদেশ ভাঙলে ৬ মাস পর্যন্ত
+          কারাদণ্ড বা ১০,০০০ টাকা পর্যন্ত জরিমানা হতে পারে। উপজেলা মহিলা বিষয়ক কার্যালয় এবং বিনামূল্যে আইনি
+          সহায়তা (১৬৪৩০) আবেদন করতে সাহায্য করতে পারে। এখনই বিপদে থাকলে ৯৯৯; হেল্পলাইন ১০৯।
+    source: "Domestic Violence (Prevention and Protection) Act 2010 (bdlaws.minlaw.gov.bd; lawhelpbd.com summary)"
     source_url: http://bdlaws.minlaw.gov.bd/
   - id: bd-rights-legal-aid
     module: rights
     topic: legal_aid
     gap: null
-    title: Free legal aid
+    title: "Free legal aid"
     text: >-
       People who cannot afford a lawyer can get free legal aid from the government. Every district has a
-      District Legal Aid Office at the district judge court. The national legal aid helpline is 16430
-      (toll-free). Legal aid can give advice, mediate, and file cases at no cost.
+      District Legal Aid Office at the district judge court, and there are legal aid committees at upazila
+      and union level. She can go in person and explain her problem; the office helps with the
+      application. Women who are abandoned or in distress, widows without means and victims of violence
+      are among those who qualify. Legal aid gives advice, tries mediation, and pays for a lawyer, court
+      costs and certified copies. The national legal aid helpline is 16430 (toll-free). It helps to bring
+      any papers she has, such as the kabin-nama, khatian, death certificate or national ID card.
     keywords: উকিল আইনি সহায়তা বিনামূল্যে মামলা টাকা নেই লিগ্যাল এইড
     local:
       bn:
         title: "বিনামূল্যে আইনি সহায়তা"
         text: >-
           যাঁদের আইনজীবী রাখার সামর্থ্য নেই, তাঁরা সরকারের কাছ থেকে বিনামূল্যে আইনি সহায়তা পেতে পারেন।
-          প্রতিটি জেলায় জেলা জজ আদালতে জেলা লিগ্যাল এইড অফিস আছে। জাতীয় আইনগত সহায়তা হেল্পলাইন ১৬৪৩০
-          (টোল-ফ্রি)। লিগ্যাল এইড বিনা খরচে পরামর্শ দিতে, মধ্যস্থতা করতে এবং মামলা করে দিতে পারে।
-    source: "Legal Aid Act 2000; National Legal Aid Services Organisation (nlaso.gov.bd)"
+          প্রতিটি জেলায় জেলা জজ আদালতে জেলা লিগ্যাল এইড অফিস আছে, আর উপজেলা ও ইউনিয়ন পর্যায়ে লিগ্যাল এইড
+          কমিটি আছে। তিনি নিজে গিয়ে সমস্যার কথা বলতে পারেন; অফিস আবেদন করতে সাহায্য করে। স্বামী-পরিত্যক্তা বা
+          অসহায় নারী, সামর্থ্যহীন বিধবা এবং নির্যাতনের শিকার নারীরা এই সহায়তা পাওয়ার যোগ্য। লিগ্যাল এইড
+          পরামর্শ দেয়, মধ্যস্থতার চেষ্টা করে এবং আইনজীবী, মামলার খরচ ও সত্যায়িত কপির খরচ দেয়। জাতীয় আইনগত
+          সহায়তা হেল্পলাইন ১৬৪৩০ (টোল-ফ্রি)। সঙ্গে যা কাগজ আছে, যেমন কাবিননামা, খতিয়ান, মৃত্যু সনদ বা জাতীয়
+          পরিচয়পত্র, নিয়ে গেলে সুবিধা হয়।
+    source: "Legal Aid Services Act 2000; National Legal Aid Services Organisation (nlaso.gov.bd); The Daily Star overview of the legal aid system"
     source_url: https://nlaso.gov.bd/
   - id: bd-rights-land-mutation
     module: rights
     topic: land_records
     gap: land_inheritance
-    title: Putting inherited land in her own name (mutation)
+    title: "Putting inherited land in the heirs' names (mutation)"
     text: >-
-      After inheriting land, the heir should apply for mutation (namjari) so the land record shows her name.
-      Applications go to the Assistant Commissioner (Land) office of the upazila and can also be made online
-      (e-mutation) through the government land service. A record in her own name protects her claim.
+      After someone dies, all the heirs should apply together for mutation (namjari) so the land record
+      shows their names. Under the Land Ministry rules of February 2025, one application must list every
+      heir; if the land has not been divided, the heirs are recorded together as co-sharers. Documents:
+      the warish (heirship) certificate from the Union Parishad or municipality, the death certificate,
+      the previous khatian, the plot (dag) numbers, each heir's national ID card and the application form.
+      Apply online at land.gov.bd (e-namjari) or get help at the Union Digital Centre or the union land
+      office. The government fee is Tk 1,170, paid online (Tk 20 court fee, Tk 50 notice fee, Tk 1,000
+      record correction, Tk 100 khatian copy, as set in 2022). It usually takes 28 to 45 days. Without
+      mutation the land cannot be sold or gifted, and it is easier for others to take it.
     keywords: নামজারি খারিজ খতিয়ান জমির কাগজ নিজের নামে এসি ল্যান্ড অনলাইন
     local:
       bn:
-        title: "উত্তরাধিকারের জমি নিজের নামে করা (নামজারি)"
+        title: "উত্তরাধিকারের জমি ওয়ারিশদের নামে করা (নামজারি)"
         text: >-
-          জমির উত্তরাধিকার পাওয়ার পর জমির রেকর্ডে নিজের নাম তুলতে নামজারির আবেদন করা উচিত। আবেদন করতে হয়
-          উপজেলার সহকারী কমিশনার (ভূমি) অফিসে, আর সরকারি ভূমি সেবার মাধ্যমে অনলাইনেও (ই-নামজারি) করা যায়।
-          নিজের নামে রেকর্ড থাকলে জমির দাবি সুরক্ষিত থাকে।
-    source: "Ministry of Land e-mutation service (land.gov.bd)"
-    source_url: https://land.gov.bd/
+          কেউ মারা গেলে সব ওয়ারিশ মিলে নামজারির আবেদন করা উচিত, যাতে জমির রেকর্ডে তাঁদের নাম ওঠে। ভূমি
+          মন্ত্রণালয়ের ফেব্রুয়ারি ২০২৫-এর নিয়ম অনুযায়ী একটি আবেদনেই সব ওয়ারিশের নাম দিতে হয়; জমি ভাগ না
+          হলে সবাই একসঙ্গে অংশীদার হিসেবে রেকর্ডে ওঠেন। কাগজপত্র: ইউনিয়ন পরিষদ বা পৌরসভা থেকে ওয়ারিশ সনদ,
+          মৃত্যু সনদ, আগের খতিয়ান, দাগ নম্বর, প্রত্যেক ওয়ারিশের জাতীয় পরিচয়পত্র এবং আবেদন ফরম।
+          land.gov.bd-তে অনলাইনে (ই-নামজারি) আবেদন করা যায়, অথবা ইউনিয়ন ডিজিটাল সেন্টার বা ইউনিয়ন ভূমি অফিস
+          থেকে সাহায্য নেওয়া যায়। সরকারি ফি ১,১৭০ টাকা, অনলাইনে দিতে হয় (কোর্ট ফি ২০, নোটিশ ফি ৫০, রেকর্ড
+          সংশোধন ১,০০০, খতিয়ান কপি ১০০ টাকা; ২০২২ সালের হার)। সাধারণত ২৮ থেকে ৪৫ দিন লাগে। নামজারি না হলে জমি
+          বিক্রি বা দান করা যায় না, এবং অন্যরা দখল করে নিতে পারে।
+    source: "Land Ministry notification of 11 February 2025, reported by The Daily Star Bangla (30 August 2026); e-mutation fees, The Financial Express (2022)"
+    source_url: https://bangla.thedailystar.net/life-living/others/news-3956981
   - id: bd-rights-domestic-workers
     module: rights
     topic: wages
@@ -470,3 +509,179 @@ entries:
           নির্ণয় করে না। জাতীয় স্বাস্থ্য বাতায়ন ১৬২৬৩।
     source: "UNICEF Guidance on Menstrual Health and Hygiene (2019); WHO"
     source_url: https://www.unicef.org/
+
+# Papers HerEvo writes for her. {field} is filled from the conversation; anything unknown, and always her
+# name, address and phone number, stays as a blank line for her to fill in by hand. Drafts for expert review.
+documents:
+  legal_aid_request:
+    title: {bn: "বিনামূল্যে আইনি সহায়তার আবেদন", en: "Application for free legal aid"}
+    bn: |
+      বরাবর,
+      জেলা লিগ্যাল এইড অফিসার,
+      জেলা লিগ্যাল এইড অফিস, {district}
+
+      বিষয়: বিনামূল্যে আইনি সহায়তার জন্য আবেদন।
+
+      জনাব,
+      আমি একজন অসচ্ছল নারী। আমার সমস্যা: {issue}
+
+      ঘটনার বিবরণ: {facts}
+
+      আমার আইনজীবী রাখার সামর্থ্য নেই। তাই বিনীতভাবে অনুরোধ করছি, আমাকে বিনামূল্যে আইনি সহায়তা দেওয়া হোক: {request}
+
+      সঙ্গে যে কাগজ দিচ্ছি: {documents}
+
+      বিনীত,
+      নাম: ______________
+      ঠিকানা: ______________
+      মোবাইল: ______________
+      তারিখ: ______________
+      স্বাক্ষর বা টিপসই: ______________
+    en: |
+      To
+      The District Legal Aid Officer,
+      District Legal Aid Office, {district}
+
+      Subject: Application for free legal aid.
+
+      Sir or Madam,
+      I am a woman without means. My problem: {issue}
+
+      What happened: {facts}
+
+      I cannot afford a lawyer. I respectfully ask for free legal aid: {request}
+
+      Papers attached: {documents}
+
+      Yours faithfully,
+      Name: ______________
+      Address: ______________
+      Mobile: ______________
+      Date: ______________
+      Signature or thumbprint: ______________
+  maintenance_application:
+    title: {bn: "ভরণপোষণের জন্য চেয়ারম্যানের কাছে আবেদন", en: "Application to the Union Parishad chairman for maintenance"}
+    bn: |
+      বরাবর,
+      চেয়ারম্যান,
+      {union} ইউনিয়ন পরিষদ
+
+      বিষয়: মুসলিম পারিবারিক আইন অধ্যাদেশ ১৯৬১ অনুযায়ী ভরণপোষণের জন্য আবেদন।
+
+      জনাব,
+      আমার স্বামী ______________ (পিতা: ______________, ঠিকানা: ______________) {since} থেকে আমার ও আমাদের সন্তানদের ভরণপোষণ দিচ্ছেন না। আমাদের সন্তান: {children}। {facts}
+
+      অতএব, সালিশি পরিষদ গঠন করে আমার ও সন্তানদের জন্য মাসিক {amount} টাকা ভরণপোষণ নির্ধারণের সার্টিফিকেট দেওয়ার জন্য বিনীত অনুরোধ করছি।
+
+      বিনীত,
+      নাম: ______________
+      ঠিকানা: ______________
+      তারিখ: ______________
+      স্বাক্ষর বা টিপসই: ______________
+    en: |
+      To
+      The Chairman,
+      {union} Union Parishad
+
+      Subject: Application for maintenance under the Muslim Family Laws Ordinance 1961.
+
+      Sir,
+      My husband ______________ (father: ______________, address: ______________) has not maintained me and our children since {since}. Our children: {children}. {facts}
+
+      I respectfully ask you to form an Arbitration Council and issue a certificate fixing maintenance of Tk {amount} a month for me and the children.
+
+      Yours faithfully,
+      Name: ______________
+      Address: ______________
+      Date: ______________
+      Signature or thumbprint: ______________
+  namjari_checklist:
+    title: {bn: "নামজারির প্রস্তুতি তালিকা (উত্তরাধিকারের জমি)", en: "Mutation checklist (inherited land)"}
+    bn: |
+      মৃত ব্যক্তি: {deceased}
+      ওয়ারিশগণ: {heirs}
+      মৌজা: {mouza}    খতিয়ান নম্বর: {khatian}    দাগ নম্বর: {dag}
+
+      যা সংগ্রহ করবেন:
+      ☐ ওয়ারিশ সনদ (ইউনিয়ন পরিষদ বা পৌরসভা থেকে)
+      ☐ মৃত্যু সনদ
+      ☐ আগের খতিয়ানের কপি
+      ☐ প্রত্যেক ওয়ারিশের জাতীয় পরিচয়পত্রের কপি
+      ☐ দাগ নম্বরসহ জমির বিবরণ
+
+      কোথায় আবেদন: land.gov.bd (ই-নামজারি), অথবা ইউনিয়ন ডিজিটাল সেন্টার বা ইউনিয়ন ভূমি অফিসে সাহায্য নিন
+      ফি: ১,১৭০ টাকা, অনলাইনে (২০২২ সালের হার)
+      সময়: সাধারণত ২৮ থেকে ৪৫ দিন
+      মনে রাখবেন: একটি আবেদনেই সব ওয়ারিশের নাম দিতে হবে।
+    en: |
+      Deceased: {deceased}
+      Heirs: {heirs}
+      Mouza: {mouza}    Khatian no.: {khatian}    Plot (dag) no.: {dag}
+
+      Collect:
+      ☐ Warish (heirship) certificate, from the Union Parishad or municipality
+      ☐ Death certificate
+      ☐ Copy of the previous khatian
+      ☐ National ID copy of every heir
+      ☐ Land description with plot numbers
+
+      Where: land.gov.bd (e-namjari), or get help at the Union Digital Centre or union land office
+      Fee: Tk 1,170, paid online (2022 rate)
+      Time: usually 28 to 45 days
+      Remember: one application must list all the heirs.
+  child_marriage_report:
+    title: {bn: "বাল্যবিবাহ বন্ধের আবেদন", en: "Report to stop a child marriage"}
+    bn: |
+      বরাবর,
+      উপজেলা নির্বাহী অফিসার,
+      {upazila} উপজেলা
+
+      বিষয়: বাল্যবিবাহ বন্ধের জন্য আবেদন।
+
+      জনাব,
+      আমি জানতে পেরেছি যে {village} গ্রামে {age} বছর বয়সী একটি মেয়ের বিয়ে {date} তারিখে হওয়ার কথা। বাল্যবিবাহ নিরোধ আইন ২০১৭ অনুযায়ী মেয়েদের বিয়ের ন্যূনতম বয়স ১৮ বছর। {facts}
+
+      অতএব, বিয়েটি বন্ধ করতে দ্রুত ব্যবস্থা নেওয়ার এবং আমার পরিচয় গোপন রাখার অনুরোধ করছি।
+
+      বিনীত,
+      নাম (ইচ্ছা হলে): ______________
+      তারিখ: ______________
+    en: |
+      To
+      The Upazila Nirbahi Officer,
+      {upazila} Upazila
+
+      Subject: Request to stop a child marriage.
+
+      Sir or Madam,
+      I have learned that a girl aged {age} is to be married on {date} in {village} village. Under the Child Marriage Restraint Act 2017, the minimum age of marriage for women is 18. {facts}
+
+      I ask you to act quickly to stop this marriage and to keep my identity confidential.
+
+      Yours faithfully,
+      Name (optional): ______________
+      Date: ______________
+  income_statement:
+    title: {bn: "আয়ের হিসাব", en: "Income record"}
+    bn: |
+      HerEvo-তে নিজে লিখে রাখা বিক্রির হিসাব
+      সময়: {period}
+      বিক্রির সংখ্যা: {count}
+      মোট আয়: {total}
+
+      বিস্তারিত:
+      {lines}
+
+      নোট: এই হিসাব তিনি নিজে HerEvo-তে লিখে রেখেছেন; এটি সরকারি সনদ নয়।
+      নাম: ______________    স্বাক্ষর বা টিপসই: ______________
+    en: |
+      Sales she recorded herself in HerEvo
+      Period: {period}
+      Number of sales: {count}
+      Total income: {total}
+
+      Details:
+      {lines}
+
+      Note: she recorded these sales herself in HerEvo; this is not an official certificate.
+      Name: ______________    Signature or thumbprint: ______________

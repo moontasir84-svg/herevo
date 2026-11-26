@@ -101,4 +101,5 @@ CREATE TABLE IF NOT EXISTS turns (
 
 -- Upgrades for databases created by earlier versions
 ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS preferred_language TEXT;  -- set when she asks for a language
+ALTER TABLE users ADD COLUMN IF NOT EXISTS preferred_language TEXT;
+ALTER TABLE turns ADD COLUMN IF NOT EXISTS reply TEXT;  -- HerEvo's answer, so the conversation can continue (deleted after 30 days)  -- set when she asks for a language

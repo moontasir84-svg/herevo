@@ -245,3 +245,80 @@ def test_offline_pack_carries_translations():
     from app.main import app
     body = TestClient(app).get("/v1/packs/BD").json()
     assert all(e["local"]["bn"]["text"] for e in body["entries"])
+
+
+def test_follow_up_gets_the_conversation_and_searches_with_it(fake_llm, recorder):
+    uid = _uid()
+    handle(uid=uid, channel="web", text="স্বামী মারা যাওয়ার পর দেবর বলছে জমি আমার না।")
+    r = handle(uid=uid, channel="web", text="দুই ছেলে আর এক মেয়ে")
+    call = fake_llm.calls[-1]
+    assert call["history"] and call["history"][0]["message"].startswith("স্বামী মারা")
+    assert call["history"][0]["reply"]  # HerEvo's earlier answer is remembered too
+    assert call["passages"][0]["id"].startswith("bd-rights-inheritance")  # found via the earlier message
+
+
+def test_conversation_is_deleted_with_the_30_day_purge():
+    from app import db
+    with db.pool().connection() as conn:
+        conn.execute("INSERT INTO turns (user_id, channel, language, intent, safety, answered_by, message, reply, created_at) "
+                     "VALUES (NULL, 'purge-reply', 'bn', 'ADVICE', 'OK', 'gemini', 'q', 'a', now() - interval '40 days')")
+    db.purge_old_messages(30)
+    with db.pool().connection() as conn:
+        row = conn.execute("SELECT message, reply FROM turns WHERE channel = 'purge-reply'").fetchone()
+    assert row == {"message": None, "reply": None}
+
+
+def _ai(**extra):
+    base = {"intent": "RIGHTS", "confidence": 0.9, "safety": "OK", "covered": True,
+            "answer": "আপনার স্বামীর সম্পত্তিতে আপনার অধিকার আছে।", "answer_en": "You have a right to your husband's property.",
+            "cited_ids": ["bd-rights-inheritance-widow#0"]}
+    return {**base, **extra}
+
+
+def test_herevo_computes_the_shares_not_the_ai(fake_llm, recorder):
+    fake_llm.next = _ai(inheritance={"deceased": "husband", "wives": 1, "sons": 2, "daughters": 1,
+                                     "father_alive": False, "mother_alive": False, "land_amount": 100,
+                                     "land_unit": "শতাংশ", "complete": True},
+                        steps=["ওয়ারিশ সনদ তুলুন", "নামজারির আবেদন করুন"], steps_en=["Get the warish certificate", "Apply for mutation"])
+    r = handle(uid=_uid(), channel="web", text="দুই ছেলে আর এক মেয়ে, স্বামীর বাবা-মা বেঁচে নেই, জমি ১০০ শতাংশ")
+    assert "স্ত্রী: ১/৮ (১২.৫%) = ১২.৫ শতাংশ" in r.reply and "প্রত্যেক ছেলে: ৭/২০ (৩৫%) = ৩৫ শতাংশ" in r.reply
+    assert "Each son: 7/20 (35%)" in r.reply_en and r.steps == ["ওয়ারিশ সনদ তুলুন", "নামজারির আবেদন করুন"]
+
+
+def test_incomplete_facts_compute_nothing(fake_llm, recorder):
+    fake_llm.next = _ai(answer="ক'জন ছেলে আর মেয়ে আছে?", inheritance={"deceased": "husband", "wives": 1, "complete": False})
+    r = handle(uid=_uid(), channel="web", text="স্বামী মারা গেছেন, জমির ভাগ কত পাব?")
+    assert r.calculation is None and r.reply == "ক'জন ছেলে আর মেয়ে আছে?"
+
+
+def test_a_case_for_a_lawyer_says_so(fake_llm, recorder):
+    fake_llm.next = _ai(inheritance={"deceased": "husband", "wives": 1, "sons": 0, "daughters": 0,
+                                     "father_alive": False, "mother_alive": True, "complete": True})
+    r = handle(uid=_uid(), channel="web", text="সন্তান নেই, শাশুড়ি বেঁচে আছেন")
+    assert r.calculation is None and "আইনজীবী দরকার" in r.reply
+
+
+def test_herevo_writes_the_paper_with_her_details_blank(fake_llm, recorder):
+    fake_llm.next = _ai(document={"type": "maintenance_application", "fields": [
+        {"name": "union", "value": "পাইকান"}, {"name": "since", "value": "৬ মাস আগে"},
+        {"name": "children", "value": "২ জন"}, {"name": "amount", "value": "৪,০০০"}]})
+    r = handle(uid=_uid(), channel="web", text="হ্যাঁ, চেয়ারম্যানের কাছে আবেদনটা লিখে দিন")
+    d = r.document
+    assert d["title"] == "ভরণপোষণের জন্য চেয়ারম্যানের কাছে আবেদন"
+    assert "পাইকান ইউনিয়ন পরিষদ" in d["text"] and "মাসিক ৪,০০০ টাকা" in d["text"]
+    assert "আমার স্বামী ______________" in d["text"] and "নাম: ______________" in d["text"]
+    assert "Union Parishad" in d["text_en"] and "নিচে লিখে দিয়েছি" in r.reply
+
+
+def test_income_statement_uses_her_recorded_sales(fake_llm, recorder):
+    uid = _uid()
+    handle(uid=uid, channel="web", text="আজ ধান বিক্রি করেছি ১২০০ টাকা")
+    fake_llm.next = _ai(intent="EARN", document={"type": "income_statement", "fields": []})
+    r = handle(uid=uid, channel="web", text="ঋণের জন্য আমার আয়ের হিসাবটা দিন")
+    assert "১,২০০ BDT" in r.document["text"] and "1,200 BDT" in r.document["text_en"]
+
+
+def test_no_shares_computed_outside_bangladesh(fake_llm, recorder):
+    fake_llm.next = _ai(cited_ids=[], inheritance={"deceased": "husband", "wives": 1, "sons": 1, "complete": True})
+    r = handle(uid=_uid(), channel="web", text="My husband died, one son", country="KE")
+    assert r.calculation is None

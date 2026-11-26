@@ -14,25 +14,42 @@ from .config import get_settings
 Intent = Literal["RIGHTS", "EARN", "ADVICE", "SAFETY"]
 
 SYSTEM_PROMPT = """You are HerEvo, an AI ally for women who reach you from basic or shared phones about any \
-problem: farming, money and work, rights, health or safety.
+problem: farming, money and work, rights, health or safety. Your job is to SOLVE her problem with her, step by \
+step, the way a knowledgeable older sister would, not to send her somewhere else.
 
-Rules:
-1. Reply in {language_name}, even if she wrote in another language, in 2 or 3 short, warm, spoken sentences. No lists, no \
-symbols, no markdown.
-2. Use ONLY the numbered knowledge passages you are given. Never add facts from elsewhere. If the passages \
-do not answer the question, set covered=false and say so kindly, then give a free help contact from the passages.
-3. Never give legal advice: give general information about what the law says, then a free legal aid contact.
-4. Never give fertilizer, pesticide or medicine doses, and never diagnose. For health, name the danger \
-signs from the passages and tell her where to go.
-5. If the message mentions violence, threats, eviction, being forced, or fear for her safety, set \
+How to help:
+1. Reply in {language_name}, even if she wrote in another language. Warm, plain, short sentences that can be read \
+aloud: 2 to 5 sentences in `answer`. No markdown, no symbols.
+2. Use ONLY the numbered knowledge passages and the conversation so far. Never invent a law, fee, office, number \
+or deadline. If the passages do not cover her question, set covered=false, say so kindly and give the free help \
+contact from the passages.
+3. Understand her case before advising. If you need a fact to help her (who died and who survived, how much land, \
+how much dower was promised, since when he stopped paying), ask ONE short question at the end of `answer`. Never \
+ask again for something she already said in the conversation. Never ask for her name, phone number or address.
+4. Give concrete next steps in `steps` (up to 6, each one short): what to do, where to go, what papers to bring, \
+what it costs and how long it takes, taken from the passages. Leave `steps` empty while you are still asking.
+5. Inheritance: NEVER calculate shares yourself. Put the facts she gave in `inheritance`. Set complete=true only \
+when you know who died, the surviving wife or wives or husband, the number of sons and daughters, and whether the \
+deceased's father and mother are alive (and, if there are no children, how many brothers and sisters the deceased \
+had). HerEvo adds the exact shares to your answer. Until then, ask for the missing fact.
+6. Papers: when she needs to apply, complain or claim, offer to write the paper for her. When she agrees or asks, \
+fill `document` with its type and the facts she gave (never her name, phone or address: those stay blank for her \
+to fill in by hand). Types: legal_aid_request (to the District Legal Aid Office), maintenance_application (to the \
+Union Parishad chairman), namjari_checklist (land mutation checklist), child_marriage_report (to the UNO), \
+income_statement (her recorded sales, for a lender).
+7. Send her to a helpline, lawyer, doctor or office only as one of the steps, when a person is truly needed, and \
+tell her what to bring. Never give legal advice: say what the law generally says, plus free legal aid.
+8. Never give fertilizer, pesticide or medicine doses, and never diagnose. For health, name the danger signs from \
+the passages and tell her where to go.
+9. If the message mentions violence, threats, eviction, being forced, or fear for her safety, set \
 safety=ESCALATE and intent=SAFETY, and write only a short line of comfort: a trained human will take over.
-6. If she reports a sale or income, set intent=EARN and fill `sale`; never guess a missing amount. Begin the \
+10. If she reports a sale or income, set intent=EARN and fill `sale`; never guess a missing amount. Begin the \
 answer by confirming what was recorded (the product and the amount, in her currency), so she knows it was saved.
-7. Always fill answer_en with an English translation of your answer, for audit.
-8. List in cited_ids the ids of the passages your answer relies on.
-9. Use intent=RIGHTS only when she asks about a legal right (land, inheritance, dower, maintenance, divorce, \
+11. Use intent=RIGHTS only when she asks about a legal right (land, inheritance, dower, maintenance, divorce, \
 wages, child support and the like). A greeting or small talk is intent=ADVICE with covered=false and no \
-cited_ids: welcome her in one sentence and ask what she needs."""
+cited_ids: welcome her in one sentence and ask what she needs.
+12. Always fill answer_en (and steps_en) with English translations, for audit. List in cited_ids the ids of the \
+passages your answer relies on."""
 
 LANGUAGE_NAMES = {"bn": "Bangla", "en": "English", "sw": "Swahili", "es": "Spanish"}
 
@@ -46,9 +63,44 @@ RESPOND_TOOL = {
             "confidence": {"type": "number", "minimum": 0, "maximum": 1},
             "safety": {"type": "string", "enum": ["OK", "ESCALATE"]},
             "covered": {"type": "boolean", "description": "true if the passages answer the question"},
-            "answer": {"type": "string", "description": "2-3 spoken sentences in the caller's language"},
+            "answer": {"type": "string", "description": "2-5 plain sentences in the caller's language"},
             "answer_en": {"type": "string", "description": "English translation of answer"},
             "cited_ids": {"type": "array", "items": {"type": "string"}},
+            "steps": {"type": "array", "items": {"type": "string"},
+                      "description": "up to 6 short concrete next steps in the caller's language"},
+            "steps_en": {"type": "array", "items": {"type": "string"}, "description": "English translation of steps"},
+            "inheritance": {
+                "type": ["object", "null"],
+                "description": "facts for HerEvo's inheritance calculator; never compute shares yourself",
+                "properties": {
+                    "deceased": {"type": "string", "enum": ["husband", "wife", "father", "mother", "other"]},
+                    "wives": {"type": "integer", "description": "surviving wives, if a man died"},
+                    "husband": {"type": "boolean", "description": "surviving husband, if a woman died"},
+                    "sons": {"type": "integer"},
+                    "daughters": {"type": "integer"},
+                    "father_alive": {"type": "boolean", "description": "the deceased's father"},
+                    "mother_alive": {"type": "boolean", "description": "the deceased's mother"},
+                    "siblings": {"type": ["integer", "null"], "description": "the deceased's brothers and sisters"},
+                    "land_amount": {"type": ["number", "null"]},
+                    "land_unit": {"type": ["string", "null"], "description": "e.g. decimal, bigha, katha, acre"},
+                    "complete": {"type": "boolean"},
+                },
+                "required": ["deceased", "complete"],
+            },
+            "document": {
+                "type": ["object", "null"],
+                "description": "a paper HerEvo writes for her, only when she agrees or asks",
+                "properties": {
+                    "type": {"type": "string", "enum": ["legal_aid_request", "maintenance_application",
+                                                        "namjari_checklist", "child_marriage_report",
+                                                        "income_statement"]},
+                    "fields": {"type": "array", "items": {
+                        "type": "object",
+                        "properties": {"name": {"type": "string"}, "value": {"type": "string"}},
+                        "required": ["name", "value"]}},
+                },
+                "required": ["type"],
+            },
             "sale": {
                 "type": ["object", "null"],
                 "properties": {
@@ -77,26 +129,70 @@ class Sale(BaseModel):
     currency: str
 
 
+class InheritanceFacts(BaseModel):
+    deceased: Literal["husband", "wife", "father", "mother", "other"]
+    wives: int = Field(default=0, ge=0, le=4)
+    husband: bool = False
+    sons: int = Field(default=0, ge=0, le=30)
+    daughters: int = Field(default=0, ge=0, le=30)
+    father_alive: bool = False
+    mother_alive: bool = False
+    siblings: int | None = Field(default=None, ge=0, le=40)
+    land_amount: float | None = Field(default=None, gt=0)
+    land_unit: str | None = None
+    complete: bool = False
+
+
+class DocField(BaseModel):
+    name: str
+    value: str
+
+
+DOC_TYPES = ("legal_aid_request", "maintenance_application", "namjari_checklist", "child_marriage_report",
+             "income_statement")
+
+
+class DocRequest(BaseModel):
+    type: Literal[DOC_TYPES]  # type: ignore[valid-type]
+    fields: list[DocField] = []
+
+
 class Respond(BaseModel):
     intent: Intent
     confidence: float = Field(ge=0, le=1)
     safety: Literal["OK", "ESCALATE"]
     covered: bool
-    answer: str = Field(min_length=1, max_length=1200)
-    answer_en: str = Field(min_length=1, max_length=1200)
+    answer: str = Field(min_length=1, max_length=2000)
+    answer_en: str = Field(min_length=1, max_length=2000)
     cited_ids: list[str] = []
     sale: Sale | None = None
+    steps: list[str] = Field(default_factory=list, max_length=8)
+    steps_en: list[str] = Field(default_factory=list, max_length=8)
+    inheritance: InheritanceFacts | None = None
+    document: DocRequest | None = None
 
     @field_validator("answer", "answer_en")
     @classmethod
     def strip(cls, v: str) -> str:
         return " ".join(v.split())
 
+    @field_validator("steps", "steps_en")
+    @classmethod
+    def clean_steps(cls, v: list[str]) -> list[str]:
+        return [" ".join(x.split()) for x in v if x and x.strip()][:6]
+
 
 class LLM(Protocol):
     model: str
 
-    def respond(self, language: str, passages: list[dict], message: str) -> dict: ...
+    def respond(self, language: str, passages: list[dict], message: str, history: list[dict] | None = None) -> dict: ...
+
+
+def format_history(history: list[dict] | None) -> str:
+    if not history:
+        return ""
+    lines = [f"Caller: {h['message']}\nHerEvo: {h['reply']}" for h in history]
+    return "Earlier in this conversation (use it: do not ask again for facts she already gave):\n" + "\n".join(lines) + "\n\n"
 
 
 def format_passages(passages: list[dict]) -> str:
@@ -117,9 +213,9 @@ class ClaudeLLM:
         self.model = model
         self.max_tokens = max_tokens
 
-    def respond(self, language: str, passages: list[dict], message: str) -> dict:
+    def respond(self, language: str, passages: list[dict], message: str, history: list[dict] | None = None) -> dict:
         system = SYSTEM_PROMPT.format(language_name=LANGUAGE_NAMES.get(language, "the caller's language"))
-        user = f"Knowledge passages:\n{format_passages(passages)}\n\nCaller says:\n{message}"
+        user = f"{format_history(history)}Knowledge passages:\n{format_passages(passages)}\n\nCaller says now:\n{message}"
         msg = self.client.messages.create(
             model=self.model,
             max_tokens=self.max_tokens,
@@ -178,11 +274,11 @@ class GeminiLLM:
                 return r2
         return r
 
-    def respond(self, language: str, passages: list[dict], message: str) -> dict:
+    def respond(self, language: str, passages: list[dict], message: str, history: list[dict] | None = None) -> dict:
         import httpx
 
         system = SYSTEM_PROMPT.format(language_name=LANGUAGE_NAMES.get(language, "the caller's language"))
-        user = f"Knowledge passages:\n{format_passages(passages)}\n\nCaller says:\n{message}"
+        user = f"{format_history(history)}Knowledge passages:\n{format_passages(passages)}\n\nCaller says now:\n{message}"
         body = {
             "systemInstruction": {"parts": [{"text": system}]},
             "contents": [{"role": "user", "parts": [{"text": user}]}],

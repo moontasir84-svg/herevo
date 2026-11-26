@@ -126,6 +126,17 @@ def _gate_language(pack, uid: str, text: str, channel_country: str) -> tuple[str
     return db.preferred_language(uid) or detect_language(text), False
 
 
+BN = str.maketrans("0123456789", "০১২৩৪৫৬৭৮৯")
+
+
+def format_reply(result) -> str:
+    """Her answer, then the numbered next steps."""
+    if not result.steps:
+        return result.reply
+    nums = [str(i).translate(BN) if result.reply_language == "bn" else str(i) for i in range(1, len(result.steps) + 1)]
+    return result.reply + "\n\n" + "\n".join(f"{n}. {step}" for n, step in zip(nums, result.steps))
+
+
 def handle_update(update: dict) -> None:
     msg = update.get("message") or update.get("edited_message")
     if not msg or ("text" not in msg and "voice" not in msg):
@@ -195,7 +206,9 @@ def handle_update(update: dict) -> None:
 
     result = handle(uid=uid, channel="telegram-voice" if by_voice else "telegram", text=text, country=cc,
                     district=user.get("district"))
-    sender.send(chat_id, result.reply)
+    sender.send(chat_id, format_reply(result))
+    if result.document:  # the paper as its own message, easy to forward or print
+        sender.send(chat_id, f"📄 {result.document['title']}\n\n{result.document['text']}")
     if by_voice and s.voice_replies and get_speech() is not None:
         audio = get_speech().synthesize(result.reply, result.reply_language)
         if audio:

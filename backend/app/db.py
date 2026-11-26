@@ -237,15 +237,26 @@ def log_turn(row: dict) -> None:
     with pool().connection() as conn:
         conn.execute(
             """INSERT INTO turns (user_id, channel, language, intent, confidence, safety, cited_ids, answered_by,
-                                  model, latency_ms, message)
+                                  model, latency_ms, message, reply)
                VALUES (%(user_id)s, %(channel)s, %(language)s, %(intent)s, %(confidence)s, %(safety)s, %(cited_ids)s,
-                       %(answered_by)s, %(model)s, %(latency_ms)s, %(message)s)""",
-            row,
+                       %(answered_by)s, %(model)s, %(latency_ms)s, %(message)s, %(reply)s)""",
+            {"reply": None, **row},
         )
+
+
+def recent_turns(uid: str, limit: int = 6, hours: int = 12) -> list[dict]:
+    """Her last few messages and HerEvo's answers (oldest first), so a follow-up makes sense."""
+    with pool().connection() as conn:
+        rows = conn.execute(
+            """SELECT message, reply, intent FROM turns
+               WHERE user_id = %s AND message IS NOT NULL AND reply IS NOT NULL
+                 AND created_at > now() - make_interval(hours => %s)
+               ORDER BY id DESC LIMIT %s""", (uid, hours, limit)).fetchall()
+    return list(reversed(rows))
 
 
 def purge_old_messages(days: int = 30) -> int:
     with pool().connection() as conn:
-        cur = conn.execute("UPDATE turns SET message = NULL WHERE message IS NOT NULL "
+        cur = conn.execute("UPDATE turns SET message = NULL, reply = NULL WHERE (message IS NOT NULL OR reply IS NOT NULL) "
                            "AND created_at < now() - make_interval(days => %s)", (days,))
         return cur.rowcount

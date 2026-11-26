@@ -235,3 +235,15 @@ def test_helper_reply_formats_and_website_cases(fake_llm, recorder):
     assert "website chat" in [t for w, t in recorder.sent if w == "helper"][-1]
     tg(int(HELPER), f"/reply {web['escalation_id']} hello")
     assert "came from the website chat" in recorder.sent[-1][1]
+
+
+def test_telegram_sends_steps_and_the_paper(fake_llm, recorder):
+    tg(448, "হ্যাঁ")
+    fake_llm.next = {"intent": "RIGHTS", "confidence": 0.9, "safety": "OK", "covered": True,
+                     "answer": "আবেদনটি লিখে দিলাম।", "answer_en": "Here is the application.", "cited_ids": [],
+                     "steps": ["আবেদনটি চেয়ারম্যানকে দিন", "কপি রেখে দিন"],
+                     "document": {"type": "legal_aid_request", "fields": [{"name": "issue", "value": "দেনমোহর পাইনি"}]}}
+    tg(448, "দেনমোহর পাইনি, লিগ্যাল এইডের আবেদন লিখে দিন")
+    texts = [t for who, t in recorder.sent if who == "448"]
+    assert "১. আবেদনটি চেয়ারম্যানকে দিন\n২. কপি রেখে দিন" in texts[-2]
+    assert texts[-1].startswith("📄 বিনামূল্যে আইনি সহায়তার আবেদন") and "দেনমোহর পাইনি" in texts[-1]

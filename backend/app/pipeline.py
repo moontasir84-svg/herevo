@@ -17,6 +17,9 @@ from . import db, safety
 from .alerts import get_notifier
 from .config import get_settings
 from .llm import ValidationError, get_llm, parse
+from .documents import INTRO
+from .documents import render as render_document
+from .inheritance import Family, compute, describe
 from .packs import entry_gap, load_pack, local_entry
 from .retrieval import retrieve
 
@@ -98,7 +101,11 @@ class TurnResult:
     fallback_reason: str | None = None  # why the AI was not used (plain words, never a key)
     language: str = "en"  # detected language of her message
     reply_language: str = "en"
-    helper_alerted: bool | None = None  # safety cases: did a real helper channel receive the alert?  # language of the reply (hers, or the one she asked for)
+    helper_alerted: bool | None = None  # safety cases: did a real helper channel receive the alert?
+    steps: list[str] = field(default_factory=list)       # concrete next steps, in her language
+    steps_en: list[str] = field(default_factory=list)
+    calculation: str | None = None                       # inheritance shares worked out by HerEvo, not the AI
+    document: dict | None = None                         # a paper HerEvo wrote for her (see documents.py)  # language of the reply (hers, or the one she asked for)
     latency_ms: int = 0
 
     def to_dict(self) -> dict:
@@ -183,7 +190,10 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
         return _finish(result, uid, channel, lang, text, t0, model=None)
 
     # 2. Retrieve from her country pack.
-    passages = retrieve(cc, text)
+    history = db.recent_turns(uid)
+    # A short follow-up ("2 sons and a daughter") has no topic words of its own: search with her last message too.
+    query = text if not history or len(text.split()) >= 8 else f"{history[-1]['message']} {text}"
+    passages = retrieve(cc, query)
     for p in passages:  # the checked translation in her language, when the pack has one
         if lang != "en":
             p["local"] = local_entry(cc, p["id"], lang)
@@ -195,7 +205,7 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
     failure: Exception | None = None
     if llm is not None:
         try:
-            parsed = parse(llm.respond(lang, passages, text), set(by_id))
+            parsed = parse(llm.respond(lang, passages, text, history=history), set(by_id))
         except (ValidationError, ValueError, KeyError, TypeError) as exc:
             failure = exc
             log.warning("invalid model output, using fallback: %s", exc)
@@ -214,9 +224,11 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
         result = TurnResult(reply=parsed.answer, reply_en=parsed.answer_en, intent=parsed.intent,
                             confidence=parsed.confidence, safety="OK", answered_by=get_settings().llm_provider,
                             citations=cites,
-                            sale=parsed.sale.model_dump() if parsed.sale else None)
+                            sale=parsed.sale.model_dump() if parsed.sale else None,
+                            steps=parsed.steps, steps_en=parsed.steps_en)
         if not parsed.covered:
             result.citations = []
+        _solve(result, parsed, pack, cc, lang, uid)
     else:
         # 4. Fallback: rules + pre-checked text only. Never an unvalidated answer.
         intent = fallback_intent(text)
@@ -264,6 +276,38 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
     return _finish(result, uid, channel, lang, text, t0, model=getattr(llm, "last_model", llm.model) if parsed is not None else None)
 
 
+REFER_TO_LAWYER = {
+    "bn": "এই পরিবারের ভাগ হিসাব করতে আইনজীবী দরকার। বিনামূল্যে আইনি সহায়তা: ১৬৪৩০ (টোল-ফ্রি)।",
+    "en": "Working out the shares for this family needs a lawyer. Free legal aid: 16430 (toll-free).",
+}
+
+
+def _solve(result: TurnResult, parsed, pack: dict, cc: str, lang: str, uid: str) -> None:
+    """The parts HerEvo does itself, never the AI: inheritance arithmetic and the papers she needs."""
+    inh = parsed.inheritance
+    if inh and inh.complete and cc == "BD":  # the calculator follows Muslim law as applied in Bangladesh
+        fam = Family(deceased=inh.deceased if inh.deceased != "other" else "other", wives=inh.wives,
+                     husband=inh.husband, sons=inh.sons, daughters=inh.daughters, father=inh.father_alive,
+                     mother=inh.mother_alive, siblings=inh.siblings, land=inh.land_amount, unit=inh.land_unit)
+        res, why = compute(fam) if inh.deceased != "other" else (None, "other relative: ask legal aid")
+        if res:
+            result.calculation = describe(res, lang, inh.land_unit)
+            result.reply += "\n\n" + result.calculation
+            result.reply_en += "\n\n" + describe(res, "en", inh.land_unit)
+            if result.intent != "RIGHTS":
+                result.intent = "RIGHTS"
+        elif not why.startswith("need"):
+            result.reply += "\n\n" + REFER_TO_LAWYER.get(lang, REFER_TO_LAWYER["en"])
+            result.reply_en += "\n\n" + REFER_TO_LAWYER["en"]
+    if parsed.document:
+        fields = {f.name.strip().lower(): f.value for f in parsed.document.fields}
+        doc = render_document(pack, parsed.document.type, fields, lang, uid)
+        if doc:
+            result.document = doc
+            result.reply += "\n\n" + INTRO.get(doc["language"], INTRO["en"])
+            result.reply_en += "\n\n" + INTRO["en"]
+
+
 def _escalate(uid, channel, cc, district, lang, pack, *, reason, message, answered_by) -> TurnResult:
     eid = db.add_escalation(uid, channel, reason)
     db.add_case(cc, district, "SAFETY", "safety_threats")
@@ -287,5 +331,5 @@ def _finish(result: TurnResult, uid, channel, lang, text, t0, model) -> TurnResu
     db.log_turn({"user_id": uid, "channel": channel, "language": lang, "intent": result.intent,
                  "confidence": result.confidence, "safety": result.safety,
                  "cited_ids": [c.id for c in result.citations], "answered_by": result.answered_by,
-                 "model": model, "latency_ms": result.latency_ms, "message": text})
+                 "model": model, "latency_ms": result.latency_ms, "message": text, "reply": result.reply})
     return result

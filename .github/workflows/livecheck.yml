@@ -18,6 +18,8 @@ jobs:
           echo "new send flow (bubble thinking): $(grep -c 'bubble thinking' page.html)"
           echo "deferred map: $(grep -c 'defer src' page.html)"
           echo "== /sw.js"; curl -s --max-time 60 $B/sw.js | grep -m1 "const CACHE"
+          echo "== /health/ai (one test question to the AI with the current answer format)"
+          curl -s --max-time 90 $B/health/ai; echo
           echo "== /v1/ask timing"
           curl -s -o /dev/null -w "HTTP %{http_code} in %{time_total}s\n" --max-time 90 -H 'content-type: application/json' \
             -d '{"session_id":"livecheck-0001","text":"How do I save money?","country":"BD"}' $B/v1/ask

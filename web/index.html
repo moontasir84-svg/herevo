@@ -57,11 +57,20 @@ h2{font-family:var(--display); font-weight:600; font-size:18px; margin:0}
 .callbar .who{font-weight:600}
 .callbar .meta{font-family:var(--mono); font-size:12px; color:var(--call-muted)}
 .dot{display:inline-block; width:8px; height:8px; border-radius:50%; background:#5BD08F; margin-right:6px; vertical-align:1px}
-.thread{padding:18px; display:flex; flex-direction:column; gap:14px; min-height:340px; max-height:520px; overflow-y:auto}
+.thread{padding:18px; display:flex; flex-direction:column; gap:14px; min-height:340px; max-height:640px; overflow-y:auto}
 .empty{color:var(--call-muted); font-size:14px; margin:auto 0; text-align:center; padding:24px}
 .turn{display:flex; flex-direction:column; gap:4px; max-width:88%}
 .turn.her{align-self:flex-end; align-items:flex-end}
-.bubble{padding:10px 14px; border-radius:16px; font-size:15px; line-height:1.45}
+.bubble{padding:10px 14px; border-radius:16px; font-size:15px; line-height:1.45; white-space:pre-line; overflow-wrap:anywhere}
+.bubble ol.steps{margin:10px 0 2px; padding-left:22px; white-space:normal}
+.bubble ol.steps li{margin:4px 0}
+.doc{border:1px solid var(--line); background:var(--surface); color:var(--ink); border-radius:12px; padding:12px 14px; max-width:100%}
+.doc h4{margin:0 0 8px; font-size:14px}
+.doc pre{margin:0; white-space:pre-wrap; font-size:13.5px; line-height:1.5; font-family:inherit; overflow-wrap:anywhere}
+.doc .row{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
+.doc button{font:inherit; font-size:13px; padding:6px 12px; border-radius:999px; border:1px solid var(--line); background:var(--sunk); color:var(--ink); cursor:pointer}
+@media print{ body.printing-doc > *{display:none !important} body.printing-doc #printArea{display:block !important; color:#000; background:#fff; padding:24px; font:14px/1.6 'Noto Sans Bengali', Inter, sans-serif; white-space:pre-wrap} }
+#printArea{display:none}
 .her .bubble{background:#2B3A31; border-bottom-right-radius:4px}
 .ai .bubble{background:#F5EBD3; color:#2A2109; border-bottom-left-radius:4px}
 .ai .bubble.thinking{font-style:italic; opacity:.75; animation:think 1.4s ease-in-out infinite}
@@ -221,6 +230,7 @@ tr.new td{background:var(--accent-soft)}
     <p class="small" id="liveEvidence" hidden></p>
   </section>
 
+  <div id="printArea" aria-hidden="true"></div>
   <p class="foot">Demo for the International AI Builders Congress 2026. The three women, their earnings and the map counts are sample data. Channels marked Planned are part of the build plan, not this demo. Rights answers are general information based on national law and the World Bank Women, Business and the Law data (as of 1 Oct 2025), not legal advice. Legal aid organisations named here must be confirmed as partners before any pilot.</p>
 </div>
 
@@ -365,12 +375,33 @@ function renderThread(){
     }
     const her = el('div','turn her'); her.append(el('div','bubble',t.says)); if (t.saysEn) her.append(el('div','gloss',t.saysEn)); box.append(her);
     const ai = el('div','turn ai' + (t.safety === 'ESCALATE' ? ' esc' : ''));
-    ai.append(el('div','bubble',t.reply));
+    const bub = el('div','bubble',t.reply);
+    if (t.steps && t.steps.length){ const ol = el('ol','steps'); t.steps.forEach(x => ol.append(el('li',null,x))); bub.append(ol); }
+    ai.append(bub);
     const row = el('div','ai-row'); if (t.replyEn) row.append(el('div','gloss',t.replyEn));
     const sp = el('button','speak','Play'); sp.type = 'button'; sp.setAttribute('aria-label','Play this answer aloud'); sp.onclick = () => speak(t.reply, c.lang);
-    row.append(sp); ai.append(row); box.append(ai);
+    row.append(sp); ai.append(row);
+    if (t.doc) ai.append(docCard(t.doc));
+    box.append(ai);
   }
   box.scrollTop = box.scrollHeight;
+}
+
+function docCard(d){
+  const card = el('div','doc'); card.append(el('h4',null,'📄 ' + d.title));
+  const pre = el('pre'); pre.textContent = d.text; card.append(pre);
+  const row = el('div','row'), bn = d.language === 'bn';
+  const pr = el('button',null, bn ? 'ছাপুন · Print' : 'Print'); pr.type = 'button';
+  pr.onclick = () => { const a = $('printArea'); a.textContent = d.title + '\n\n' + d.text; document.body.classList.add('printing-doc');
+    setTimeout(() => { window.print(); document.body.classList.remove('printing-doc'); }, 50); };
+  const cp = el('button',null, bn ? 'কপি · Copy' : 'Copy'); cp.type = 'button';
+  cp.onclick = async () => { try{ await navigator.clipboard.writeText(d.title + '\n\n' + d.text); cp.textContent = 'Copied'; }
+    catch(e){ const r = document.createRange(); r.selectNodeContents(pre); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); } };
+  row.append(pr, cp);
+  if (d.text_en && d.text_en !== d.text){ const en = el('button',null,'English version'); en.type = 'button';
+    en.onclick = () => { const showingEn = pre.dataset.en === '1'; pre.textContent = showingEn ? d.text : d.text_en; pre.dataset.en = showingEn ? '' : '1';
+      en.textContent = showingEn ? 'English version' : 'Original'; }; row.append(en); }
+  card.append(row); return card;
 }
 
 function renderTrace(t){
@@ -388,6 +419,8 @@ function renderTrace(t){
   const s = el('span','pill ' + (t.safety === 'ESCALATE' ? 'esc' : 'ok'), t.safety === 'ESCALATE' ? 'ESCALATE → human helper' : 'OK');
   add('Safety', s);
   if (t.safety === 'ESCALATE') add('Handed to', el('span',null,(t.escalationId ? (t.helperAlerted === false ? `Case #${t.escalationId} opened. No helper group is connected yet (test setup), so no one was alerted. ` : `Helper alerted on Telegram · case #${t.escalationId}. `) : '') + 'Trained helper at a partner hotline, who can also refer her to the nearest clinic or police women\'s desk. The AI does not counsel.'));
+  if (t.calculation) add('Worked out by', el('span',null,'HerEvo\'s inheritance calculator (exact fractions, not the AI)'));
+  if (t.doc) add('Wrote for her', el('span',null, t.doc.title + ' (her name and address left blank)'));
   add('Answered by', el('span','small', t.api ? `${t.answeredBy === 'offline' ? 'This phone' : 'HerEvo backend'} · ${({claude:'Claude, grounded in the country pack', gemini:'Gemini (free test tier), grounded in the country pack', offline:'offline pack on this phone (no internet)', fallback:'rules + pre-checked text', safety_rule:'safety rule (no AI)'})[t.answeredBy] || t.answeredBy}${t.latency != null ? ` · ${t.latency} ms` : ''}` : (t.live ? 'Claude, live (quick tier)' : 'Scripted demo answer')));
 }
 
@@ -535,7 +568,8 @@ async function askApi(text, saysEn){
         ? `${cites ? 'Closest pre-checked pack passage · ' + cites : 'Pre-checked fallback message'} · AI unavailable${r.fallback_reason ? ': ' + r.fallback_reason : ''}`
         : cites || ({safety_rule:'Safety rule, before any AI'})[r.answered_by] || 'Country pack',
       safety: r.safety, sale: r.sale ? {item: r.sale.product || 'Sale', amt: r.sale.amount} : null,
-      gap: GAP_NAME[r.gap] || null, live: true, api: true, answeredBy: r.answered_by, escalationId: r.escalation_id, latency: r.latency_ms, language: r.language, replyLanguage: r.reply_language, helperAlerted: r.helper_alerted});
+      gap: GAP_NAME[r.gap] || null, live: true, api: true, answeredBy: r.answered_by, escalationId: r.escalation_id, latency: r.latency_ms, language: r.language, replyLanguage: r.reply_language, helperAlerted: r.helper_alerted,
+      steps: r.steps || [], stepsEn: r.steps_en || [], calculation: r.calculation, doc: r.document});
     $('freeText').value = ''; $('hint').textContent = `Answered by the HerEvo backend in ${r.latency_ms} ms.`;
   }catch(err){
     pending = null;

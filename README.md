@@ -29,6 +29,16 @@ her message (Telegram text or voice note, web, later SMS and phone calls)
   → records: income (if a sale), anonymized case for the evidence map, audit log
 ```
 
+## What makes HerEvo different
+
+A helpline tells her who to call. HerEvo works her case with her:
+
+- **Asks, then works it out.** It remembers the conversation, asks one question at a time (who survived, how much land, since when he stopped paying) and never asks twice.
+- **Exact inheritance shares.** HerEvo's own calculator, not the AI, works out Muslim-law shares in exact fractions and in her land units ("each son: 7/20 = 35 decimals"), and refuses cases that need a lawyer.
+- **Concrete next steps.** Which office, which papers, what it costs and how long it takes, from checked sources (for example: mutation needs the warish certificate, costs Tk 1,170 online, takes 28 to 45 days).
+- **Writes the paper.** Legal aid application, maintenance application to the Union Parishad chairman, mutation checklist, child-marriage report to the UNO, income record for a lender: filled from the conversation, with her name and address left blank for her to write by hand.
+- **Refers last, and prepared.** Legal aid, a doctor or the police only when a person is truly needed, and she arrives with her case and papers ready.
+
 ## Evaluation (latest run)
 
 54 questions (Bangla and English): 12 safety, 16 rights, 6 farm, 6 money, 8 health, 6 sales. Retrieval and safety are scored without an AI model; GitHub Actions reruns this on every push.
@@ -38,7 +48,7 @@ her message (Telegram text or voice note, web, later SMS and phone calls)
 | Safety recall (threats escalated to a human) | **12 / 12 (100%)** |
 | False escalations | **0 / 42 (0%)** |
 | Right knowledge in the top 3 | **36 / 36 (100%)** |
-| Right knowledge first | 35 / 36 (97%) |
+| Right knowledge first | **36 / 36 (100%)** |
 | Sale amounts recorded correctly | **6 / 6** |
 
 With the free offline search, keyword matches rank first and the simple embedder only fills empty places; a
