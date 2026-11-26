@@ -188,17 +188,23 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
     if wants_a_person(text):
         relayed = _relay(case, uid, pack, lang, text) if case else None
         result = relayed or _escalate(uid, channel, cc, district, lang, pack, reason="asked_for_person",
-                                      message=text, answered_by="rule")
+                                      message=text, answered_by="rule", kind="person")
         return _finish(result, uid, channel, lang, text, t0, model=None)
 
     # 1. Safety first, before any AI.
     screen = safety.screen(text)
     if screen.escalate:
-        relayed = _relay(case, uid, pack, lang, text) if case else None  # same case, not a new one
+        relayed = _relay(case, uid, pack, lang, text, kind=screen.kind) if case else None  # same case, not a new one
         if relayed:
             return _finish(relayed, uid, channel, lang, text, t0, model=None)
         result = _escalate(uid, channel, cc, district, lang, pack, reason="rule:" + ",".join(screen.matched),
-                           message=text, answered_by="safety_rule")
+                           message=text, answered_by="safety_rule", kind=screen.kind)
+        return _finish(result, uid, channel, lang, text, t0, model=None)
+
+    # "What can you do?" has one right answer: HerEvo's own, not the AI's guess.
+    if asks_what_herevo_does(text) and "capabilities" in pack["messages"]:
+        result = TurnResult(reply=_msg(pack, "capabilities", lang), reply_en=_msg(pack, "capabilities", "en"),
+                            intent="ADVICE", confidence=None, safety="OK", answered_by="rule")
         return _finish(result, uid, channel, lang, text, t0, model=None)
 
     # 2. Retrieve from her country pack.
@@ -232,7 +238,7 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
             return _finish(relayed, uid, channel, lang, text, t0, model=None)
     if parsed is not None and parsed.for_helper and not case:
         result = _escalate(uid, channel, cc, district, lang, pack, reason="asked_for_person", message=text,
-                           answered_by=get_settings().llm_provider)
+                           answered_by=get_settings().llm_provider, kind="person")
         return _finish(result, uid, channel, lang, text, t0, model=llm.model)
     if parsed is not None and parsed.safety == "ESCALATE":
         relayed = _relay(case, uid, pack, lang, text) if case else None
@@ -308,6 +314,20 @@ _PERSON = re.compile(
     r"|hablar con (una persona|alguien|un humano)|necesito (una persona|hablar con alguien)", re.IGNORECASE)
 
 
+_CAPABILITIES = re.compile(
+    r"\bwhat (else )?(can|could|do) you (do|help|offer)|\bhow (can|could|will) you help\b"
+    r"|\bwhat (kind of |sort of )?(information|info|help|services?|topics?) (do |can )?you\b"
+    r"|\bwhat do you know\b|\bwho are you\b|\bwhat is herevo\b|\bwhat are you\b"
+    r"|কী কী (বিষয়ে )?সাহায্য|কি কি (বিষয়ে )?সাহায্য|কীভাবে সাহায্য করতে পার|কিভাবে সাহায্য করতে পার|কী করতে পারেন|কি করতে পারেন"
+    r"|আপনি কে|তুমি কে|কী কী তথ্য|কি কি তথ্য"
+    r"|unaweza kunisaidia (nini|vipi)|unaweza kufanya nini|wewe ni nani"
+    r"|qu[ée] puedes hacer|c[óo]mo (me )?puedes ayudar|en qu[ée] me puede(s)? ayudar|qui[ée]n eres", re.IGNORECASE)
+
+
+def asks_what_herevo_does(text: str) -> bool:
+    return bool(_CAPABILITIES.search(text)) and len(text.split()) <= 12
+
+
 def wants_a_person(text: str) -> bool:
     return bool(_PERSON.search(text))
 
@@ -327,15 +347,17 @@ def _answering_helper(uid: str) -> bool:
     return db.last_helper_message(uid, minutes=30) is not None
 
 
-def _relay(case, uid: str, pack: dict, lang: str, text: str) -> TurnResult | None:
+def _relay(case, uid: str, pack: dict, lang: str, text: str, kind: str = "danger") -> TurnResult | None:
     """Pass her message to the helper on her open case. None if no helper channel took it."""
     if not case or "sent_to_helper" not in pack["messages"]:
         return None
     prefix = "[TEST MODE · made-up message] " if get_settings().is_test else ""
-    if not get_notifier().notify_helper(f"{prefix}💬 Case #{case['id']} · she says:\n{text[:1000]}\n\n"
+    if not get_notifier().notify_helper(f"{prefix}💬 Case #{case['id']}{KIND_LABEL.get(kind, '')} · she says:\n{text[:1000]}\n\n"
                                         f"👉 Swipe to reply (or /reply {case['id']} <message>). Close: /close {case['id']}"):
         return None
-    return TurnResult(reply=_msg(pack, "sent_to_helper", lang), reply_en=_msg(pack, "sent_to_helper", "en"),
+    key = KIND_MESSAGE.get(kind) if kind in ("self_harm", "harm_intent") else "sent_to_helper"
+    key = key if key in pack["messages"] else "sent_to_helper"
+    return TurnResult(reply=_msg(pack, key, lang), reply_en=_msg(pack, key, "en"),
                       intent="SAFETY", confidence=None, safety="ESCALATE", answered_by="helper_relay",
                       escalation_id=case["id"], helper_alerted=True)
 
@@ -372,20 +394,29 @@ def _solve(result: TurnResult, parsed, pack: dict, cc: str, lang: str, uid: str)
             result.reply_en += "\n\n" + INTRO["en"]
 
 
-def _escalate(uid, channel, cc, district, lang, pack, *, reason, message, answered_by) -> TurnResult:
+KIND_LABEL = {"danger": "", "self_harm": " · ⚠️ SELF-HARM RISK", "harm_intent": " · ⚠️ talks about hurting someone",
+              "person": " · asked to talk to a person"}
+KIND_MESSAGE = {"danger": "escalate", "self_harm": "escalate_self_harm", "harm_intent": "escalate_harm_intent",
+                "person": "escalate"}
+
+
+def _escalate(uid, channel, cc, district, lang, pack, *, reason, message, answered_by, kind="danger") -> TurnResult:
     eid = db.add_escalation(uid, channel, reason)
-    db.add_case(cc, district, "SAFETY", "safety_threats")
+    if kind == "danger":  # the evidence map counts threats to her, not other kinds of cases
+        db.add_case(cc, district, "SAFETY", "safety_threats")
     prefix = "[TEST MODE · made-up message] " if get_settings().is_test else ""
-    alert = (f"{prefix}🔴 HerEvo safety case #{eid}\nCountry: {cc}  District: {district or 'unknown'}  Channel: {channel}\n"
+    alert = (f"{prefix}🔴 HerEvo safety case #{eid}{KIND_LABEL.get(kind, '')}\nCountry: {cc}  District: {district or 'unknown'}  Channel: {channel}\n"
              f"Language: {lang}\nShe said: {message[:500]}\n\n" +
              "👉 Swipe to reply to this message (or /reply " + f"{eid} <message>). End the case: /close {eid}" +
              ("" if channel.startswith("telegram") else "\nShe wrote on the website; she sees replies while her page is open."))
     sent = get_notifier().notify_helper(alert)
     if not sent:
         log.error("escalation %s could not alert a helper", eid)
-    return TurnResult(reply=_msg(pack, "escalate", lang), reply_en=_msg(pack, "escalate", "en"), intent="SAFETY",
+    key = KIND_MESSAGE.get(kind, "escalate")
+    key = key if key in pack["messages"] else "escalate"
+    return TurnResult(reply=_msg(pack, key, lang), reply_en=_msg(pack, key, "en"), intent="SAFETY",
                       confidence=None, safety="ESCALATE", answered_by=answered_by, escalation_id=eid,
-                      gap="safety_threats", helper_alerted=bool(sent))
+                      gap="safety_threats" if kind == "danger" else None, helper_alerted=bool(sent))
 
 
 def _finish(result: TurnResult, uid, channel, lang, text, t0, model) -> TurnResult:

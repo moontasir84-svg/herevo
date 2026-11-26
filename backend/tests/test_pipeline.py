@@ -322,3 +322,32 @@ def test_no_shares_computed_outside_bangladesh(fake_llm, recorder):
     fake_llm.next = _ai(cited_ids=[], inheritance={"deceased": "husband", "wives": 1, "sons": 1, "complete": True})
     r = handle(uid=_uid(), channel="web", text="My husband died, one son", country="KE")
     assert r.calculation is None
+
+
+def test_asking_how_to_hurt_someone_is_refused_with_care_and_goes_to_a_helper(fake_llm, recorder):
+    r = handle(uid=_uid(), channel="web", text="how to kill someone?")
+    assert r.safety == "ESCALATE" and r.reply.startswith("I can't help with hurting anyone") and fake_llm.calls == []
+    assert "talks about hurting someone" in recorder.sent[-1][1] and r.gap is None
+
+
+def test_self_harm_gets_its_own_caring_reply(fake_llm, recorder):
+    r = handle(uid=_uid(), channel="web", text="I want to die")
+    assert r.safety == "ESCALATE" and r.reply.startswith("Thank you for telling me") and "SELF-HARM" in recorder.sent[-1][1]
+    r = handle(uid=_uid(), channel="web", text="আমি আর বাঁচতে চাই না")
+    assert r.reply.startswith("আমাকে বলার জন্য ধন্যবাদ")
+
+
+def test_during_an_open_case_harm_talk_is_relayed_with_the_right_words(fake_llm, recorder):
+    uid = _uid()
+    case = handle(uid=uid, channel="web", text="My husband beats me").escalation_id
+    r = handle(uid=uid, channel="web", text="how to kill him")
+    assert r.answered_by == "helper_relay" and r.escalation_id == case and r.reply.startswith("I can't help with hurting")
+
+
+def test_what_can_you_do_lists_everything_including_farming(fake_llm, recorder):
+    r = handle(uid=_uid(), channel="web", text="how can you help me?")
+    assert "Farming" in r.reply and "write papers" in r.reply and fake_llm.calls == []
+    r = handle(uid=_uid(), channel="web", text="আপনি কী কী সাহায্য করতে পারেন?")
+    assert "চাষাবাদ" in r.reply
+    r = handle(uid=_uid(), channel="web", text="what kind of information you have?")
+    assert "Farming" in r.reply

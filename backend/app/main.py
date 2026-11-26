@@ -227,7 +227,8 @@ def offline_pack(country: str):
                      "local": {k: {"title": v["title"], "text": " ".join(v["text"].split())}
                                for k, v in (e.get("local") or {}).items()},
                      "source": e["source"]} for e in pack["entries"]],
-        "safety_terms": sorted({t for terms in safety.TERMS.values() for t in terms}),
+        "safety_terms": sorted({t for lists in (safety.TERMS, safety.SELF_HARM, safety.HARM_INTENT)
+                                 for terms in lists.values() for t in terms}),
     }
     return JSONResponse(body, headers={"Cache-Control": "public, max-age=3600"})
 

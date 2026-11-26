@@ -15,6 +15,15 @@ messages:
   sent_to_helper:
     sw: "Ujumbe wako umetumwa kwa mhudumu wako, atakujibu hapa. Ukiwa hatarini sasa, piga 999 au 112."
     en: "Your message has been sent to your helper, who will answer here. If you are in danger now, call 999 or 112."
+  escalate_self_harm:
+    sw: "Asante kwa kuniambia, hauko peke yako. Ninamwomba mhudumu aliyefunzwa azungumze nawe sasa hapa. Ukiwa katika hatari ya kujiumiza sasa, piga 999 au 112, au nenda hospitali iliyo karibu."
+    en: "Thank you for telling me. You are not alone. I am asking a trained helper to talk with you now, here. If you might hurt yourself right now, call 999 or 112, or go to the nearest hospital."
+  escalate_harm_intent:
+    sw: "Siwezi kusaidia kumdhuru mtu yeyote. Kama kuna mtu anakuumiza, au mambo ni magumu kiasi cha kufikiria hivi, mhudumu aliyefunzwa anaweza kuzungumza nawe sasa; nimemjulisha. Kama kuna mtu yuko hatarini sasa, piga 999 au 112."
+    en: "I can't help with hurting anyone. If someone is hurting you, or things feel so hard that you are thinking this, a trained helper can talk with you now: I have let them know. If anyone is in danger right now, call 999 or 112."
+  capabilities:
+    sw: "Ninaweza kukusaidia kuhusu:\n• Pesa na kazi: kuweka akiba na kukopa kwa usalama, kurekodi mauzo yako, mshahara ambao haujalipwa\n• Haki: ardhi na urithi, matunzo ya watoto, msaada wa kisheria bila malipo\n• Usalama: mtu aliyefunzwa atazungumza nawe hapa\nUngependa msaada kuhusu nini?"
+    en: "I can help you with:\n• Money and work: saving and borrowing safely, recording your sales, unpaid wages\n• Rights: land and inheritance, child support, free legal aid\n• Safety: a trained person who talks with you here\nWhat would you like help with?"
   not_covered:
     sw: "Sina jibu la uhakika kwa swali hili bado. Kwa msaada wa kisheria bila malipo, wasiliana na Huduma ya Kitaifa ya Msaada wa Kisheria (NLAS) au FIDA Kenya."
     en: "I don't have a reliable answer to this yet. For free legal help, contact the National Legal Aid Service (NLAS) or FIDA Kenya."

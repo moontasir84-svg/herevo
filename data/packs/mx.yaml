@@ -15,6 +15,15 @@ messages:
   sent_to_helper:
     es: "Su mensaje fue enviado a la persona que la acompaña, que le responderá aquí. Si está en peligro ahora, llame al 911."
     en: "Your message has been sent to your helper, who will answer here. If you are in danger now, call 911."
+  escalate_self_harm:
+    es: "Gracias por decírmelo; no está sola. Estoy pidiendo a una persona capacitada que hable con usted ahora, aquí. Si puede hacerse daño en este momento, llame al 911 o vaya al hospital más cercano."
+    en: "Thank you for telling me. You are not alone. I am asking a trained helper to talk with you now, here. If you might hurt yourself right now, call 911 or go to the nearest hospital."
+  escalate_harm_intent:
+    es: "No puedo ayudar a hacerle daño a nadie. Si alguien le está haciendo daño, o las cosas se sienten tan difíciles que piensa en esto, una persona capacitada puede hablar con usted ahora; ya le avisé. Si alguien está en peligro ahora, llame al 911."
+    en: "I can't help with hurting anyone. If someone is hurting you, or things feel so hard that you are thinking this, a trained helper can talk with you now: I have let them know. If anyone is in danger right now, call 911."
+  capabilities:
+    es: "Puedo ayudarle con:\n• Dinero y trabajo: ahorrar y pedir préstamos de forma segura, registrar sus ventas, salarios no pagados\n• Derechos: herencia, pensión alimenticia, trabajo del hogar, asesoría legal gratuita\n• Seguridad: una persona capacitada que habla con usted aquí\n¿En qué le gustaría que le ayude?"
+    en: "I can help you with:\n• Money and work: saving and borrowing safely, recording your sales, unpaid wages\n• Rights: inheritance, child support, domestic work, free legal advice\n• Safety: a trained person who talks with you here\nWhat would you like help with?"
   not_covered:
     es: "Todavía no tengo una respuesta confiable para esta pregunta. Para asesoría legal gratuita, acuda a la Defensoría Pública de su estado."
     en: "I don't have a reliable answer to this yet. For free legal advice, go to your state's Public Defender's Office (Defensoría Pública)."

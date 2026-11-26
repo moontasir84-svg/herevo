@@ -18,6 +18,15 @@ messages:
   sent_to_helper:
     bn: "আপনার বার্তা সহায়তাকর্মীর কাছে পাঠানো হয়েছে। তিনি এই চ্যাটেই উত্তর দেবেন। এখনই বিপদে থাকলে ৯৯৯ নম্বরে কল করুন।"
     en: "Your message has been sent to your helper, who will answer in this chat. If you are in danger now, call 999."
+  escalate_self_harm:
+    bn: "আমাকে বলার জন্য ধন্যবাদ। আপনি একা নন। আমি এখনই একজন প্রশিক্ষিত সহায়তাকর্মীকে এই চ্যাটে আপনার সাথে কথা বলতে বলছি। এখনই নিজের ক্ষতি করার আশঙ্কা থাকলে ৯৯৯ নম্বরে কল করুন বা নিকটতম হাসপাতালে যান।"
+    en: "Thank you for telling me. You are not alone. I am asking a trained helper to talk with you now, here in this chat. If you might hurt yourself right now, call 999 or go to the nearest hospital."
+  escalate_harm_intent:
+    bn: "কাউকে ক্ষতি করার বিষয়ে আমি সাহায্য করতে পারি না। কেউ যদি আপনাকে কষ্ট দেয়, অথবা পরিস্থিতি এত কঠিন মনে হয় যে এমন কথা ভাবছেন, তাহলে একজন প্রশিক্ষিত সহায়তাকর্মী এখনই আপনার সাথে কথা বলতে পারেন; আমি তাঁকে জানিয়েছি। এখনই কেউ বিপদে থাকলে ৯৯৯ নম্বরে কল করুন।"
+    en: "I can't help with hurting anyone. If someone is hurting you, or things feel so hard that you are thinking this, a trained helper can talk with you now: I have let them know. If anyone is in danger right now, call 999."
+  capabilities:
+    bn: "আমি যেসব বিষয়ে সাহায্য করতে পারি:\n• চাষাবাদ: ফসলের সমস্যা, যেমন পাতা হলুদ হওয়া বা পোকা, এবং কৃষি কর্মকর্তার বিনামূল্যে পরামর্শ\n• টাকা ও কাজ: নিরাপদে সঞ্চয় ও ঋণ, বিক্রির হিসাব রাখা, বকেয়া মজুরি\n• অধিকার: জমি ও উত্তরাধিকার (সঠিক ভাগ হিসাব করে দিই), দেনমোহর, ভরণপোষণ, বাল্যবিবাহ, বিনামূল্যে আইনি সহায়তা\n• স্বাস্থ্য: গর্ভাবস্থা, প্রসবের পর ও নবজাতকের বিপদচিহ্ন, মাসিক, কোথায় যাবেন\n• নিরাপত্তা: একজন প্রশিক্ষিত মানুষ এখানেই আপনার সাথে কথা বলবেন\nআমি আপনার জন্য কাগজও লিখে দিতে পারি: লিগ্যাল এইডের আবেদন, ভরণপোষণের আবেদন, নামজারির তালিকা, বাল্যবিবাহ বন্ধের আবেদন এবং আয়ের হিসাব। কোন বিষয়ে সাহায্য চান?"
+    en: "I can help you with:\n• Farming: crop problems such as yellow leaves or pests, and free advice from the agriculture officer\n• Money and work: saving and borrowing safely, recording your sales, unpaid wages\n• Rights: land and inheritance (I work out the exact shares), dower, maintenance, child marriage, free legal aid\n• Health: danger signs in pregnancy, after birth and in a newborn; periods; where to go\n• Safety: a trained person who talks with you here\nI can also write papers for you: a legal aid application, a maintenance application, a land mutation checklist, a report to stop a child marriage, and your income record. What would you like help with?"
   not_covered:
     bn: "এই প্রশ্নের নির্ভরযোগ্য উত্তর আমার কাছে এখনো নেই। বিনামূল্যে আইনি সহায়তার জন্য জাতীয় আইনগত সহায়তা হেল্পলাইন ১৬৪৩০ নম্বরে কল করুন।"
     en: "I don't have a reliable answer to this yet. For free legal help, call the National Legal Aid helpline 16430."
