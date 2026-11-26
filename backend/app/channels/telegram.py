@@ -162,7 +162,7 @@ def handle_update(update: dict) -> None:
                     district=user.get("district"))
     sender.send(chat_id, result.reply)
     if by_voice and s.voice_replies and get_speech() is not None:
-        audio = get_speech().synthesize(result.reply, detect_language(result.reply))
+        audio = get_speech().synthesize(result.reply, result.reply_language)
         if audio:
             sender.send_voice(chat_id, audio)
 

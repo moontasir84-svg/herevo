@@ -25,15 +25,37 @@ log = logging.getLogger("herevo.pipeline")
 _BN_DIGITS = str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789")
 
 
+# Common short words and word shapes of each Latin-script language HerEvo serves. A message is scored
+# against each list; the best score wins, and English is the default when nothing stands out.
+_LATIN_WORDS = {
+    "sw": set("""ni na kwa ya wa za la kwenye katika mimi wewe yeye sisi wao yangu wangu wako yako
+        sana hapana ndiyo ndio leo jana kesho wiki wikendi siku mwezi miezi mwaka pesa kazi shilingi
+        mwajiri mshahara mtoto watoto mume bibi nyumba shamba ardhi usalama akiba msaada tafadhali
+        habari jambo hujambo mambo sijui nawezaje vipi gani nini lini wapi kwa nini bado tu pia
+        lakini kama hii hiyo huyu yule""".split()),
+    "es": set("""el la los las de del que y en mi mis por para con una un unos es son no me te se
+        tengo tiene hoy ayer mañana dinero trabajo hijos hijo hija esposo expareja pesos mercado
+        cómo como qué que cuándo dónde por favor hola buenos buenas gracias puedo quiero necesito
+        ayuda préstamo puesto vendí venta pensión pero también muy""".split()),
+    "en": set("""the a an and is are was were i my me you your he she it we they to of for in on at
+        with how what when where why do does did can could should would will not no yes sold sell
+        money help please hello hi today yesterday this that have has had am""".split()),
+}
+_LATIN_SHAPES = {
+    "sw": re.compile(r"\b(nili|nime|nita|tuli|tume|wali|ali|ana|hana|haja|sija|nina|una|ku)[a-z]{2,}", re.I),
+    "es": re.compile(r"[ñ¿¡áéíóú]|\b\w+(ción|mente)\b", re.I),
+    "en": re.compile(r"\b\w+(ing|ed)\b", re.I),
+}
+
+
 def detect_language(text: str) -> str:
     if re.search(r"[ঀ-৿]", text):
         return "bn"
-    lowered = text.lower()
-    if re.search(r"\b(nina|wangu|mshahara|sijui|tafadhali|habari|jambo|hujambo|mambo)\b", lowered):
-        return "sw"
-    if re.search(r"[ñ¿¡]|\b(mi|tengo|cómo|como|hijos|dinero|pesos|hola|buenos|buenas)\b", lowered):
-        return "es"
-    return "en"
+    words = re.findall(r"[a-záéíóúñü]+", text.lower())
+    scores = {lang: sum(w in vocab for w in words) + 1.5 * len(_LATIN_SHAPES[lang].findall(text))
+              for lang, vocab in _LATIN_WORDS.items()}
+    best = max(scores, key=scores.get)
+    return best if scores[best] > scores["en"] else "en"
 
 
 _LANG_ASK = [

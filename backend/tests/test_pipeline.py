@@ -1,3 +1,4 @@
+import pytest
 from app import db
 from app.packs import load_pack
 from app.pipeline import detect_language, handle
@@ -34,6 +35,27 @@ def test_language_detection():
     assert detect_language("Mwajiri wangu hajanilipa mshahara") == "sw"
     assert detect_language("¿Cómo consigo un préstamo?") == "es"
     assert detect_language("How do I save money?") == "en"
+
+
+@pytest.mark.parametrize("text,lang", [
+    ("Wikendi niliuza maandazi 40 kwa shilingi 800.", "sw"),
+    ("Mwajiri wangu hajanilipa mshahara kwa miezi miwili.", "sw"),
+    ("Nawezaje kuweka akiba kwa usalama?", "sw"),
+    ("Mwajiri wangu ananipiga na kunitishia.", "sw"),
+    ("Mi expareja no paga la pensión de mis hijos.", "es"),
+    ("Hoy vendí 1,200 pesos de tlayudas en el mercado.", "es"),
+    ("¿Cómo consigo un préstamo para mi puesto?", "es"),
+    ("Mi expareja me amenaza cuando voy al mercado.", "es"),
+    ("At the weekend I sold 40 mandazi for 800 shillings.", "en"),
+    ("My employer hits me and threatens me", "en"),
+    ("I sold vegetables for 800 taka today", "en"),
+    ("Where can I get free legal aid?", "en"),
+    ("Hi", "en"),
+    ("Hola", "es"),
+    ("Habari", "sw"),
+])
+def test_detects_the_language_of_every_demo_message(text, lang):
+    assert detect_language(text) == lang
 
 
 def test_safety_escalates_before_any_ai_call(fake_llm, recorder):
