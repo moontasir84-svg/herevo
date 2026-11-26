@@ -72,8 +72,9 @@ Re-run it after every change to a prompt, pack or safety term.
    `https://api.telegram.org/bot<TOKEN>/getUpdates` and copy the group's `chat.id` (a negative number)
    into `HELPER_CHAT_ID`.
 
-The free Render plan sleeps after 15 minutes idle; the first message after that takes up to a minute.
-Use a paid instance (or a ping) for the pilot and the Congress Day demo.
+The free Render plan sleeps after 15 minutes idle, and waking takes about a minute. The `keep-awake`
+GitHub Action (`.github/workflows/keepalive.yml`) opens `/health` every 5 minutes so it never sleeps; one
+always-on service fits inside Render's 750 free hours a month.
 
 ## Configuration
 

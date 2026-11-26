@@ -1,7 +1,7 @@
 <title>HerEvo</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,400..600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Bengali:wght@400;600&display=swap">
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,400..600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Bengali:wght@400;600&display=swap">
 <style>
 /* Layout: a live call on the left, the AI's visible reasoning and her records on the right; stacks on phones. */
 :root{
@@ -64,6 +64,9 @@ h2{font-family:var(--display); font-weight:600; font-size:18px; margin:0}
 .bubble{padding:10px 14px; border-radius:16px; font-size:15px; line-height:1.45}
 .her .bubble{background:#2B3A31; border-bottom-right-radius:4px}
 .ai .bubble{background:#F5EBD3; color:#2A2109; border-bottom-left-radius:4px}
+.ai .bubble.thinking{font-style:italic; opacity:.75; animation:think 1.4s ease-in-out infinite}
+@keyframes think{50%{opacity:.4}}
+@media (prefers-reduced-motion: reduce){.ai .bubble.thinking{animation:none}}
 .ai.esc .bubble{background:#F7D9D6; color:#3B0D09}
 .gloss{font-size:12.5px; color:var(--call-muted); padding:0 4px}
 .ai-row{display:flex; align-items:center; gap:8px}
@@ -219,8 +222,8 @@ tr.new td{background:var(--accent-soft)}
   <p class="foot">Demo for the International AI Builders Congress 2026. Callers, earnings and the map counts are sample data. Channels marked Planned are part of the build plan, not this demo. Rights answers are general information based on national law and the World Bank Women, Business and the Law data (as of 1 Oct 2025), not legal advice. Legal aid organisations named here must be confirmed as partners before any pilot.</p>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/js/jsvectormap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/maps/world.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/js/jsvectormap.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/maps/world.js" onload="mapReady()"></script>
 <script>
 const CALLERS = {
   bd: { key:'bd', name:'Rina', role:'Widow and farmer', place:'Rangpur, Bangladesh', lang:'bn', langName:'Bangla', country:'Bangladesh', cur:'Tk',
@@ -351,8 +354,13 @@ function renderThread(){
   const c = CALLERS[current], box = $('thread'); box.textContent = '';
   $('who').textContent = c.name; $('place').textContent = '· ' + c.place;
   const turns = turnsBy[current];
-  if (!turns.length){ box.append(el('div','empty',`${c.name} has called HerEvo from a basic phone. Pick what she says below.`)); return; }
-  for (const t of turns){
+  if (!turns.length && !(pending && pending.caller === current)){ box.append(el('div','empty',`${c.name} has called HerEvo from a basic phone. Pick what she says below.`)); return; }
+  for (const t of turns.concat(pending && pending.caller === current ? [{says: pending.text, saysEn: pending.saysEn, waiting: true}] : [])){
+    if (t.waiting){
+      const her = el('div','turn her'); her.append(el('div','bubble',t.says)); box.append(her);
+      const ai = el('div','turn ai'); ai.append(el('div','bubble thinking','HerEvo is thinking…')); box.append(ai);
+      continue;
+    }
     const her = el('div','turn her'); her.append(el('div','bubble',t.says)); if (t.saysEn) her.append(el('div','gloss',t.saysEn)); box.append(her);
     const ai = el('div','turn ai' + (t.safety === 'ESCALATE' ? ' esc' : ''));
     ai.append(el('div','bubble',t.reply));
@@ -400,15 +408,22 @@ function isDark(){
   if (t) return t === 'dark';
   return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches;
 }
-let map = null;
+let map = null, mapKey = '', worldLoaded = false;
+function mapReady(){ worldLoaded = true; mapKey = ''; renderMap(); }  // called when the deferred map data has loaded
 function renderMap(){
-  const box = $('worldmap'); if (!box || typeof jsVectorMap === 'undefined') { if (box) box.hidden = true; return; }
+  const box = $('worldmap'); if (!box) return;
+  if (!worldLoaded || typeof jsVectorMap === 'undefined'){ box.hidden = true; return; }
+  box.hidden = false;
   const dark = isDark();
   const levels = dark ? ['#3A3424','#6B5520','#A87A1E','#E3A92B'] : ['#F1E2BC','#E2C27A','#C9930F','#8A5E00'];
   ['lg1','lg2','lg3','lg4'].forEach((id,i) => $(id).style.background = levels.at(i));
   const totals = {}; for (const g of Object.values(gaps)) totals[g.code] = g.v.reduce((a,b)=>a+b,0);
   const vals = Object.values(totals), lo = Math.min(...vals), hi = Math.max(...vals);
   const values = {}; for (const [code, n] of Object.entries(totals)) values[code] = 'l' + Math.min(3, Math.floor((n - lo) / (hi - lo + 1) * 4));
+  const key = JSON.stringify([values, dark]);
+  if (map && key === mapKey) return;  // nothing changed: keep the map that is already drawn
+  mapKey = key;
+  try{ if (map && map.destroy) map.destroy(); }catch(e){}
   box.textContent = '';
   try{
     map = new jsVectorMap({
@@ -489,16 +504,28 @@ function commit(t){
 
 function playScripted(s){ if (busy) return; if (api) return askApi(s.says, s.saysEn); commit({...s, live:false}); }
 
+let pending = null;
 async function askApi(text, saysEn){
   const c = CALLERS[current];
-  busy = true; $('send').disabled = true; $('hint').textContent = 'HerEvo is thinking…';
+  busy = true; $('send').disabled = true;
+  pending = {caller: current, text, saysEn: saysEn || '', since: Date.now()};
+  $('freeText').value = ''; renderThread();
+  // Tell her what is happening while she waits, and never wait more than 60 s.
+  const ctl = new AbortController(), stop = setTimeout(() => ctl.abort(), 60000);
+  const tick = setInterval(() => {
+    const s = Math.round((Date.now() - pending.since) / 1000);
+    $('hint').textContent = s < 8 ? 'HerEvo is thinking…' : s < 25 ? `Still thinking (${s} s). The free AI is slow; it answers within 30 s.`
+      : `Waiting for the server (${s} s). If there is no answer by 60 s, HerEvo answers from the pack saved on this phone.`;
+  }, 1000);
+  $('hint').textContent = 'HerEvo is thinking…';
   try{
-    const res = await fetch('/v1/ask', {method:'POST', headers:{'content-type':'application/json'},
+    const res = await fetch('/v1/ask', {method:'POST', signal: ctl.signal, headers:{'content-type':'application/json'},
       body: JSON.stringify({session_id: sessionFor(c.key), text, country: c.country === 'Bangladesh' ? 'BD' : c.country === 'Kenya' ? 'KE' : 'MX',
                             district: c.place.split(',')[0]})});
-    if (res.status === 429){ $('hint').textContent = 'Too many messages. Please wait a few minutes.'; return; }
+    if (res.status === 429){ pending = null; renderThread(); $('freeText').value = text; $('hint').textContent = 'Too many messages. Please wait a few minutes.'; return; }
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const r = await res.json();
+    pending = null;
     const cites = (r.citations || []).map(x => `${x.title} (${x.source}${x.review_status === 'draft' ? ', awaiting expert review' : ''})`).join('; ');
     setTimeout(loadEvidence, 0);
     commit({intent: r.intent, conf: r.confidence ?? 0.7, says: text, saysEn: saysEn || '', reply: r.reply, replyEn: r.reply_en,
@@ -509,10 +536,11 @@ async function askApi(text, saysEn){
       gap: GAP_NAME[r.gap] || null, live: true, api: true, answeredBy: r.answered_by, escalationId: r.escalation_id, latency: r.latency_ms, language: r.language, replyLanguage: r.reply_language, helperAlerted: r.helper_alerted});
     $('freeText').value = ''; $('hint').textContent = `Answered by the HerEvo backend in ${r.latency_ms} ms.`;
   }catch(err){
-    const why = /^HTTP \d+/.test(err.message) ? `The server had an error (${err.message})` : 'No connection';
+    pending = null;
+    const why = err.name === 'AbortError' ? 'No answer from the server in 60 s' : /^HTTP \d+/.test(err.message) ? `The server had an error (${err.message})` : 'No connection';
     if (offlinePackAnswer(text)) $('hint').textContent = `${why}, so HerEvo answered from the country pack saved on this phone.`;
     else { offline(text); $('hint').textContent = 'Backend unreachable, so this answer came from the scripted demo.'; }
-  }finally{ busy = false; $('send').disabled = false; }
+  }finally{ clearTimeout(stop); clearInterval(tick); pending = null; busy = false; $('send').disabled = false; renderThread(); }
 }
 
 /* Offline router for typed words when live AI is not available */
@@ -646,14 +674,19 @@ $('free').addEventListener('submit', onFree);
 $('consent').addEventListener('change', renderLedger);
 render(); setMode();
 
+const ON_BACKEND = /^https?:$/.test(location.protocol) && !/(^|\.)claude(usercontent)?\.(ai|com)$/.test(location.hostname);
+if (ON_BACKEND){
+  api = true; apiTest = true; setMode(); loadPacks();
+  try{ if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js'); }catch(e){}
+}
 (async () => {
   if (!/^https?:$/.test(location.protocol)) return;
   try{
     const r = await fetch('/health', {cache:'no-store'});
     const h = r.ok ? await r.json() : null;
     if (h && h.ok && Array.isArray(h.countries)){
-      api = true; apiTest = h.data_mode !== 'live'; setMode(); loadEvidence(); loadPacks();
-      try{ if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js'); }catch(e){}
+      api = true; apiTest = h.data_mode !== 'live'; setMode(); loadEvidence();
+      if (!ON_BACKEND){ loadPacks(); try{ if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js'); }catch(e){} }
     }
   }catch(e){ /* not served by the backend: keep the scripted / Claude demo */ }
 })();

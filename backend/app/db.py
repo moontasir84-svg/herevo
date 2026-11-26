@@ -14,8 +14,21 @@ SCHEMA = Path(__file__).resolve().parent.parent / "db" / "schema.sql"
 _pool: ConnectionPool | None = None
 
 
+# Connections to a hosted database can be dropped silently while idle (by the pooler, a load balancer or
+# the network). Without these settings a query on a dead connection waits for the operating system's TCP
+# timeout, which is many minutes. With them a dead connection is noticed in seconds and replaced.
+CONNECT_KWARGS = {
+    "row_factory": dict_row,
+    "connect_timeout": 10,
+    "keepalives": 1, "keepalives_idle": 30, "keepalives_interval": 10, "keepalives_count": 3,
+    "tcp_user_timeout": 20000,  # ms: give up on unacknowledged sends after 20 s
+}
+
+
 def _configure(conn):
     register_vector(conn)
+    conn.execute("SET statement_timeout = '15s'")  # no single query may hold her up
+    conn.commit()
 
 
 def pool() -> ConnectionPool:
@@ -25,10 +38,13 @@ def pool() -> ConnectionPool:
         # The extension must exist before register_vector can find the type.
         import psycopg
 
-        with psycopg.connect(s.database_url, autocommit=True) as c:
+        with psycopg.connect(s.database_url, autocommit=True, connect_timeout=10) as c:
             c.execute("CREATE EXTENSION IF NOT EXISTS vector")
         _pool = ConnectionPool(s.database_url, min_size=1, max_size=5, configure=_configure,
-                               kwargs={"row_factory": dict_row}, open=True)
+                               kwargs=CONNECT_KWARGS, open=True,
+                               check=ConnectionPool.check_connection,  # test each connection before use
+                               max_idle=120,  # close connections idle for 2 minutes instead of reusing stale ones
+                               timeout=15)  # never wait more than 15 s for a free connection
     return _pool
 
 

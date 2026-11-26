@@ -1,0 +1,23 @@
+name: keep-awake
+
+# Render's free plan puts the server to sleep after 15 minutes without visitors, and waking it takes about
+# a minute. This opens /health every 5 minutes so HerEvo is always awake. Free for public repositories.
+# (One always-on service fits inside Render's 750 free hours a month.)
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Ping HerEvo
+        run: |
+          for i in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 https://herevo.onrender.com/health) && echo "HTTP $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 10
+          done
+          echo "HerEvo did not answer /health"; exit 1

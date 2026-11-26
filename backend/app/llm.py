@@ -164,12 +164,12 @@ class GeminiLLM:
         self.max_tokens = max_tokens
         self.last_model = model
 
-    def _post(self, httpx, model: str, body: dict):
+    def _post(self, httpx, model: str, body: dict, timeout: float = 20):
         url = self.URL.format(model=model)
-        r = httpx.post(url, headers={"x-goog-api-key": self.key}, json=body, timeout=20)
+        r = httpx.post(url, headers={"x-goog-api-key": self.key}, json=body, timeout=timeout)
         if r.status_code in (400, 401, 403):
             # Some key formats are only accepted as the ?key= query parameter: try that once.
-            r2 = httpx.post(url, params={"key": self.key}, json=body, timeout=20)
+            r2 = httpx.post(url, params={"key": self.key}, json=body, timeout=timeout)
             if r2.status_code == 200 or r.status_code != 400:
                 return r2
         return r
@@ -191,13 +191,14 @@ class GeminiLLM:
             "generationConfig": {"maxOutputTokens": max(self.max_tokens, 8192), "temperature": 0.2},
         }
         data, notes = None, []
-        deadline = time.monotonic() + 30  # she is waiting: give up and use the checked fallback after 30 s
+        deadline = time.monotonic() + 25  # she is waiting: give up and use the checked fallback after 25 s
         for model in self.models:
             for attempt in range(2):  # an overloaded model often answers on the second try
-                if time.monotonic() > deadline:
+                left = deadline - time.monotonic()
+                if left < 3:
                     break
                 try:
-                    r = self._post(httpx, model, body)
+                    r = self._post(httpx, model, body, timeout=min(20.0, left))
                 except httpx.HTTPError as exc:  # network trouble: class name only, never the URL (it may hold the key)
                     notes.append(f"{model} network {type(exc).__name__}")
                     continue
@@ -217,7 +218,7 @@ class GeminiLLM:
                     raise ValueError(f"Gemini HTTP {r.status_code} ({model}): {status}: {detail}")
                 if r.status_code == 400 or r.status_code == 404:
                     break  # this model can't take the request (unknown or retired): try the next one
-                time.sleep(1.5)  # 429 / 5xx: wait a moment, then retry or move on
+                time.sleep(min(1.5, max(0.0, deadline - time.monotonic())))  # 429 / 5xx: wait a moment, then retry or move on
             if data is not None:
                 break
         if data is None:
