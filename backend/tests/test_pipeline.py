@@ -168,3 +168,36 @@ def test_greeting_labelled_rights_by_the_ai_is_not_counted_as_a_case(fake_llm, r
     r = handle(uid=_uid(), channel="test", text="Hi")
     assert r.intent == "ADVICE" and r.gap is None and r.language == "en"
     assert db.evidence(min_count=1) == []
+
+
+def test_asking_for_bangla_switches_and_remembers_the_reply_language(fake_llm, recorder):
+    from app.pipeline import requested_language
+    assert requested_language("Reply me in Bangla") == "bn"
+    assert requested_language("বাংলায় বলুন") == "bn"
+    assert requested_language("en español por favor") == "es"
+    assert requested_language("My brother lives in Bangladesh and took my land") is None
+    uid = _uid()
+    r = handle(uid=uid, channel="web", text="Reply me in Bangla")
+    assert r.reply_language == "bn" and r.language == "en" and fake_llm.calls[-1]["language"] == "bn"
+    assert r.intent != "RIGHTS"
+    r = handle(uid=uid, channel="web", text="How do I save money?")
+    assert r.reply_language == "bn" and fake_llm.calls[-1]["language"] == "bn"
+
+
+def test_language_request_without_ai_gets_a_hello_in_that_language(recorder):
+    r = handle(uid=_uid(), channel="web", text="Reply me in Bangla")
+    assert r.answered_by == "fallback" and r.reply.startswith("আসসালামু আলাইকুম!")
+
+
+def test_safety_case_without_a_helper_group_says_nobody_was_alerted(fake_llm):
+    from app import alerts
+    alerts.set_notifier(alerts.LogNotifier())
+    try:
+        r = handle(uid=_uid(), channel="web", text="My husband is beating me")
+    finally:
+        alerts.set_notifier(None)
+    assert r.safety == "ESCALATE" and r.helper_alerted is False
+
+
+def test_safety_case_with_a_helper_group_says_alerted(recorder):
+    assert handle(uid=_uid(), channel="web", text="My husband is beating me").helper_alerted is True

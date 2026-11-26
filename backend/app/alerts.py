@@ -39,7 +39,7 @@ class LogNotifier:
     def notify_helper(self, text: str) -> bool:
         self.sent.append(text)
         log.warning("SAFETY ALERT (no helper channel configured): %s", text)
-        return True
+        return False  # nobody was actually alerted
 
 
 _notifier: Notifier | None = None

@@ -61,6 +61,21 @@ def upsert_user(uid: str, channel: str, country: str, language: str) -> dict:
         return conn.execute("SELECT * FROM users WHERE id = %s", (uid,)).fetchone()
 
 
+def set_preferred_language(uid: str, channel: str, country: str, language: str) -> None:
+    with pool().connection() as conn:
+        conn.execute(
+            """INSERT INTO users (id, channel, country, language, preferred_language) VALUES (%s, %s, %s, %s, %s)
+               ON CONFLICT (id) DO UPDATE SET preferred_language = EXCLUDED.preferred_language""",
+            (uid, channel, country, language, language),
+        )
+
+
+def preferred_language(uid: str) -> str | None:
+    with pool().connection() as conn:
+        row = conn.execute("SELECT preferred_language FROM users WHERE id = %s", (uid,)).fetchone()
+        return row["preferred_language"] if row else None
+
+
 def set_address(uid: str, address: str) -> None:
     with pool().connection() as conn:
         conn.execute("UPDATE users SET address = %s WHERE id = %s", (address, uid))

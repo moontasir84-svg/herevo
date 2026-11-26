@@ -101,3 +101,4 @@ CREATE TABLE IF NOT EXISTS turns (
 
 -- Upgrades for databases created by earlier versions
 ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS preferred_language TEXT;  -- set when she asks for a language

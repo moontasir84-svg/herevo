@@ -36,6 +36,23 @@ def detect_language(text: str) -> str:
     return "en"
 
 
+_LANG_ASK = [
+    ("bn", re.compile(r"\b(bangla|bengali|bangla\s*te|banglay)\b|বাংলায়|বাংলাতে|বাংলা ভাষায়", re.I)),
+    ("en", re.compile(r"\b(english)\b|ইংরেজিতে|ইংলিশে|kwa kiingereza|en ingl[eé]s", re.I)),
+    ("sw", re.compile(r"\b(swahili|kiswahili)\b", re.I)),
+    ("es", re.compile(r"\b(spanish|espa[nñ]ol)\b", re.I)),
+]
+_LANG_VERB = re.compile(r"\b(in|into|use|speak|talk|answer|reply|respond|write|please|kwa|en)\b|য়$|তে\b|ভাষায়|বলুন|বলো|লিখুন", re.I)
+
+
+def requested_language(text: str) -> str | None:
+    """'Reply me in Bangla', 'বাংলায় বলুন', 'en español por favor' -> the language she asked for."""
+    if len(text) > 80 or not _LANG_VERB.search(text):
+        return None
+    hits = [code for code, rx in _LANG_ASK if rx.search(text)]
+    return hits[0] if len(hits) == 1 else None
+
+
 @dataclass
 class Citation:
     id: str
@@ -58,6 +75,8 @@ class TurnResult:
     gap: str | None = None  # evidence-map category this turn added to, if any
     fallback_reason: str | None = None  # why the AI was not used (plain words, never a key)
     language: str = "en"  # detected language of her message
+    reply_language: str = "en"
+    helper_alerted: bool | None = None  # safety cases: did a real helper channel receive the alert?  # language of the reply (hers, or the one she asked for)
     latency_ms: int = 0
 
     def to_dict(self) -> dict:
@@ -128,7 +147,11 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
     text = text.strip()[:2000]
     pack = load_pack(country or "BD")
     cc = pack["country"]
-    lang = detect_language(text)
+    lang_in = detect_language(text)
+    asked = requested_language(text)
+    if asked:
+        db.set_preferred_language(uid, channel, cc, asked)
+    lang = asked or db.preferred_language(uid) or lang_in  # once she asks for a language, keep using it
 
     # 1. Safety first, before any AI.
     screen = safety.screen(text)
@@ -179,7 +202,7 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
             local_amt = amt.translate(str.maketrans("0123456789", "০১২৩৪৫৬৭৮৯")) if lang == "bn" else amt
             reply, reply_en = (_msg(pack, "sale_recorded", lang).format(amount=local_amt),
                                _msg(pack, "sale_recorded", "en").format(amount=amt))
-        elif is_greeting(text) and "hello" in pack["messages"]:
+        elif (asked or is_greeting(text)) and "hello" in pack["messages"]:
             reply, reply_en = _msg(pack, "hello", lang), _msg(pack, "hello", "en")
             intent = "ADVICE"
         elif passages and passages[0].get("keyword_match") and "closest" in pack["messages"]:
@@ -200,7 +223,7 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
 
     # 5. Records. The evidence map must stay clean: a greeting, or a "rights" label the AI gave without
     # citing a rights passage and without any rights word in her message, is not counted as a case.
-    if result.intent == "RIGHTS" and (is_greeting(text) or not (result.citations or fallback_intent(text) == "RIGHTS")):
+    if result.intent == "RIGHTS" and (is_greeting(text) or asked or not (result.citations or fallback_intent(text) == "RIGHTS")):
         result.intent = "ADVICE"
     if result.intent == "EARN" and result.sale:
         db.add_sale(uid, result.sale)
@@ -223,12 +246,13 @@ def _escalate(uid, channel, cc, district, lang, pack, *, reason, message, answer
         log.error("escalation %s could not alert a helper", eid)
     return TurnResult(reply=_msg(pack, "escalate", lang), reply_en=_msg(pack, "escalate", "en"), intent="SAFETY",
                       confidence=None, safety="ESCALATE", answered_by=answered_by, escalation_id=eid,
-                      gap="safety_threats")
+                      gap="safety_threats", helper_alerted=bool(sent))
 
 
 def _finish(result: TurnResult, uid, channel, lang, text, t0, model) -> TurnResult:
     result.latency_ms = int((time.monotonic() - t0) * 1000)
-    result.language = lang
+    result.language = detect_language(text)
+    result.reply_language = lang
     db.log_turn({"user_id": uid, "channel": channel, "language": lang, "intent": result.intent,
                  "confidence": result.confidence, "safety": result.safety,
                  "cited_ids": [c.id for c in result.citations], "answered_by": result.answered_by,

@@ -39,7 +39,7 @@ rule-based fallback. Add the key to get Claude's grounded answers.
 
 ```bash
 createdb herevo_test                  # once
-python -m pytest -q                   # 70 tests: safety, retrieval, pipeline, API, Telegram, voice, MCP, offline pack
+python -m pytest -q                   # 74 tests: safety, retrieval, pipeline, API, Telegram, voice, MCP, offline pack
 ```
 
 Tests use a real Postgres + pgvector database with a fake Claude, fake Telegram and fake speech service,

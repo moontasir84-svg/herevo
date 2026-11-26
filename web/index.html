@@ -371,13 +371,13 @@ function renderTrace(t){
   const conf = el('div','bar'); const fill = el('i'); fill.style.width = Math.round((t.conf||0)*100) + '%'; conf.append(fill);
   intent.append(el('span','small muted',`  confidence ${Math.round((t.conf||0)*100)}%`), conf);
   add('Intent', intent);
-  const LN = {bn:'Bangla', en:'English', sw:'Swahili', es:'Spanish'}, ln = LN[t.language] || CALLERS[current].langName;
-  add('Language', el('span',null,`${ln} in, ${ln} out`));
+  const LN = {bn:'Bangla', en:'English', sw:'Swahili', es:'Spanish'}, lin = LN[t.language] || CALLERS[current].langName;
+  add('Language', el('span',null,`${lin} in, ${LN[t.replyLanguage] || lin} out`));
   add('Grounded in', el('span',null,t.source || 'Approved knowledge base'));
   if (t.aid) add('Nearest legal aid', el('span',null,t.aid + ' (demo directory)'));
   const s = el('span','pill ' + (t.safety === 'ESCALATE' ? 'esc' : 'ok'), t.safety === 'ESCALATE' ? 'ESCALATE → human helper' : 'OK');
   add('Safety', s);
-  if (t.safety === 'ESCALATE') add('Handed to', el('span',null,(t.escalationId ? `Helper alerted on Telegram · case #${t.escalationId}. ` : '') + 'Trained helper at a partner hotline, who can also refer her to the nearest clinic or police women\'s desk. The AI does not counsel.'));
+  if (t.safety === 'ESCALATE') add('Handed to', el('span',null,(t.escalationId ? (t.helperAlerted === false ? `Case #${t.escalationId} opened. No helper group is connected yet (test setup), so no one was alerted. ` : `Helper alerted on Telegram · case #${t.escalationId}. `) : '') + 'Trained helper at a partner hotline, who can also refer her to the nearest clinic or police women\'s desk. The AI does not counsel.'));
   add('Answered by', el('span','small', t.api ? `${t.answeredBy === 'offline' ? 'This phone' : 'HerEvo backend'} · ${({claude:'Claude, grounded in the country pack', gemini:'Gemini (free test tier), grounded in the country pack', offline:'offline pack on this phone (no internet)', fallback:'rules + pre-checked text', safety_rule:'safety rule (no AI)'})[t.answeredBy] || t.answeredBy}${t.latency != null ? ` · ${t.latency} ms` : ''}` : (t.live ? 'Claude, live (quick tier)' : 'Scripted demo answer')));
 }
 
@@ -506,7 +506,7 @@ async function askApi(text, saysEn){
         ? `${cites ? 'Closest pre-checked pack passage · ' + cites : 'Pre-checked fallback message'} · AI unavailable${r.fallback_reason ? ': ' + r.fallback_reason : ''}`
         : cites || ({safety_rule:'Safety rule, before any AI'})[r.answered_by] || 'Country pack',
       safety: r.safety, sale: r.sale ? {item: r.sale.product || 'Sale', amt: r.sale.amount} : null,
-      gap: GAP_NAME[r.gap] || null, live: true, api: true, answeredBy: r.answered_by, escalationId: r.escalation_id, latency: r.latency_ms, language: r.language});
+      gap: GAP_NAME[r.gap] || null, live: true, api: true, answeredBy: r.answered_by, escalationId: r.escalation_id, latency: r.latency_ms, language: r.language, replyLanguage: r.reply_language, helperAlerted: r.helper_alerted});
     $('freeText').value = ''; $('hint').textContent = `Answered by the HerEvo backend in ${r.latency_ms} ms.`;
   }catch(err){
     const why = /^HTTP \d+/.test(err.message) ? `The server had an error (${err.message})` : 'No connection';
