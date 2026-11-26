@@ -25,9 +25,9 @@ def test_allowed_combinations():
 
 
 class _Resp:
-    def __init__(self, payload):
+    def __init__(self, payload, status_code=200):
         self.payload = payload
-        self.status_code = 200
+        self.status_code = status_code
 
     def raise_for_status(self):
         pass
@@ -81,3 +81,16 @@ def test_test_mode_is_visible_to_users_and_helpers(fake_llm, recorder):
     assert recorder.sent[-1][1].startswith("⚠️ পরীক্ষামূলক সংস্করণ")
     c.post("/telegram/webhook/s3cret", json={"message": {"chat": {"id": 888}, "text": "স্বামী আমাকে মারধর করে"}})
     assert any(who == "helper" and text.startswith("[TEST MODE") for who, text in recorder.sent)
+
+
+def test_gemini_http_error_reports_reason(monkeypatch):
+    monkeypatch.setattr(httpx, "post", lambda *a, **k: _Resp(
+        {"error": {"status": "NOT_FOUND", "message": "models/x is not found"}}, status_code=404))
+    with pytest.raises(ValueError, match="404.*NOT_FOUND.*not found"):
+        GeminiLLM("k", "x", 100).respond("bn", [], "x")
+
+
+def test_gemini_cut_off_response_is_explained(monkeypatch):
+    monkeypatch.setattr(httpx, "post", lambda *a, **k: _Resp({"candidates": [{"finishReason": "MAX_TOKENS", "content": {}}]}))
+    with pytest.raises(ValueError, match="MAX_TOKENS"):
+        GeminiLLM("k", "m", 100).respond("bn", [], "x")

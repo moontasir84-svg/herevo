@@ -165,15 +165,28 @@ class GeminiLLM:
                                                  "description": RESPOND_TOOL["description"],
                                                  "parameters": to_gemini_schema(RESPOND_TOOL["input_schema"])}]}],
             "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames": ["respond"]}},
-            "generationConfig": {"maxOutputTokens": self.max_tokens, "temperature": 0.2},
+            # Newer Gemini models "think" before answering and those tokens count against this limit,
+            # so leave generous room or the function call gets cut off.
+            "generationConfig": {"maxOutputTokens": max(self.max_tokens, 8192), "temperature": 0.2},
         }
-        r = httpx.post(self.URL.format(model=self.model), headers={"x-goog-api-key": self.key}, json=body, timeout=30)
-        r.raise_for_status()
-        for part in r.json()["candidates"][0]["content"]["parts"]:
+        r = httpx.post(self.URL.format(model=self.model), headers={"x-goog-api-key": self.key}, json=body, timeout=60)
+        if r.status_code != 200:
+            # Google's error body names the reason (bad key, unknown model, invalid schema, quota). It never
+            # contains the key itself, so it is safe to log.
+            try:
+                err = r.json().get("error", {})
+                reason = f"{err.get('status')}: {err.get('message')}"
+            except ValueError:
+                reason = r.text[:300]
+            raise ValueError(f"Gemini HTTP {r.status_code} ({self.model}): {reason}")
+        data = r.json()
+        cand = (data.get("candidates") or [{}])[0]
+        for part in (cand.get("content") or {}).get("parts") or []:
             call = part.get("functionCall")
             if call and call.get("name") == "respond":
                 return dict(call.get("args") or {})
-        raise ValueError("Gemini did not call the respond function")
+        raise ValueError(f"Gemini returned no function call (finishReason={cand.get('finishReason')}, "
+                         f"blocked={data.get('promptFeedback', {}).get('blockReason')})")
 
 
 def parse(raw: dict, passage_ids: set[str]) -> Respond:
