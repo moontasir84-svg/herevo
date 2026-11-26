@@ -28,8 +28,14 @@ messages:
     es: "¡Hola! Soy HerEvo. Escriba o diga su pregunta sobre trabajo, dinero, derechos o seguridad."
     en: "Hello! I am HerEvo. Write or say your question about work, money, rights or safety."
   welcome:
-    es: "Hola, soy HerEvo. Pregunte lo que necesite sobre su trabajo, dinero, derechos o seguridad. No guardamos su nombre ni su número de teléfono. Escriba 'sí' para continuar."
-    en: "Hello, I am HerEvo. Ask anything about work, money, rights or safety. We do not store your name or phone number. Type 'yes' to continue."
+    es: "Hola, soy HerEvo. Pregunte lo que necesite sobre su trabajo, dinero, salud, derechos o seguridad, en español o en inglés. No guardamos su nombre ni su número de teléfono. Si está de acuerdo, escriba 'sí' (o 'yes')."
+    en: "Hello, I am HerEvo. Ask anything about work, money, health, rights or safety, in Spanish or English. We do not store your name or phone number. If you agree, type 'yes'."
+  consent_reminder:
+    es: "Para continuar, escriba 'sí' (o 'yes') y luego haga su pregunta."
+    en: "To continue, type 'yes', then ask your question."
+  consent_thanks:
+    es: "Gracias. Ahora escriba o diga su pregunta."
+    en: "Thank you. Now type or say your question."
 
 contacts:
   - {id: mx-911, kind: emergency, name: Emergencias, phone: "911", free: true, source: "Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública"}

@@ -195,3 +195,24 @@ def test_alert_follows_the_group_when_telegram_upgrades_it(monkeypatch):
     n = TelegramNotifier("t", "-5378753373")
     assert n.notify_helper("case #1") is True and n.chat_id == "-1009876543210"
     assert sent_to == ["-5378753373", "-1009876543210"]
+
+
+def test_consent_in_her_language_with_short_reminders(fake_llm, recorder):
+    chat = 444
+    tg(chat, "/start")
+    assert "আসসালামু আলাইকুম" in recorder.sent[-1][1]          # first welcome: the pack's own language
+    tg(chat, "hi")
+    assert recorder.sent[-1][1] == "To continue, type 'yes', then ask your question."  # short, in English
+    tg(chat, "can I talk in English")
+    assert "Hello, I am HerEvo" in recorder.sent[-1][1] and "in Bangla or English" in recorder.sent[-1][1]
+    tg(chat, "Yes.")
+    assert recorder.sent[-1][1] == "Thank you. Now type or say your question."
+    tg(chat, "How do I save money?")
+    assert fake_llm.calls[-1]["language"] == "en"
+
+
+def test_new_user_writing_in_english_gets_the_english_welcome(fake_llm, recorder):
+    tg(445, "hello")
+    assert "Hello, I am HerEvo" in recorder.sent[-1][1] and "⚠️ Test version" in recorder.sent[-1][1]
+    tg(445, "হ্যাঁ")
+    assert recorder.sent[-1][1] == "ধন্যবাদ। এখন আপনার প্রশ্ন লিখুন বা বলুন।"

@@ -28,8 +28,14 @@ messages:
     sw: "Habari! Mimi ni HerEvo. Andika au sema swali lako kuhusu kazi, pesa, haki au usalama."
     en: "Hello! I am HerEvo. Write or say your question about work, money, rights or safety."
   welcome:
-    sw: "Habari, mimi ni HerEvo. Uliza swali lolote kuhusu kazi, pesa, haki au usalama. Hatuhifadhi jina wala nambari yako ya simu. Andika 'ndiyo' kuendelea."
-    en: "Hello, I am HerEvo. Ask any question about work, money, rights or safety. We do not store your name or phone number. Type 'yes' to continue."
+    sw: "Habari, mimi ni HerEvo. Uliza swali lolote kuhusu kazi, pesa, afya, haki au usalama, kwa Kiswahili au Kiingereza. Hatuhifadhi jina wala nambari yako ya simu. Ukikubali, andika 'ndiyo' (au 'yes')."
+    en: "Hello, I am HerEvo. Ask any question about work, money, health, rights or safety, in Swahili or English. We do not store your name or phone number. If you agree, type 'yes'."
+  consent_reminder:
+    sw: "Ili kuendelea, andika 'ndiyo' (au 'yes'), kisha uliza swali lako."
+    en: "To continue, type 'yes', then ask your question."
+  consent_thanks:
+    sw: "Asante. Sasa andika au sema swali lako."
+    en: "Thank you. Now type or say your question."
 
 contacts:
   - {id: ke-999, kind: emergency, name: Police emergency, phone: "999 / 112", free: true, source: "National Police Service, Kenya"}

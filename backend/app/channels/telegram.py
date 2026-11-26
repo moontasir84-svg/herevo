@@ -14,12 +14,17 @@ from .. import db, safety
 from ..config import get_settings
 from ..packs import load_pack
 from ..alerts import helper_chat_ids
-from ..pipeline import detect_language, handle
+from ..pipeline import detect_language, handle, requested_language
 from ..speech import get_speech
 
 log = logging.getLogger("herevo.telegram")
 
-YES_WORDS = {"yes", "y", "ok", "হ্যাঁ", "হা", "হ্যা", "জি", "ঠিক আছে", "ndiyo", "sí", "si"}
+YES_WORDS = {"yes", "y", "ok", "okay", "yes please", "i agree", "agree", "হ্যাঁ", "হা", "হ্যা", "জি", "জি হ্যাঁ",
+             "ঠিক আছে", "রাজি", "haan", "ha", "ji", "ndiyo", "ndio", "sawa", "sí", "si", "de acuerdo"}
+
+
+def _is_yes(text: str) -> bool:
+    return text.lower().strip(" .!?।'\"") in YES_WORDS
 
 
 class Sender(Protocol):
@@ -99,8 +104,19 @@ TEST_NOTICE = ("⚠️ পরীক্ষামূলক সংস্করণ: 
                "⚠️ Test version: do not share real names, places or personal stories. Use made-up examples.\n\n")
 
 
-def _welcome(pack) -> str:
-    return (TEST_NOTICE if get_settings().is_test else "") + _text(pack, "welcome", "bn")
+def _welcome(pack, lang: str) -> str:
+    return (TEST_NOTICE if get_settings().is_test else "") + _text(pack, "welcome", lang)
+
+
+def _gate_language(pack, uid: str, text: str, channel_country: str) -> tuple[str, bool]:
+    """The language to talk to her in before she has agreed, and whether she just asked for it."""
+    asked = requested_language(text)
+    if asked:
+        db.set_preferred_language(uid, "telegram", channel_country, asked)
+        return asked, True
+    if text.startswith("/"):
+        return db.preferred_language(uid) or pack["languages"][0], False
+    return db.preferred_language(uid) or detect_language(text), False
 
 
 def handle_update(update: dict) -> None:
@@ -129,13 +145,14 @@ def handle_update(update: dict) -> None:
     pack = load_pack(s.default_country)
     cc = pack["country"]
     uid = db.user_id_for("telegram", str(chat_id))
-    lang = detect_language(text) if not text.startswith("/") else "bn"
+    is_new = db.get_user(uid) is None
+    lang = detect_language(text) if not text.startswith("/") else pack["languages"][0]
     user = db.upsert_user(uid, "telegram", cc, lang)
     db.set_address(uid, str(chat_id))
     sender = get_sender()
 
     if text.startswith("/start"):
-        sender.send(chat_id, _welcome(pack))
+        sender.send(chat_id, _welcome(pack, _gate_language(pack, uid, text, cc)[0]))
         return
     if text.startswith("/delete"):
         db.delete_user(uid)
@@ -154,11 +171,14 @@ def handle_update(update: dict) -> None:
 
     # Safety is never gated behind consent.
     if not user["consented"] and not safety.screen(text).escalate:
-        if text.lower() in YES_WORDS:
+        glang, asked = _gate_language(pack, uid, text, cc)
+        if _is_yes(text):
             db.set_consent(uid, True)
-            sender.send(chat_id, "ধন্যবাদ। এখন আপনার প্রশ্ন লিখুন। / Thank you. Now type your question.")
+            sender.send(chat_id, _text(pack, "consent_thanks", db.preferred_language(uid) or glang))
+        elif is_new or asked:
+            sender.send(chat_id, _welcome(pack, glang))  # the full notice, in her language
         else:
-            sender.send(chat_id, _welcome(pack))
+            sender.send(chat_id, _text(pack, "consent_reminder", glang))  # short, not the whole notice again
         return
 
     result = handle(uid=uid, channel="telegram-voice" if by_voice else "telegram", text=text, country=cc,

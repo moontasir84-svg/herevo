@@ -31,8 +31,14 @@ messages:
     bn: "আসসালামু আলাইকুম! আমি HerEvo। জমি, ফসল, আয়, অধিকার বা নিরাপত্তা নিয়ে আপনার প্রশ্নটি লিখুন বা বলুন।"
     en: "Hello! I am HerEvo. Write or say your question about land, crops, income, rights or safety."
   welcome:
-    bn: "আসসালামু আলাইকুম, আমি HerEvo। জমি, ফসল, আয়, অধিকার বা নিরাপত্তা নিয়ে যেকোনো প্রশ্ন বাংলায় লিখুন বা বলুন। আপনার নাম বা ফোন নম্বর আমরা সংরক্ষণ করি না। চালিয়ে যেতে 'হ্যাঁ' লিখুন।"
-    en: "Hello, I am HerEvo. Ask any question about land, crops, income, rights or safety, in Bangla. We do not store your name or phone number. Type 'yes' to continue."
+    bn: "আসসালামু আলাইকুম, আমি HerEvo। জমি, ফসল, আয়, স্বাস্থ্য, অধিকার বা নিরাপত্তা নিয়ে যেকোনো প্রশ্ন বাংলায় বা ইংরেজিতে লিখুন বা বলুন। আপনার নাম বা ফোন নম্বর আমরা সংরক্ষণ করি না। রাজি থাকলে 'হ্যাঁ' (বা 'yes') লিখুন।"
+    en: "Hello, I am HerEvo. Ask any question about land, crops, income, health, rights or safety, in Bangla or English. We do not store your name or phone number. If you agree, type 'yes'."
+  consent_reminder:
+    bn: "চালিয়ে যেতে 'হ্যাঁ' (বা 'yes') লিখুন, তারপর আপনার প্রশ্ন লিখুন।"
+    en: "To continue, type 'yes', then ask your question."
+  consent_thanks:
+    bn: "ধন্যবাদ। এখন আপনার প্রশ্ন লিখুন বা বলুন।"
+    en: "Thank you. Now type or say your question."
 
 contacts:
   - id: bd-999
