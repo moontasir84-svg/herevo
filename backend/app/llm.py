@@ -149,7 +149,7 @@ class GeminiLLM:
     URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
     def __init__(self, api_key: str, model: str, max_tokens: int):
-        self.key = api_key
+        self.key = api_key.strip()  # a stray space or newline from copy-paste makes Google reject the key
         self.model = model
         self.max_tokens = max_tokens
 
@@ -169,7 +169,13 @@ class GeminiLLM:
             # so leave generous room or the function call gets cut off.
             "generationConfig": {"maxOutputTokens": max(self.max_tokens, 8192), "temperature": 0.2},
         }
-        r = httpx.post(self.URL.format(model=self.model), headers={"x-goog-api-key": self.key}, json=body, timeout=60)
+        url = self.URL.format(model=self.model)
+        r = httpx.post(url, headers={"x-goog-api-key": self.key}, json=body, timeout=60)
+        if r.status_code in (400, 401, 403):
+            # Some key formats are only accepted as the ?key= query parameter: try that once.
+            r2 = httpx.post(url, params={"key": self.key}, json=body, timeout=60)
+            if r2.status_code == 200 or r.status_code != 400:
+                r = r2
         if r.status_code != 200:
             # Google's error body names the reason (bad key, unknown model, invalid schema, quota). It never
             # contains the key itself, so it is safe to log.

@@ -94,3 +94,17 @@ def test_gemini_cut_off_response_is_explained(monkeypatch):
     monkeypatch.setattr(httpx, "post", lambda *a, **k: _Resp({"candidates": [{"finishReason": "MAX_TOKENS", "content": {}}]}))
     with pytest.raises(ValueError, match="MAX_TOKENS"):
         GeminiLLM("k", "m", 100).respond("bn", [], "x")
+
+
+def test_gemini_retries_key_as_query_param(monkeypatch):
+    calls = []
+
+    def fake_post(url, json=None, timeout=None, headers=None, params=None):
+        calls.append("header" if headers else "param")
+        if headers:
+            return _Resp({"error": {"status": "UNAUTHENTICATED", "message": "API key not valid"}}, status_code=401)
+        return _Resp({"candidates": [{"content": {"parts": [{"functionCall": {"name": "respond", "args": {"ok": 1}}}]}}]})
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    assert GeminiLLM(" AQ.key \n", "m", 100).respond("bn", [], "x") == {"ok": 1}
+    assert calls == ["header", "param"]

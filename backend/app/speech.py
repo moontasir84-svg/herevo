@@ -64,7 +64,7 @@ class GeminiSpeech:
     URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
     def __init__(self, api_key: str, model: str):
-        self.key = api_key
+        self.key = api_key.strip()
         self.model = model
 
     def transcribe(self, audio: bytes, language: str) -> str | None:
