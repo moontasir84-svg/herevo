@@ -213,6 +213,7 @@ tr.new td{background:var(--accent-soft)}
       </div>
       <div class="scroll"><table class="heat" id="heat"></table></div>
     </div>
+    <p class="small" id="liveEvidence" hidden></p>
   </section>
 
   <p class="foot">Demo for the International AI Builders Congress 2026. Callers, earnings and the map counts are sample data. Channels marked Planned are part of the build plan, not this demo. Rights answers are general information based on national law and the World Bank Women, Business and the Law data (as of 1 Oct 2025), not legal advice. Legal aid organisations named here must be confirmed as partners before any pilot.</p>
@@ -376,7 +377,7 @@ function renderTrace(t){
   const s = el('span','pill ' + (t.safety === 'ESCALATE' ? 'esc' : 'ok'), t.safety === 'ESCALATE' ? 'ESCALATE → human helper' : 'OK');
   add('Safety', s);
   if (t.safety === 'ESCALATE') add('Handed to', el('span',null,(t.escalationId ? `Helper alerted on Telegram · case #${t.escalationId}. ` : '') + 'Trained helper at a partner hotline, who can also refer her to the nearest clinic or police women\'s desk. The AI does not counsel.'));
-  add('Answered by', el('span','small', t.api ? `HerEvo backend · ${({claude:'Claude, grounded in the country pack', fallback:'rules + pre-checked text', safety_rule:'safety rule (no AI)'})[t.answeredBy] || t.answeredBy}${t.latency != null ? ` · ${t.latency} ms` : ''}` : (t.live ? 'Claude, live (quick tier)' : 'Scripted demo answer')));
+  add('Answered by', el('span','small', t.api ? `${t.answeredBy === 'offline' ? 'This phone' : 'HerEvo backend'} · ${({claude:'Claude, grounded in the country pack', gemini:'Gemini (free test tier), grounded in the country pack', offline:'offline pack on this phone (no internet)', fallback:'rules + pre-checked text', safety_rule:'safety rule (no AI)'})[t.answeredBy] || t.answeredBy}${t.latency != null ? ` · ${t.latency} ms` : ''}` : (t.live ? 'Claude, live (quick tier)' : 'Scripted demo answer')));
 }
 
 function renderLedger(){
@@ -442,6 +443,28 @@ function renderHeat(){
   t.append(tb);
 }
 
+/* Live backend: real anonymized counts from /v1/evidence, shown next to (never mixed into) the sample map. */
+const GAP_KEYS = {land_inheritance:'Land & inheritance', unpaid_wages:'Unpaid wages', family_support:'Family support', safety_threats:'Safety threats', other:'Other'};
+const CC_NAME = {BD:'Bangladesh', KE:'Kenya', MX:'Mexico'};
+async function loadEvidence(){
+  if (!api) return;
+  try{
+    const r = await fetch('/v1/evidence', {cache:'no-store'});
+    if (!r.ok) return;
+    const cells = (await r.json()).cells || [];
+    const box = $('liveEvidence'); box.textContent = '';
+    const total = cells.reduce((a,c) => a + c.n, 0);
+    box.append(el('b', null, `Live backend: ${total} anonymized report${total === 1 ? '' : 's'} recorded`));
+    if (total){
+      const byCc = {};
+      cells.forEach(c => { (byCc[c.country] = byCc[c.country] || []).push(`${GAP_KEYS[c.gap] || c.gap} ${c.n}`); });
+      box.append(document.createTextNode(' · ' + Object.entries(byCc).map(([cc, xs]) => `${CC_NAME[cc] || cc}: ${xs.join(', ')}`).join(' · ')));
+    }
+    box.append(document.createTextNode('. No names, messages or phone numbers are stored with these counts; the map above stays sample data until the pilot.'));
+    box.hidden = false;
+  }catch(e){ /* the sample map still works */ }
+}
+
 function render(){ renderCallers(); renderChips(); renderThread(); renderLedger(); renderHeat(); const tt = turnsBy[current]; renderTrace(tt[tt.length-1]); }
 
 function addSale(sale){
@@ -476,13 +499,15 @@ async function askApi(text, saysEn){
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const r = await res.json();
     const cites = (r.citations || []).map(x => `${x.title} (${x.source}${x.review_status === 'draft' ? ', awaiting expert review' : ''})`).join('; ');
+    setTimeout(loadEvidence, 0);
     commit({intent: r.intent, conf: r.confidence ?? 0.7, says: text, saysEn: saysEn || '', reply: r.reply, replyEn: r.reply_en,
       source: cites || ({fallback:'Pre-checked fallback message (AI unavailable)', safety_rule:'Safety rule, before any AI'})[r.answered_by] || 'Country pack',
       safety: r.safety, sale: r.sale ? {item: r.sale.product || 'Sale', amt: r.sale.amount} : null,
       gap: GAP_NAME[r.gap] || null, live: true, api: true, answeredBy: r.answered_by, escalationId: r.escalation_id, latency: r.latency_ms});
     $('freeText').value = ''; $('hint').textContent = `Answered by the HerEvo backend in ${r.latency_ms} ms.`;
   }catch(err){
-    offline(text); $('hint').textContent = 'Backend unreachable, so this answer came from the scripted demo.';
+    if (offlinePackAnswer(text)) $('hint').textContent = 'No connection, so HerEvo answered from the country pack saved on this phone.';
+    else { offline(text); $('hint').textContent = 'Backend unreachable, so this answer came from the scripted demo.'; }
   }finally{ busy = false; $('send').disabled = false; }
 }
 
@@ -529,6 +554,67 @@ async function onFree(e){
     }finally{ busy = false; $('send').disabled = false; }
   } else { offline(text); }
 }
+/* ---------- Offline mode: answer from the downloaded country pack ---------- */
+const packs = {};
+const CC_OF = {Bangladesh:'BD', Kenya:'KE', Mexico:'MX'};
+const BN_SUFFIXES = ['গুলোকে','গুলোর','গুলো','দেরকে','দের','টাকে','টির','টার','টা','টি','কে','য়ের','ের','র','তে','য়','ে'];
+const STOP = new Set(['আমার','আমি','আমাকে','আমারে','আমাদের','না','কি','কী','কেন','করব','করবো','হয়ে','হয়','এবং','ও','আর','এই','সে','তার','যাচ্ছে','the','a','an','my','is','to','of','and','i','me','what','how','do','for','in','on','it','can','mi','el','la','de','que','y','na','ya','wa']);
+const toks = (t) => t.toLowerCase().split(/[\s.,!?।॥;:"'“”‘’()\[\]{}\-–—/&|<>*@#%^+=~`\\]+/).filter(Boolean);
+function stem(w){ if (/[\u0980-\u09FF]/.test(w)) for (const s of BN_SUFFIXES) if (w.endsWith(s) && w.length - s.length >= 2) return w.slice(0, -s.length); return w; }
+function terms(t){ const out = []; for (const w of toks(t)) { if (w.length < 2 || STOP.has(w)) continue; const x = stem(w); if (!out.includes(x)) out.push(x); } return out; }
+function offlineSafety(pack, text){
+  const tk = toks(text);
+  return (pack.safety_terms || []).some(term => {
+    const parts = term.toLowerCase().split(/\s+/);
+    for (let i = 0; i + parts.length <= tk.length; i++){
+      const w = tk.slice(i, i + parts.length);
+      if (w.slice(0, -1).every((x, j) => x === parts[j]) && w[w.length - 1].startsWith(parts[parts.length - 1])) return true;
+    }
+    return false;
+  });
+}
+const BN_DIGITS = (s) => String(s).replace(/[0-9]/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+const OFFLINE_TXT = {
+  bn: {safe:'আপনি একা নন। এখন ইন্টারনেট নেই, তাই সহায়তাকর্মীকে জানানো যাচ্ছে না। এখনই বিপদে থাকলে {e} নম্বরে কল করুন। সহায়তা হেল্পলাইন {h}, ইন্টারনেট ছাড়াই কাজ করে।', pre:'অফলাইন উত্তর, ডাউনলোড করা তথ্য থেকে (এখনো ইংরেজিতে): '},
+  sw: {safe:'Hauko peke yako. Hakuna mtandao sasa, kwa hivyo siwezi kumjulisha mhudumu. Ukiwa hatarini sasa, piga {e}. Simu ya msaada: {h}, inafanya kazi bila mtandao.', pre:'Jibu la nje ya mtandao (bado kwa Kiingereza): '},
+  es: {safe:'No está sola. Ahora no hay internet, así que no puedo avisar a una persona capacitada. Si está en peligro ahora, llame al {e}. Línea de ayuda: {h}, funciona sin internet.', pre:'Respuesta sin conexión (por ahora en inglés): '},
+  en: {safe:'You are not alone. There is no internet now, so I cannot alert a helper. If you are in danger now, call {e}. Helpline: {h}, works without internet.', pre:'Offline answer from the downloaded pack: '}
+};
+async function loadPacks(){
+  for (const cc of ['BD','KE','MX']){
+    try{ const r = await fetch('/v1/packs/' + cc); if (r.ok) packs[cc] = await r.json(); }catch(e){}
+  }
+  setMode();
+}
+function offlinePackAnswer(text){
+  const c = CALLERS[current], cc = CC_OF[c.country], pack = packs[cc];
+  if (!pack) return false;
+  const L = OFFLINE_TXT[c.lang] || OFFLINE_TXT.en, ph = (k) => (pack.contacts.find(x => x.kind === k) || {}).phone || '';
+  const fmt = (s, bn) => s.replace('{e}', bn ? BN_DIGITS(ph('emergency')) : ph('emergency')).replace('{h}', bn ? BN_DIGITS(ph('helpline')) : ph('helpline'));
+  if (offlineSafety(pack, text)){
+    commit({intent:'SAFETY', conf:1, says:text, saysEn:'', reply:fmt(L.safe, c.lang === 'bn'), replyEn:fmt(OFFLINE_TXT.en.safe, false), safety:'ESCALATE',
+            source:'Offline safety screen (same terms as the server)', gap:'Safety threats', live:true, api:true, answeredBy:'offline'});
+  } else {
+    const q = terms(text);
+    let best = null, bestScore = 0;
+    for (const e of pack.entries){
+      const doc = toks(`${e.title} ${e.topic.replace(/_/g,' ')} ${e.text} ${e.keywords}`);
+      const score = q.filter(t => doc.some(w => w.startsWith(t))).length;
+      if (score > bestScore){ best = e; bestScore = score; }
+    }
+    if (best){
+      commit({intent: best.module === 'rights' ? 'RIGHTS' : 'ADVICE', conf: Math.min(.9, .4 + .15 * bestScore), says:text, saysEn:'',
+              reply: L.pre + best.text, replyEn: best.text, source: `Offline pack · ${best.title} (${best.source}${pack.review_status === 'draft' ? ', awaiting expert review' : ''})`,
+              safety:'OK', gap: GAP_NAME[best.gap] || null, live:true, api:true, answeredBy:'offline'});
+    } else {
+      const m = pack.messages.not_covered;
+      commit({intent:'ADVICE', conf:.3, says:text, saysEn:'', reply: m[c.lang] || m.en, replyEn: m.en, source:'Offline pack: not covered', safety:'OK', live:true, api:true, answeredBy:'offline'});
+    }
+  }
+  $('freeText').value = '';
+  return true;
+}
+
 function offline(text){
   const intent = route(text), base = CALLERS[current].script.find(s => s.intent === intent);
   commit({...base, says:text, saysEn:'', conf:.7, live:false});
@@ -542,7 +628,11 @@ async function speak(text, lang){
 
 function setMode(){
   const m = $('mode'); m.textContent = '';
-  if (api){ m.append(el('b',null,'● Live backend'), document.createTextNode(apiTest ? ' · TEST MODE: use made-up messages only, never real personal information' : ' · every message goes through the real HerEvo system')); return; }
+  if (api){
+    const ready = Object.keys(packs);
+    m.append(el('b',null,'● Live backend'), document.createTextNode((apiTest ? ' · TEST MODE: use made-up messages only, never real personal information' : ' · every message goes through the real HerEvo system') + (ready.length ? ` · works offline (${ready.join(', ')} packs saved)` : '')));
+    return;
+  }
   if (sample){ m.append(el('b',null,'● Live AI'), document.createTextNode(' · typed questions answered by Claude')); }
   else m.textContent = 'Scripted demo · typed questions use the offline router';
 }
@@ -557,7 +647,10 @@ render(); setMode();
   try{
     const r = await fetch('/health', {cache:'no-store'});
     const h = r.ok ? await r.json() : null;
-    if (h && h.ok && Array.isArray(h.countries)){ api = true; apiTest = h.data_mode !== 'live'; setMode(); }
+    if (h && h.ok && Array.isArray(h.countries)){
+      api = true; apiTest = h.data_mode !== 'live'; setMode(); loadEvidence(); loadPacks();
+      try{ if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js'); }catch(e){}
+    }
   }catch(e){ /* not served by the backend: keep the scripted / Claude demo */ }
 })();
 

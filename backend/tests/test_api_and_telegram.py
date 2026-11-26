@@ -114,3 +114,14 @@ def test_web_app_is_served_and_api_still_wins():
 def test_ask_returns_evidence_gap(fake_llm, recorder):
     r = client.post("/v1/ask", json={"session_id": "web-session-9", "text": "স্বামী মারা যাওয়ার পর দেবর বলছে জমি আমার না।"}).json()
     assert r["gap"] == "land_inheritance"
+
+
+def test_offline_pack_download():
+    r = client.get("/v1/packs/bd")
+    assert r.status_code == 200 and "max-age" in r.headers["cache-control"]
+    p = r.json()
+    assert p["country"] == "BD" and p["review_status"] == "draft"
+    assert any(e["id"] == "bd-farm-rice-yellowing" for e in p["entries"])
+    assert any(c["phone"] == "109" for c in p["contacts"])
+    assert "হুমকি" in p["safety_terms"] and "escalate" in p["messages"]
+    assert client.get("/v1/packs/zz").status_code == 404

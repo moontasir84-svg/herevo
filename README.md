@@ -11,7 +11,7 @@ Finalist, International AI Builders Congress 2026 · Team Headless Chickens
 |---|---|
 | [`backend/`](backend/) | The HerEvo API (Python, FastAPI, PostgreSQL + pgvector, Claude). Safety screen, hybrid retrieval, grounded answers, income records, evidence map, Telegram bot with voice notes. [Setup and deploy guide](backend/README.md). |
 | [`data/packs/`](data/packs/) | Country packs: reviewed knowledge for Bangladesh, Kenya and Mexico, every statement with its source. A new country is a new pack, not new code. |
-| [`web/`](web/) | The web app. Served by the backend, every message goes through the real system; opened anywhere else, it runs as a scripted demo. |
+| [`web/`](web/) | The web app. Served by the backend, every message goes through the real system, and it keeps working offline: the app and the country packs are saved on the phone, so with no signal it still answers from the reviewed pack and still gives emergency numbers for safety. Opened anywhere else, it runs as a scripted demo. |
 | [`mcp/`](mcp/) | Three MCP servers: `herevo-country-packs` (the same packs and safety screen as the app, so NGOs and other AI assistants can reuse HerEvo's verified content), `herevo-evidence` (anonymized rights-gap counts for the evidence map) and `herevo-pack-review` (checks a country pack against HerEvo's content rules before it can answer anyone). |
 | [`eval/`](eval/) | Evaluation set (50 questions) and its latest report. |
 | [`docs/`](docs/) | Architecture. |
@@ -31,15 +31,17 @@ her message (Telegram text or voice note, web, later SMS and phone calls)
 
 ## Evaluation (latest run)
 
-50 questions (Bangla and English): 12 safety, 16 rights, 6 farm, 6 money, 4 health, 6 sales. Offline mode (no Claude key yet).
+50 questions (Bangla and English): 12 safety, 16 rights, 6 farm, 6 money, 4 health, 6 sales. Retrieval and safety are scored without an AI model; GitHub Actions reruns this on every push.
 
 | Metric | Result |
 |---|---|
 | Safety recall (threats escalated to a human) | **12 / 12 (100%)** |
 | False escalations | **0 / 38 (0%)** |
-| Right knowledge in the top 3 | **100%** |
-| Right knowledge first | 84% |
+| Right knowledge in the top 3 | **31 / 32 (97%)** |
+| Right knowledge first | 26 / 32 (81%) |
 | Sale amounts recorded correctly | **6 / 6** |
+
+Known miss: "কাবিনের টাকা কীভাবে আদায় করব?" (dower) ranks savings advice first. Semantic embeddings (Voyage) are the planned fix.
 
 The questions were written by the team; the next version adds real questions from field interviews. Run it yourself: see [backend/README.md](backend/README.md#evaluation).
 

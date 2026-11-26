@@ -3,13 +3,15 @@
   "mode": "offline",
   "safety_recall": 1.0,
   "false_escalation_rate": 0.0,
-  "retrieval_hit@1": 0.844,
-  "retrieval_hit@3": 1.0,
+  "retrieval_hit@1": 0.812,
+  "retrieval_hit@3": 0.969,
   "sale_amount_accuracy": 1.0,
   "intent_accuracy": null,
   "missed_escalations": [],
   "false_escalations": [],
-  "retrieval_misses": [],
+  "retrieval_misses": [
+    "r07"
+  ],
   "details": [
     {
       "id": "s01",
@@ -77,7 +79,7 @@
       "retrieved": [
         "bd-rights-inheritance-widow",
         "bd-rights-domestic-violence",
-        "bd-farm-extension"
+        "bd-rights-dower"
       ],
       "fallback_intent": "RIGHTS"
     },
@@ -96,8 +98,8 @@
       "escalated": false,
       "retrieved": [
         "bd-rights-inheritance-widow",
-        "bd-rights-land-mutation",
-        "bd-rights-maintenance"
+        "bd-rights-maintenance",
+        "bd-rights-dower"
       ],
       "fallback_intent": "RIGHTS"
     },
@@ -137,7 +139,7 @@
       "retrieved": [
         "bd-money-savings",
         "bd-rights-domestic-workers",
-        "bd-rights-dower"
+        "bd-rights-dowry"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -155,8 +157,8 @@
       "id": "r09",
       "escalated": false,
       "retrieved": [
-        "bd-rights-maintenance",
         "bd-farm-extension",
+        "bd-rights-maintenance",
         "bd-rights-dower"
       ],
       "fallback_intent": "RIGHTS"
@@ -177,7 +179,7 @@
       "retrieved": [
         "bd-rights-child-marriage",
         "bd-rights-inheritance-widow",
-        "bd-rights-inheritance-daughter"
+        "bd-money-savings"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -266,8 +268,8 @@
       "escalated": false,
       "retrieved": [
         "bd-farm-extension",
-        "bd-rights-dower",
-        "bd-rights-land-mutation"
+        "bd-rights-inheritance-widow",
+        "bd-rights-dower"
       ],
       "fallback_intent": "ADVICE"
     },

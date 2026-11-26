@@ -103,6 +103,31 @@ def contacts(country: str):
     return {"contacts": db.contacts(country.upper())}
 
 
+@app.get("/v1/packs/{country}")
+def offline_pack(country: str):
+    """A country pack for offline use: reviewed entries, help contacts, messages and the safety terms,
+    so the app can still answer (and still escalate) with no signal. Public, reviewed content only."""
+    from fastapi.responses import JSONResponse
+
+    from . import safety
+    from .packs import load_pack
+
+    cc = country.upper()
+    if cc not in available_countries():
+        raise HTTPException(404, f"No country pack for {cc}")
+    pack = load_pack(cc)
+    body = {
+        "country": pack["country"], "name": pack["name"], "version": str(pack["version"]),
+        "review_status": "reviewed" if pack.get("reviewed_by") else "draft",
+        "messages": pack["messages"], "contacts": pack["contacts"],
+        "entries": [{"id": e["id"], "module": e["module"], "topic": e["topic"], "gap": e.get("gap"),
+                     "title": e["title"], "text": " ".join(e["text"].split()), "keywords": e.get("keywords", ""),
+                     "source": e["source"]} for e in pack["entries"]],
+        "safety_terms": sorted({t for terms in safety.TERMS.values() for t in terms}),
+    }
+    return JSONResponse(body, headers={"Cache-Control": "public, max-age=3600"})
+
+
 @app.post("/telegram/webhook/{secret}")
 def telegram_webhook(secret: str, update: dict):
     # Sync handler: FastAPI runs it in a worker thread, so DB and Claude calls don't block the server.

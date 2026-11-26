@@ -119,14 +119,16 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
             log.error("model call failed, using fallback: %s", exc)
 
     if parsed is not None and parsed.safety == "ESCALATE":
-        result = _escalate(uid, channel, cc, district, lang, pack, reason="model", message=text, answered_by="claude")
+        result = _escalate(uid, channel, cc, district, lang, pack, reason="model", message=text,
+                           answered_by=get_settings().llm_provider)
         return _finish(result, uid, channel, lang, text, t0, model=llm.model)
 
     if parsed is not None:
         cites = [Citation(c, by_id[c]["title"], by_id[c]["source_name"], by_id[c]["review_status"])
                  for c in parsed.cited_ids]
         result = TurnResult(reply=parsed.answer, reply_en=parsed.answer_en, intent=parsed.intent,
-                            confidence=parsed.confidence, safety="OK", answered_by="claude", citations=cites,
+                            confidence=parsed.confidence, safety="OK", answered_by=get_settings().llm_provider,
+                            citations=cites,
                             sale=parsed.sale.model_dump() if parsed.sale else None)
         if not parsed.covered:
             result.citations = []
