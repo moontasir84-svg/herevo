@@ -233,7 +233,7 @@ def test_helper_reply_formats_and_website_cases(fake_llm, recorder):
     assert ("447", "HerEvo সহায়তাকর্মী / helper: আবার লিখছি") in recorder.sent
     web = client.post("/v1/ask", json={"session_id": "s-web-0001", "text": "My husband is beating me"}).json()
     alert = [t for w, t in recorder.sent if w == "helper"][-1]
-    assert "website chat" in alert and f"/reply {web['escalation_id']}" in alert
+    assert "on the website" in alert and f"/reply {web['escalation_id']}" in alert
     assert client.get("/v1/inbox/s-web-0001").json() == {"messages": []}
     tg(int(HELPER), f"/reply {web['escalation_id']} I am here. Are you safe now?")
     assert recorder.sent[-1][1].startswith(f"Sent to case {web['escalation_id']} (website chat")
@@ -266,3 +266,37 @@ def test_during_an_open_case_her_messages_go_to_the_helper_not_the_ai(fake_llm, 
     assert recorder.sent[-1][1].startswith(f"Case {case} closed")
     r = client.post("/v1/ask", json={"session_id": "s-web-relay", "text": "How do I save money?"}).json()
     assert r["answered_by"] != "helper_relay"
+
+
+def _swipe(text, replied_to):
+    return client.post("/telegram/webhook/s3cret", json={"update_id": 20, "message": {
+        "message_id": 20, "chat": {"id": int(HELPER), "type": "group"}, "text": text,
+        "reply_to_message": {"message_id": 5, "from": {"id": 1, "is_bot": True}, "text": replied_to}}})
+
+
+def test_helper_swipes_to_reply_on_the_alert_and_on_her_relayed_message(fake_llm, recorder):
+    first = client.post("/v1/ask", json={"session_id": "s-web-swipe", "text": "My in laws beat me"}).json()
+    case = first["escalation_id"]
+    alert = [t for w, t in recorder.sent if w == "helper"][-1]
+    assert "Swipe to reply" in alert
+    _swipe("Are you safe right now?", alert)                       # reply on the alert, no command
+    assert recorder.sent[-1][1].startswith(f"Sent to case {case}")
+    client.post("/v1/ask", json={"session_id": "s-web-swipe", "text": "Yes, I am at my sister's house."})
+    relayed = [t for w, t in recorder.sent if w == "helper"][-1]
+    _swipe("Good. Stay there tonight.", relayed)                  # reply on her follow-up
+    got = client.get("/v1/inbox/s-web-swipe").json()["messages"]
+    assert [(m["text"], m["quote"]) for m in got] == [
+        ("Are you safe right now?", "My in laws beat me"),
+        ("Good. Stay there tonight.", "Yes, I am at my sister's house.")]
+
+
+def test_swipe_reply_reaches_a_telegram_user_with_the_quote(fake_llm, recorder):
+    tg(449, "স্বামী আমাকে মারধর করে")
+    alert = [t for w, t in recorder.sent if w == "helper"][-1]
+    _swipe("আপা, আপনি কি এখন নিরাপদ?", alert)
+    assert ("449", "↩ “স্বামী আমাকে মারধর করে”\nHerEvo সহায়তাকর্মী / helper: আপা, আপনি কি এখন নিরাপদ?") in recorder.sent
+
+
+def test_plain_message_in_the_group_gets_help_not_an_error(fake_llm, recorder):
+    _swipe("ok", "Sent to case 3.")  # a reply on a bot message without a case number
+    assert recorder.sent[-1][1].startswith("Swipe to reply on her message")

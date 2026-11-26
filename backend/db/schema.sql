@@ -112,4 +112,5 @@ CREATE TABLE IF NOT EXISTS inbox (
     delivered     BOOLEAN NOT NULL DEFAULT FALSE,
     created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX IF NOT EXISTS inbox_user_idx ON inbox (user_id, delivered);  -- HerEvo's answer, so the conversation can continue (deleted after 30 days)  -- set when she asks for a language
+CREATE INDEX IF NOT EXISTS inbox_user_idx ON inbox (user_id, delivered);
+ALTER TABLE inbox ADD COLUMN IF NOT EXISTS quote TEXT;  -- her message the helper answered  -- HerEvo's answer, so the conversation can continue (deleted after 30 days)  -- set when she asks for a language

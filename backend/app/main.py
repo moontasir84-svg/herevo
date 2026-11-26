@@ -185,7 +185,8 @@ def ask(body: AskIn):
 def inbox(session_id: str):
     """Messages from a trained helper for a woman on the website (polled by her open page)."""
     rows = db.take_inbox(db.user_id_for("web", session_id))
-    return {"messages": [{"case": r["escalation_id"], "text": r["text"], "at": r["created_at"].isoformat()} for r in rows]}
+    return {"messages": [{"case": r["escalation_id"], "text": r["text"], "quote": r["quote"],
+                          "at": r["created_at"].isoformat()} for r in rows]}
 
 
 @app.get("/v1/ledger/{session_id}")

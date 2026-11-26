@@ -187,7 +187,7 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
     if case and "sent_to_helper" in pack["messages"]:
         prefix = "[TEST MODE · made-up message] " if get_settings().is_test else ""
         if get_notifier().notify_helper(f"{prefix}💬 Case #{case['id']} · she says:\n{text[:1000]}\n\n"
-                                        f"Reply: /reply {case['id']} <message>   Close the case: /close {case['id']}"):
+                                        f"👉 Swipe to reply (or /reply {case['id']} <message>). Close: /close {case['id']}"):
             result = TurnResult(reply=_msg(pack, "sent_to_helper", lang), reply_en=_msg(pack, "sent_to_helper", "en"),
                                 intent="SAFETY", confidence=None, safety="ESCALATE", answered_by="helper_relay",
                                 escalation_id=case["id"], helper_alerted=True)
@@ -325,9 +325,8 @@ def _escalate(uid, channel, cc, district, lang, pack, *, reason, message, answer
     prefix = "[TEST MODE · made-up message] " if get_settings().is_test else ""
     alert = (f"{prefix}🔴 HerEvo safety case #{eid}\nCountry: {cc}  District: {district or 'unknown'}  Channel: {channel}\n"
              f"Language: {lang}\nShe said: {message[:500]}\n\n" +
-             (f"Reply to her through the bot with:\n/reply {eid} <your message>" if channel.startswith("telegram")
-              else f"She wrote on the website chat. Reply with:\n/reply {eid} <your message>\n"
-                   "She sees it while her page is open."))
+             "👉 Swipe to reply to this message (or /reply " + f"{eid} <message>). End the case: /close {eid}" +
+             ("" if channel.startswith("telegram") else "\nShe wrote on the website; she sees replies while her page is open."))
     sent = get_notifier().notify_helper(alert)
     if not sent:
         log.error("escalation %s could not alert a helper", eid)

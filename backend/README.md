@@ -39,7 +39,7 @@ rule-based fallback. Add the key to get Claude's grounded answers.
 
 ```bash
 createdb herevo_test                  # once
-python -m pytest -q                   # 122 tests: safety, retrieval, pipeline, API, Telegram, voice, MCP, offline pack
+python -m pytest -q                   # 125 tests: safety, retrieval, pipeline, API, Telegram, voice, MCP, offline pack
 ```
 
 Tests use a real Postgres + pgvector database with a fake Claude, fake Telegram and fake speech service,
@@ -111,6 +111,7 @@ always-on service fits inside Render's 750 free hours a month.
 | Woman | `/start` | Welcome and privacy notice; she types *হ্যাঁ / yes* to continue |
 | Woman | `/myrecord` | Her income history |
 | Woman | `/delete` | Erase all her data |
+| Helper | *swipe to reply* on an alert or on her relayed message | Answer her directly; on the website her message is quoted above the reply |
 | Helper | `/reply <case> <message>` | Answer a safety case through the bot (Telegram or her open website chat), without ever seeing her identity |
 | Helper | `/close <case>` | End the case: her next messages go to HerEvo again. While a case is open (up to an hour after the last message), everything she writes goes to the helper, not the AI |
 

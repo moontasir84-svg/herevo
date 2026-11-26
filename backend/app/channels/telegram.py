@@ -155,7 +155,7 @@ def handle_update(update: dict) -> None:
 
     # Messages from the helpers' chat
     if str(chat_id) in helper_chat_ids():
-        _handle_helper(text, chat_id)
+        _handle_helper(text, chat_id, msg.get("reply_to_message"))
         return
     if msg["chat"].get("type", "private") != "private":
         return  # HerEvo talks to women one to one; any other group the bot is added to is ignored
@@ -215,8 +215,21 @@ def handle_update(update: dict) -> None:
             sender.send_voice(chat_id, audio)
 
 
-def _handle_helper(text: str, helper) -> None:
-    """/reply <case_id> <message>: the helper answers a woman without ever seeing her identity."""
+CASE_IN_ALERT = re.compile(r"case #(\d+)", re.IGNORECASE)
+HER_WORDS = re.compile(r"(?:She said: |she says:\n)(.+?)(?:\n\n|$)", re.DOTALL)
+
+
+def _quote_from(alert_text: str) -> str | None:
+    m = HER_WORDS.search(alert_text or "")
+    if not m:
+        return None
+    q = " ".join(m.group(1).split())
+    return q[:200] + ("…" if len(q) > 200 else "")
+
+
+def _handle_helper(text: str, helper, reply_to: dict | None = None) -> None:
+    """Helpers answer a woman without ever seeing her identity, either by swiping to reply on an alert or a
+    'she says' message from the bot, or with /reply <case> <message>. /close <case> ends a case."""
     sender = get_sender()  # answers go back to the helpers' chat the command came from
     m = re.match(r"^/close(?:@\w+)?\s+(?:case\s+|#)?(\d+)", text, flags=re.IGNORECASE)
     if m:
@@ -224,28 +237,40 @@ def _handle_helper(text: str, helper) -> None:
         sender.send(helper, f"Case {m.group(1)} closed: her next messages go to HerEvo again." if ok
                     else f"Case {m.group(1)} not found.")
         return
-    if not text.startswith("/reply"):
-        sender.send(helper, "Use: /reply <case number> <your message>   or   /close <case number>")
+    if text.startswith("/reply"):
+        # Accept "/reply 3 ...", "/reply #3 ..." and "/reply case 3 ..."
+        parts = re.sub(r"^(/reply(?:@\w+)?)\s+(?:case\s+|#)?", r"\1 ", text, flags=re.IGNORECASE).split(maxsplit=2)
+        if len(parts) < 3 or not parts[1].isdigit():
+            sender.send(helper, "Use: /reply <case number> <your message>")
+            return
+        _deliver(int(parts[1]), parts[2], None, sender, helper)
         return
-    # Accept "/reply 3 ...", "/reply #3 ..." and "/reply case 3 ..."
-    parts = re.sub(r"^(/reply(?:@\w+)?)\s+(?:case\s+|#)?", r"\1 ", text, flags=re.IGNORECASE).split(maxsplit=2)
-    if len(parts) < 3 or not parts[1].isdigit():
-        sender.send(helper, "Use: /reply <case number> <your message>")
-        return
-    case = db.escalation(int(parts[1]))
+    if reply_to and (reply_to.get("from") or {}).get("is_bot"):
+        # Swipe-to-reply on the bot's alert or on one of her relayed messages.
+        found = CASE_IN_ALERT.search(reply_to.get("text") or "")
+        if found and not text.startswith("/"):
+            _deliver(int(found.group(1)), text, _quote_from(reply_to.get("text") or ""), sender, helper)
+            return
+    sender.send(helper, "Swipe to reply on her message (or use /reply <case number> <your message>). "
+                        "End a case with /close <case number>.")
+
+
+def _deliver(case_id: int, message: str, quote: str | None, sender, helper) -> None:
+    case = db.escalation(case_id)
     if not case:
-        sender.send(helper, f"Case {parts[1]} not found.")
+        sender.send(helper, f"Case {case_id} not found.")
         return
     if not str(case["channel"]).startswith("telegram"):
-        # She wrote on the website: her open page picks the reply up within seconds.
-        db.add_inbox(case["user_id"], case["id"], parts[2])
+        # She wrote on the website: her open page picks the reply up within seconds, shown under her message.
+        db.add_inbox(case["user_id"], case["id"], message, quote)
         db.mark_contacted(case["id"])
         sender.send(helper, f"Sent to case {case['id']} (website chat: she sees it while her page is open).")
         return
     user = db.get_user(case["user_id"])
     if not user or not user.get("address"):
-        sender.send(helper, f"Case {parts[1]}: she deleted her data or cannot be reached.")
+        sender.send(helper, f"Case {case_id}: she deleted her data or cannot be reached.")
         return
-    sender.send(user["address"], "HerEvo সহায়তাকর্মী / helper: " + parts[2])
+    head = f"↩ “{quote}”\n" if quote else ""
+    sender.send(user["address"], f"{head}HerEvo সহায়তাকর্মী / helper: {message}")
     db.mark_contacted(case["id"])
     sender.send(helper, f"Sent to case {case['id']}.")
