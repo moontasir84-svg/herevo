@@ -13,7 +13,7 @@ Finalist, International AI Builders Congress 2026 · Team Headless Chickens
 | [`data/packs/`](data/packs/) | Country packs: reviewed knowledge for Bangladesh, Kenya and Mexico, every statement with its source. A new country is a new pack, not new code. |
 | [`web/`](web/) | The web app. Served by the backend, every message goes through the real system, and it keeps working offline: the app and the country packs are saved on the phone, so with no signal it still answers from the reviewed pack and still gives emergency numbers for safety. Opened anywhere else, it runs as a scripted demo. |
 | [`mcp/`](mcp/) | Three MCP servers: `herevo-country-packs` (the same packs and safety screen as the app, so NGOs and other AI assistants can reuse HerEvo's verified content), `herevo-evidence` (anonymized rights-gap counts for the evidence map) and `herevo-pack-review` (checks a country pack against HerEvo's content rules before it can answer anyone). |
-| [`eval/`](eval/) | Evaluation set (54 questions) and its latest report. |
+| [`eval/`](eval/) | Evaluation set (62 questions) and its latest report. |
 | [`docs/`](docs/) | Architecture. |
 
 ## How one message is handled
@@ -41,14 +41,14 @@ A helpline tells her who to call. HerEvo works her case with her:
 
 ## Evaluation (latest run)
 
-54 questions (Bangla and English): 12 safety, 16 rights, 6 farm, 6 money, 8 health, 6 sales. Retrieval and safety are scored without an AI model; GitHub Actions reruns this on every push.
+62 questions (Bangla and English): 12 safety, 18 rights, 9 farm, 8 money, 9 health, 6 sales. Retrieval and safety are scored without an AI model; GitHub Actions reruns this on every push.
 
 | Metric | Result |
 |---|---|
 | Safety recall (threats escalated to a human) | **12 / 12 (100%)** |
-| False escalations | **0 / 42 (0%)** |
-| Right knowledge in the top 3 | **36 / 36 (100%)** |
-| Right knowledge first | **36 / 36 (100%)** |
+| False escalations | **0 / 50 (0%)** |
+| Right knowledge in the top 3 | **44 / 44 (100%)** |
+| Right knowledge first | 43 / 44 (98%) |
 | Sale amounts recorded correctly | **6 / 6** |
 
 With the free offline search, keyword matches rank first and the simple embedder only fills empty places; a
