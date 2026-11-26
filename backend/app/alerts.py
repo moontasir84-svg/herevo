@@ -24,8 +24,17 @@ class TelegramNotifier:
     def notify_helper(self, text: str) -> bool:
         try:
             r = httpx.post(self.url, json={"chat_id": self.chat_id, "text": text}, timeout=10)
+            if r.status_code == 400:
+                # Telegram moved the group to a "supergroup", which has a new id: follow it, and say so.
+                new_id = (r.json().get("parameters") or {}).get("migrate_to_chat_id")
+                if new_id:
+                    log.warning("Helper group moved to a new id. Set HELPER_CHAT_ID=%s in Render.", new_id)
+                    self.chat_id = str(new_id)
+                    r = httpx.post(self.url, json={"chat_id": self.chat_id, "text": text}, timeout=10)
+            if r.status_code != 200:
+                log.error("helper alert failed: HTTP %s %s", r.status_code, r.text[:200])
             return r.status_code == 200
-        except httpx.HTTPError as exc:  # never let an alert failure hide the escalation
+        except (httpx.HTTPError, ValueError) as exc:  # never let an alert failure hide the escalation
             log.error("helper alert failed: %s", exc)
             return False
 
@@ -57,3 +66,11 @@ def get_notifier() -> Notifier:
 def set_notifier(n: Notifier | None) -> None:  # used by tests
     global _notifier
     _notifier = n
+
+
+def helper_chat_ids() -> set[str]:
+    """The configured helper chat id, plus its new id if Telegram moved the group."""
+    ids = {str(get_settings().helper_chat_id)} if get_settings().helper_chat_id else set()
+    if isinstance(_notifier, TelegramNotifier):
+        ids.add(str(_notifier.chat_id))
+    return ids

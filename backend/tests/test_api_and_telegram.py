@@ -159,3 +159,39 @@ def test_message_text_is_deleted_after_30_days():
         rows = {r["channel"]: r["message"] for r in conn.execute(
             "SELECT channel, message FROM turns WHERE channel IN ('purge-old', 'purge-new')").fetchall()}
     assert rows == {"purge-old": None, "purge-new": "recent message"}
+
+
+def test_bot_ignores_groups_other_than_the_helpers(fake_llm, recorder):
+    client.post("/telegram/webhook/s3cret", json={"update_id": 9, "message": {
+        "message_id": 9, "chat": {"id": -42, "type": "group", "title": "Family"}, "text": "/start@HerEvo_bot"}})
+    assert recorder.sent == [] and db.get_user(db.user_id_for("telegram", "-42")) is None
+
+
+def test_helper_reply_works_with_the_bot_name_in_the_command(fake_llm, recorder):
+    tg(223, "স্বামী আমাকে মারধর করে")
+    case = int([t for w, t in recorder.sent if w == "helper"][-1].split("#")[1].split()[0])
+    client.post("/telegram/webhook/s3cret", json={"update_id": 10, "message": {
+        "message_id": 10, "chat": {"id": int(HELPER), "type": "group"}, "text": f"/reply@HerEvo_bot {case} আমি আছি"}})
+    assert ("223", "HerEvo সহায়তাকর্মী / helper: আমি আছি") in recorder.sent
+
+
+def test_alert_follows_the_group_when_telegram_upgrades_it(monkeypatch):
+    import httpx
+    from app.alerts import TelegramNotifier
+    sent_to = []
+
+    class R:
+        def __init__(self, code, body): self.status_code, self._b, self.text = code, body, str(body)
+        def json(self): return self._b
+
+    def fake_post(url, json=None, timeout=None):
+        sent_to.append(json["chat_id"])
+        if json["chat_id"] == "-5378753373":
+            return R(400, {"ok": False, "description": "group chat was upgraded to a supergroup chat",
+                           "parameters": {"migrate_to_chat_id": -1009876543210}})
+        return R(200, {"ok": True})
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    n = TelegramNotifier("t", "-5378753373")
+    assert n.notify_helper("case #1") is True and n.chat_id == "-1009876543210"
+    assert sent_to == ["-5378753373", "-1009876543210"]

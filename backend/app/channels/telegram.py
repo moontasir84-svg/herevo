@@ -13,6 +13,7 @@ import httpx
 from .. import db, safety
 from ..config import get_settings
 from ..packs import load_pack
+from ..alerts import helper_chat_ids
 from ..pipeline import detect_language, handle
 from ..speech import get_speech
 
@@ -119,9 +120,11 @@ def handle_update(update: dict) -> None:
     text = text.strip()
 
     # Messages from the helpers' chat
-    if s.helper_chat_id and str(chat_id) == str(s.helper_chat_id):
-        _handle_helper(text)
+    if str(chat_id) in helper_chat_ids():
+        _handle_helper(text, chat_id)
         return
+    if msg["chat"].get("type", "private") != "private":
+        return  # HerEvo talks to women one to one; any other group the bot is added to is ignored
 
     pack = load_pack(s.default_country)
     cc = pack["country"]
@@ -167,10 +170,9 @@ def handle_update(update: dict) -> None:
             sender.send_voice(chat_id, audio)
 
 
-def _handle_helper(text: str) -> None:
+def _handle_helper(text: str, helper) -> None:
     """/reply <case_id> <message>: the helper answers a woman without ever seeing her identity."""
-    sender = get_sender()
-    helper = get_settings().helper_chat_id
+    sender = get_sender()  # answers go back to the helpers' chat the command came from
     if not text.startswith("/reply"):
         sender.send(helper, "Use: /reply <case number> <your message>")
         return
