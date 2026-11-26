@@ -170,7 +170,7 @@ tr.new td{background:var(--accent-soft)}
     <div class="ch"><em>Next</em><strong>Learning</strong><span>Skills and literacy by voice</span></div>
   </section>
 
-  <section aria-label="Choose a caller" class="callers" id="callers"></section>
+  <section aria-label="Choose a woman" class="callers" id="callers"></section>
 
   <div class="grid">
     <section class="call" aria-label="The chat">
@@ -187,7 +187,7 @@ tr.new td{background:var(--accent-soft)}
           <button type="button" class="btn ghost" id="mic" hidden>Speak</button>
           <button class="btn" id="send">Send</button>
         </form>
-        <p class="hint" id="hint">Tap a line above to play the call.</p>
+        <p class="hint" id="hint">Tap one of her messages above, or type your own.</p>
       </div>
     </section>
 
@@ -202,7 +202,7 @@ tr.new td{background:var(--accent-soft)}
       <section class="panel" aria-label="Her income history">
         <div class="panel-head"><h2>Her income history</h2><span class="label" id="ledgerCount"></span></div>
         <div class="scroll"><table><thead><tr><th>Date</th><th>Earned</th><th class="num">Amount</th></tr></thead><tbody id="ledger"></tbody></table></div>
-        <label class="consent"><input type="checkbox" id="consent"> <span id="consentText">Share with a lender only when she says yes on the call</span></label>
+        <label class="consent"><input type="checkbox" id="consent"> <span id="consentText">Share with a lender only when she says yes</span></label>
       </section>
 
     </div>
@@ -210,7 +210,7 @@ tr.new td{background:var(--accent-soft)}
 
   <section class="panel" aria-label="Where women's rights fail in practice">
     <div class="panel-head"><h2>Where women's rights fail in practice</h2><span class="label">sample data · anonymized</span></div>
-    <p class="small muted" style="margin:0;max-width:72ch">Every rights or safety call adds an anonymized report to its country. Laws on paper say one thing; these reports show where women still lose land, wages, family support and safety. Ask a rights or safety question in the call above and watch its country update.</p>
+    <p class="small muted" style="margin:0;max-width:72ch">Every rights or safety question adds an anonymized report to its country. Laws on paper say one thing; these reports show where women still lose land, wages, family support and safety. Ask a rights or safety question in the chat above and watch its country update.</p>
     <div class="mapwrap">
       <div>
         <div id="worldmap" role="img" aria-label="World map shaded by number of rights-gap reports per country"></div>
@@ -401,8 +401,8 @@ function renderLedger(){
   const total = c.ledger.reduce((s,r)=>s+r.amt,0);
   $('ledgerCount').textContent = `${c.ledger.length} sales · ${c.cur} ${total.toLocaleString('en-US')}`;
   $('consentText').textContent = $('consent').checked
-    ? `${c.name} agreed on the call: this history can be shared once with a lender`
-    : 'Share with a lender only when she says yes on the call';
+    ? `${c.name} said yes: this history can be shared once with a lender`
+    : 'Share with a lender only when she says yes';
 }
 
 function isDark(){
