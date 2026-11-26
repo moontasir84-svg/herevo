@@ -139,3 +139,8 @@ def test_ai_health_check_reports_failure_without_the_key(fake_llm):
     r = client.get("/health/ai").json()
     assert r["ok"] is True and r["verdict"].startswith("The AI works")
     m._ai_check.update(at=0.0, result=None)
+
+
+def test_page_and_offline_helper_are_never_served_stale():
+    for path in ("/", "/sw.js", "/health"):
+        assert client.get(path).headers.get("cache-control") == "no-cache"

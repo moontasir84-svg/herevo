@@ -39,6 +39,20 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="HerEvo API", version=__version__, lifespan=lifespan)
+
+
+@app.middleware("http")
+async def fresh_app_files(request, call_next):
+    """The page and its offline helper must never be kept stale by the browser, or a phone keeps running
+    an old version after an update. (The offline helper still keeps its own copy for use without signal.)"""
+    response = await call_next(request)
+    path = request.url.path
+    if (path in ("/", "/index.html", "/sw.js") or path.startswith("/v1/") or path.startswith("/health")) \
+            and "cache-control" not in response.headers:
+        response.headers["Cache-Control"] = "no-cache"
+    return response
+
+
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET", "POST"], allow_headers=["*"])
 
 # Simple per-user rate limit: 20 messages per 10 minutes (protects cost and stops abuse).
