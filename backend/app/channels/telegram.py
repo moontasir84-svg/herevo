@@ -155,7 +155,7 @@ def handle_update(update: dict) -> None:
 
     # Messages from the helpers' chat
     if str(chat_id) in helper_chat_ids():
-        _handle_helper(text, chat_id, msg.get("reply_to_message"))
+        _handle_helper(text, chat_id, msg.get("reply_to_message"), msg.get("message_id"))
         return
     if msg["chat"].get("type", "private") != "private":
         return  # HerEvo talks to women one to one; any other group the bot is added to is ignored
@@ -204,7 +204,14 @@ def handle_update(update: dict) -> None:
             sender.send(chat_id, _text(pack, "consent_reminder", glang))  # short, not the whole notice again
         return
 
+    # She swiped to reply on a helper's message in her chat: it goes back to that helper, threaded.
+    answered = None
+    rt = msg.get("reply_to_message") or {}
+    if (rt.get("from") or {}).get("is_bot") and "helper: " in (rt.get("text") or ""):
+        item = db.inbox_item_by_text(uid, (rt.get("text") or "").split("helper: ", 1)[1])
+        answered = item["id"] if item else None
     result = handle(uid=uid, channel="telegram-voice" if by_voice else "telegram", text=text, country=cc,
+                    reply_to=answered,
                     district=user.get("district"))
     sender.send(chat_id, format_reply(result))
     if result.document:  # the paper as its own message, easy to forward or print
@@ -227,7 +234,7 @@ def _quote_from(alert_text: str) -> str | None:
     return q[:200] + ("…" if len(q) > 200 else "")
 
 
-def _handle_helper(text: str, helper, reply_to: dict | None = None) -> None:
+def _handle_helper(text: str, helper, reply_to: dict | None = None, message_id: int | None = None) -> None:
     """Helpers answer a woman without ever seeing her identity, either by swiping to reply on an alert or a
     'she says' message from the bot, or with /reply <case> <message>. /close <case> ends a case."""
     sender = get_sender()  # answers go back to the helpers' chat the command came from
@@ -243,26 +250,26 @@ def _handle_helper(text: str, helper, reply_to: dict | None = None) -> None:
         if len(parts) < 3 or not parts[1].isdigit():
             sender.send(helper, "Use: /reply <case number> <your message>")
             return
-        _deliver(int(parts[1]), parts[2], None, sender, helper)
+        _deliver(int(parts[1]), parts[2], None, sender, helper, message_id)
         return
     if reply_to and (reply_to.get("from") or {}).get("is_bot"):
         # Swipe-to-reply on the bot's alert or on one of her relayed messages.
         found = CASE_IN_ALERT.search(reply_to.get("text") or "")
         if found and not text.startswith("/"):
-            _deliver(int(found.group(1)), text, _quote_from(reply_to.get("text") or ""), sender, helper)
+            _deliver(int(found.group(1)), text, _quote_from(reply_to.get("text") or ""), sender, helper, message_id)
             return
     sender.send(helper, "Swipe to reply on her message (or use /reply <case number> <your message>). "
                         "End a case with /close <case number>.")
 
 
-def _deliver(case_id: int, message: str, quote: str | None, sender, helper) -> None:
+def _deliver(case_id: int, message: str, quote: str | None, sender, helper, message_id: int | None = None) -> None:
     case = db.escalation(case_id)
     if not case:
         sender.send(helper, f"Case {case_id} not found.")
         return
     if not str(case["channel"]).startswith("telegram"):
         # She wrote on the website: her open page picks the reply up within seconds, shown under her message.
-        db.add_inbox(case["user_id"], case["id"], message, quote)
+        db.add_inbox(case["user_id"], case["id"], message, quote, tg_message_id=message_id)
         db.mark_contacted(case["id"])
         sender.send(helper, f"Sent to case {case['id']} (website chat: she sees it while her page is open).")
         return
@@ -272,6 +279,7 @@ def _deliver(case_id: int, message: str, quote: str | None, sender, helper) -> N
         return
     head = f"↩ “{quote}”\n" if quote else ""
     sender.send(user["address"], f"{head}HerEvo সহায়তাকর্মী / helper: {message}")
-    db.add_inbox(case["user_id"], case["id"], message, quote, delivered=True)  # so HerEvo knows what the helper asked
+    db.add_inbox(case["user_id"], case["id"], message, quote, delivered=True,  # so HerEvo knows what the helper asked
+                 tg_message_id=message_id)
     db.mark_contacted(case["id"])
     sender.send(helper, f"Sent to case {case['id']}.")

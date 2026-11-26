@@ -171,7 +171,8 @@ def why_fallback(exc: Exception | None, llm_configured: bool) -> str:
     return "the AI call failed"
 
 
-def handle(*, uid: str, channel: str, text: str, country: str | None = None, district: str | None = None) -> TurnResult:
+def handle(*, uid: str, channel: str, text: str, country: str | None = None, district: str | None = None,
+           reply_to: int | None = None) -> TurnResult:
     t0 = time.monotonic()
     text = text.strip()[:2000]
     pack = load_pack(country or "BD")
@@ -183,6 +184,16 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
     lang = asked or db.preferred_language(uid) or lang_in  # once she asks for a language, keep using it
 
     case = db.active_case(uid)  # an open safety case: some of her messages belong with her trained helper
+
+    # She answers one specific helper message: it goes straight back to the helper, threaded under it.
+    item = db.inbox_item(uid, reply_to) if reply_to else None
+    if item:
+        target = db.escalation(item["escalation_id"])
+        kind = safety.screen(text).kind if safety.screen(text).escalate else "danger"
+        relayed = _relay(target, uid, pack, lang, text, kind=kind, quote=item["text"],
+                         thread_to=item.get("tg_message_id")) if target else None
+        if relayed:
+            return _finish(relayed, uid, channel, lang, text, t0, model=None)
 
     # 0. She asks for a person: a helper, not the AI.
     if wants_a_person(text):
@@ -231,7 +242,8 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
             failure = exc
             log.error("model call failed, using fallback: %s", exc)
 
-    if case and (parsed.for_helper if parsed is not None else _answering_helper(uid)):
+    # During an open case, only her answers to a helper who has actually written go there; anything vague stays here.
+    if case and _answering_helper(uid) and (parsed.for_helper if parsed is not None else True):
         # She is answering her helper or telling more about her situation: it goes to the person, not the AI.
         relayed = _relay(case, uid, pack, lang, text)
         if relayed:
@@ -324,7 +336,14 @@ _CAPABILITIES = re.compile(
     r"|qu[ée] puedes hacer|c[óo]mo (me )?puedes ayudar|en qu[ée] me puede(s)? ayudar|qui[ée]n eres", re.IGNORECASE)
 
 
+_JUST_HELP = re.compile(r"^\W*(please\s+)?(help|help me|i need help|need help|can you help( me)?|সাহায্য করুন|সাহায্য চাই|"
+                        r"আমাকে সাহায্য করুন|সাহায্য দরকার|nisaidie|naomba msaada|ayuda|ayúdame|ayudame|necesito ayuda)\W*$",
+                        re.IGNORECASE)
+
+
 def asks_what_herevo_does(text: str) -> bool:
+    if _JUST_HELP.match(text.strip()):
+        return True
     return bool(_CAPABILITIES.search(text)) and len(text.split()) <= 12
 
 
@@ -347,13 +366,17 @@ def _answering_helper(uid: str) -> bool:
     return db.last_helper_message(uid, minutes=30) is not None
 
 
-def _relay(case, uid: str, pack: dict, lang: str, text: str, kind: str = "danger") -> TurnResult | None:
+def _relay(case, uid: str, pack: dict, lang: str, text: str, kind: str = "danger", quote: str | None = None,
+           thread_to: int | None = None) -> TurnResult | None:
     """Pass her message to the helper on her open case. None if no helper channel took it."""
     if not case or "sent_to_helper" not in pack["messages"]:
         return None
     prefix = "[TEST MODE · made-up message] " if get_settings().is_test else ""
-    if not get_notifier().notify_helper(f"{prefix}💬 Case #{case['id']}{KIND_LABEL.get(kind, '')} · she says:\n{text[:1000]}\n\n"
-                                        f"👉 Swipe to reply (or /reply {case['id']} <message>). Close: /close {case['id']}"):
+    answering = f" · answering “{' '.join(quote.split())[:120]}”" if quote else ""
+    if not get_notifier().notify_helper(f"{prefix}💬 Case #{case['id']}{KIND_LABEL.get(kind, '')}{answering} · she says:\n"
+                                        f"{text[:1000]}\n\n"
+                                        f"👉 Swipe to reply (or /reply {case['id']} <message>). Close: /close {case['id']}",
+                                        reply_to=thread_to):
         return None
     key = KIND_MESSAGE.get(kind) if kind in ("self_harm", "harm_intent") else "sent_to_helper"
     key = key if key in pack["messages"] else "sent_to_helper"

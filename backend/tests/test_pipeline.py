@@ -351,3 +351,14 @@ def test_what_can_you_do_lists_everything_including_farming(fake_llm, recorder):
     assert "চাষাবাদ" in r.reply
     r = handle(uid=_uid(), channel="web", text="what kind of information you have?")
     assert "Farming" in r.reply
+
+
+def test_vague_help_during_an_open_case_stays_with_herevo(fake_llm, recorder):
+    uid = _uid()
+    handle(uid=uid, channel="web", text="My husband beats me")
+    r = handle(uid=uid, channel="web", text="help me")
+    assert r.answered_by == "rule" and "Farming" in r.reply  # what HerEvo can do, not a relay
+    fake_llm.next = {"intent": "ADVICE", "confidence": 0.5, "safety": "OK", "covered": False, "answer": "What do you need?",
+                     "answer_en": "What do you need?", "cited_ids": [], "for_helper": True}
+    r = handle(uid=uid, channel="web", text="I don't know what to do")
+    assert r.answered_by != "helper_relay"  # the helper has not written yet, so nothing to answer

@@ -13,7 +13,7 @@ log = logging.getLogger("herevo.alerts")
 
 
 class Notifier(Protocol):
-    def notify_helper(self, text: str) -> bool: ...
+    def notify_helper(self, text: str, reply_to: int | None = None) -> bool: ...
 
 
 class TelegramNotifier:
@@ -21,9 +21,12 @@ class TelegramNotifier:
         self.url = f"https://api.telegram.org/bot{token}/sendMessage"
         self.chat_id = chat_id
 
-    def notify_helper(self, text: str) -> bool:
+    def notify_helper(self, text: str, reply_to: int | None = None) -> bool:
+        payload = {"chat_id": self.chat_id, "text": text}
+        if reply_to:  # thread it under the helper's own message in the group
+            payload["reply_parameters"] = {"message_id": reply_to, "allow_sending_without_reply": True}
         try:
-            r = httpx.post(self.url, json={"chat_id": self.chat_id, "text": text}, timeout=10)
+            r = httpx.post(self.url, json=payload, timeout=10)
             if r.status_code == 400:
                 # Telegram moved the group to a "supergroup", which has a new id: follow it, and say so.
                 new_id = (r.json().get("parameters") or {}).get("migrate_to_chat_id")
@@ -45,7 +48,7 @@ class LogNotifier:
     def __init__(self):
         self.sent: list[str] = []
 
-    def notify_helper(self, text: str) -> bool:
+    def notify_helper(self, text: str, reply_to: int | None = None) -> bool:
         self.sent.append(text)
         log.warning("SAFETY ALERT (no helper channel configured): %s", text)
         return False  # nobody was actually alerted

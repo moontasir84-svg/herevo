@@ -269,10 +269,23 @@ def recent_turns(uid: str, limit: int = 6, hours: int = 12) -> list[dict]:
     return list(reversed(rows))
 
 
-def add_inbox(uid: str, escalation_id: int, text: str, quote: str | None = None, delivered: bool = False) -> None:
+def add_inbox(uid: str, escalation_id: int, text: str, quote: str | None = None, delivered: bool = False,
+              tg_message_id: int | None = None) -> None:
     with pool().connection() as conn:
-        conn.execute("INSERT INTO inbox (user_id, escalation_id, text, quote, delivered) VALUES (%s, %s, %s, %s, %s)",
-                     (uid, escalation_id, text, quote, delivered))
+        conn.execute("INSERT INTO inbox (user_id, escalation_id, text, quote, delivered, tg_message_id) "
+                     "VALUES (%s, %s, %s, %s, %s, %s)", (uid, escalation_id, text, quote, delivered, tg_message_id))
+
+
+def inbox_item(uid: str, item_id: int) -> dict | None:
+    """One helper message to her (only hers)."""
+    with pool().connection() as conn:
+        return conn.execute("SELECT * FROM inbox WHERE id = %s AND user_id = %s", (item_id, uid)).fetchone()
+
+
+def inbox_item_by_text(uid: str, text: str) -> dict | None:
+    with pool().connection() as conn:
+        return conn.execute("SELECT * FROM inbox WHERE user_id = %s AND text = %s ORDER BY id DESC LIMIT 1",
+                            (uid, text)).fetchone()
 
 
 def last_helper_message(uid: str, minutes: int = 30) -> dict | None:
@@ -290,7 +303,7 @@ def take_inbox(uid: str) -> list[dict]:
         return conn.execute(
             """UPDATE inbox SET delivered = TRUE WHERE id IN (
                    SELECT id FROM inbox WHERE user_id = %s AND NOT delivered ORDER BY id)
-               RETURNING id, escalation_id, text, quote, created_at""", (uid,)).fetchall()
+               RETURNING id, escalation_id, text, quote, created_at""", (uid,)).fetchall()  # id lets her reply to it
 
 
 def purge_old_messages(days: int = 30) -> int:

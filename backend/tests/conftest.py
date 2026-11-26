@@ -44,8 +44,9 @@ class Recorder:
     def __init__(self):
         self.sent = []
 
-    def notify_helper(self, text):
+    def notify_helper(self, text, reply_to=None):
         self.sent.append(("helper", text))
+        self.threaded = getattr(self, "threaded", []) + [reply_to]
         return True
 
     def send(self, chat_id, text):

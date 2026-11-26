@@ -78,6 +78,11 @@ h2{font-family:var(--display); font-weight:600; font-size:18px; margin:0}
 @media (prefers-reduced-motion: reduce){.ai .bubble.thinking{animation:none}}
 .turn.helper .bubble{background:#DCEFE4; color:#0F2A1C; border-bottom-left-radius:4px}
 .turn.helper .quote{display:block; border-left:3px solid #2E6A4E; padding:2px 8px; margin:0 0 6px; font-size:13px; color:#2D4A3B; opacity:.9; white-space:normal}
+.replybar{display:flex; align-items:center; gap:8px; margin:0 0 8px; padding:6px 10px; border-left:3px solid #2E6A4E; background:var(--sunk); border-radius:8px; font-size:13px; color:var(--ink)}
+.replybar span{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.replybar button{border:0; background:none; color:var(--muted); cursor:pointer; font-size:14px}
+.turn.helper .replybtn{align-self:flex-start; font:inherit; font-size:12px; padding:3px 10px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--call-muted); cursor:pointer}
+.turn.her .quote{display:block; border-left:3px solid #8FBFA6; padding:2px 8px; margin:0 0 6px; font-size:13px; opacity:.85}
 .turn.helper .who{font-size:12px; font-weight:600; color:var(--call-muted); padding:0 4px}
 .ai.esc .bubble{background:#F7D9D6; color:#3B0D09}
 .gloss{font-size:12.5px; color:var(--call-muted); padding:0 4px}
@@ -194,6 +199,7 @@ tr.new td{background:var(--accent-soft)}
       <div class="say">
         <div class="label" style="color:var(--call-muted)">What she says</div>
         <div class="chips" id="chips"></div>
+        <div class="replybar" id="replyBar" hidden><span id="replyText"></span><button type="button" id="replyCancel" aria-label="Cancel reply">✕</button></div>
         <form class="free" id="free" autocomplete="off">
           <input id="freeText" aria-label="Type what she says" placeholder="Or type her words in any language">
           <button type="button" class="btn ghost" id="mic" hidden>Speak</button>
@@ -375,11 +381,17 @@ function renderThread(){
       const h = el('div','turn ai helper'), hb = el('div','bubble');
       if (t.quote) hb.append(el('span','quote','↩ ' + t.quote));
       hb.append(document.createTextNode(t.reply));
-      h.append(el('div','who','Trained helper · case #' + t.caseId), hb); box.append(h);
+      h.append(el('div','who','Trained helper · case #' + t.caseId), hb);
+      if (t.inboxId){ const rb = el('button','replybtn','↩ Reply'); rb.type = 'button';
+        rb.onclick = () => { replyTarget = {key: current, id: t.inboxId, text: t.reply}; showReplyBar(); $('freeText').focus(); };
+        h.append(rb); }
+      box.append(h);
       continue;
     }
     if (t.waiting){
-      const her = el('div','turn her'); her.append(el('div','bubble',t.says)); box.append(her);
+      const her = el('div','turn her'), hbub = el('div','bubble');
+    if (t.answering) hbub.append(el('span','quote','↩ ' + t.answering));
+    hbub.append(document.createTextNode(t.says)); her.append(hbub); box.append(her);
       const ai = el('div','turn ai'); ai.append(el('div','bubble thinking','HerEvo is thinking…')); box.append(ai);
       continue;
     }
@@ -526,7 +538,14 @@ async function loadEvidence(){
   }catch(e){ /* the sample map still works */ }
 }
 
-function render(){ renderCallers(); renderChips(); renderThread(); renderLedger(); renderHeat(); const tt = turnsBy[current].filter(t => !t.helper); renderTrace(tt[tt.length-1]); }
+function render(){ renderCallers(); renderChips(); renderThread(); if (typeof showReplyBar === 'function') showReplyBar(); renderLedger(); renderHeat(); const tt = turnsBy[current].filter(t => !t.helper); renderTrace(tt[tt.length-1]); }
+
+let replyTarget = null;  // the helper message she is answering
+function showReplyBar(){
+  const on = replyTarget && replyTarget.key === current;
+  $('replyBar').hidden = !on;
+  if (on) $('replyText').textContent = 'Replying to the helper: “' + replyTarget.text + '”';
+}
 
 /* Replies from a trained helper (sent with /reply in the helpers' Telegram group) reach her open page. */
 const inboxTimers = {};
@@ -541,7 +560,7 @@ function watchInbox(key){
       if (!r.ok) return;
       const {messages} = await r.json();
       if (!messages || !messages.length) return;
-      for (const m of messages) turnsBy[key].push({helper:true, reply:m.text, quote:m.quote, caseId:m.case, says:'', intent:'SAFETY'});
+      for (const m of messages) turnsBy[key].push({helper:true, reply:m.text, quote:m.quote, caseId:m.case, inboxId:m.id, says:'', intent:'SAFETY'});
       if (key === current){ renderThread(); $('hint').textContent = 'A trained helper replied.'; }
     }catch(e){ /* offline: try again next time */ }
   };
@@ -579,6 +598,8 @@ let pending = null;
 async function askApi(text, saysEn){
   const c = CALLERS[current];
   busy = true; $('send').disabled = true;
+  const answering = (replyTarget && replyTarget.key === current) ? replyTarget : null;
+  replyTarget = null; showReplyBar();
   pending = {caller: current, text, saysEn: saysEn || '', since: Date.now()};
   $('freeText').value = ''; renderThread();
   // Tell her what is happening while she waits, and never wait more than 60 s.
@@ -592,14 +613,14 @@ async function askApi(text, saysEn){
   try{
     const res = await fetch('/v1/ask', {method:'POST', signal: ctl.signal, headers:{'content-type':'application/json'},
       body: JSON.stringify({session_id: sessionFor(c.key), text, country: c.country === 'Bangladesh' ? 'BD' : c.country === 'Kenya' ? 'KE' : 'MX',
-                            district: c.place.split(',')[0]})});
+                            district: c.place.split(',')[0], reply_to: answering ? answering.id : null})});
     if (res.status === 429){ pending = null; renderThread(); $('freeText').value = text; $('hint').textContent = 'Too many messages. Please wait a few minutes.'; return; }
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const r = await res.json();
     pending = null;
     const cites = (r.citations || []).map(x => `${x.title} (${x.source}${x.review_status === 'draft' ? ', awaiting expert review' : ''})`).join('; ');
     setTimeout(loadEvidence, 0);
-    commit({intent: r.intent, conf: r.confidence ?? 0.7, says: text, saysEn: saysEn || '', reply: r.reply, replyEn: r.reply_en,
+    commit({intent: r.intent, conf: r.confidence ?? 0.7, says: text, saysEn: saysEn || '', answering: answering ? answering.text : null, reply: r.reply, replyEn: r.reply_en,
       source: r.answered_by === 'fallback'
         ? `${cites ? 'Closest pre-checked pack passage · ' + cites : 'Pre-checked fallback message'} · AI unavailable${r.fallback_reason ? ': ' + r.fallback_reason : ''}`
         : cites || ({safety_rule:'Safety rule, before any AI', helper_relay:`Sent to her trained helper (case #${r.escalation_id}), not to the AI`})[r.answered_by] || 'Country pack',
@@ -748,6 +769,7 @@ $('consent').addEventListener('change', renderLedger);
 render(); setMode();
 
 const ON_BACKEND = /^https?:$/.test(location.protocol) && !/(^|\.)claude(usercontent)?\.(ai|com)$/.test(location.hostname);
+$('replyCancel').onclick = () => { replyTarget = null; showReplyBar(); };
 if (ON_BACKEND){
   api = true; apiTest = true; setMode(); loadPacks(); resumeInboxes();
   try{ if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js'); }catch(e){}

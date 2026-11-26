@@ -167,6 +167,7 @@ class AskIn(BaseModel):
     text: str = Field(min_length=1, max_length=2000)
     country: str = "BD"
     district: str | None = None
+    reply_to: int | None = None  # a helper message (inbox id) she is answering
 
 
 @app.post("/v1/ask")
@@ -178,14 +179,15 @@ def ask(body: AskIn):
     if rate_limited(uid):
         raise HTTPException(429, "Too many messages. Please wait a few minutes.")
     db.upsert_user(uid, "web", country, "bn")
-    return handle(uid=uid, channel="web", text=body.text, country=country, district=body.district).to_dict()
+    return handle(uid=uid, channel="web", text=body.text, country=country, district=body.district,
+                  reply_to=body.reply_to).to_dict()
 
 
 @app.get("/v1/inbox/{session_id}")
 def inbox(session_id: str):
     """Messages from a trained helper for a woman on the website (polled by her open page)."""
     rows = db.take_inbox(db.user_id_for("web", session_id))
-    return {"messages": [{"case": r["escalation_id"], "text": r["text"], "quote": r["quote"],
+    return {"messages": [{"id": r["id"], "case": r["escalation_id"], "text": r["text"], "quote": r["quote"],
                           "at": r["created_at"].isoformat()} for r in rows]}
 
 

@@ -113,4 +113,5 @@ CREATE TABLE IF NOT EXISTS inbox (
     created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS inbox_user_idx ON inbox (user_id, delivered);
-ALTER TABLE inbox ADD COLUMN IF NOT EXISTS quote TEXT;  -- her message the helper answered  -- HerEvo's answer, so the conversation can continue (deleted after 30 days)  -- set when she asks for a language
+ALTER TABLE inbox ADD COLUMN IF NOT EXISTS quote TEXT;
+ALTER TABLE inbox ADD COLUMN IF NOT EXISTS tg_message_id BIGINT;  -- the helper's message in the helpers' group  -- her message the helper answered  -- HerEvo's answer, so the conversation can continue (deleted after 30 days)  -- set when she asks for a language

@@ -328,3 +328,36 @@ def test_swipe_reply_reaches_a_telegram_user_with_the_quote(fake_llm, recorder):
 def test_plain_message_in_the_group_gets_help_not_an_error(fake_llm, recorder):
     _swipe("ok", "Sent to case 3.")  # a reply on a bot message without a case number
     assert recorder.sent[-1][1].startswith("Swipe to reply on her message")
+
+
+def test_she_answers_a_specific_helper_message_and_it_threads_in_the_group(fake_llm, recorder):
+    sid = "s-web-thread"
+    case = client.post("/v1/ask", json={"session_id": sid, "text": "My in laws beat me"}).json()["escalation_id"]
+    alert = [t for w, t in recorder.sent if w == "helper"][-1]
+    client.post("/telegram/webhook/s3cret", json={"update_id": 30, "message": {
+        "message_id": 777, "chat": {"id": int(HELPER), "type": "group"}, "text": "Where are you now?",
+        "reply_to_message": {"message_id": 5, "from": {"id": 1, "is_bot": True}, "text": alert}}})
+    item = client.get(f"/v1/inbox/{sid}").json()["messages"][0]
+    r = client.post("/v1/ask", json={"session_id": sid, "text": "At my sister's", "reply_to": item["id"]}).json()
+    assert r["answered_by"] == "helper_relay" and r["escalation_id"] == case and fake_llm.calls == []
+    relay = [t for w, t in recorder.sent if w == "helper"][-1]
+    assert "answering “Where are you now?”" in relay and "she says:\nAt my sister's" in relay
+    assert recorder.threaded[-1] == 777  # threaded under the helper's own message
+    # someone else's inbox id is ignored
+    other = client.post("/v1/ask", json={"session_id": "s-web-other", "text": "hello", "reply_to": item["id"]}).json()
+    assert other["answered_by"] != "helper_relay"
+
+
+def test_her_telegram_swipe_reply_goes_back_to_the_helper(fake_llm, recorder):
+    tg(450, "হ্যাঁ")
+    tg(450, "স্বামী আমাকে মারধর করে")
+    alert = [t for w, t in recorder.sent if w == "helper"][-1]
+    client.post("/telegram/webhook/s3cret", json={"update_id": 31, "message": {
+        "message_id": 888, "chat": {"id": int(HELPER), "type": "group"}, "text": "আপনি কোথায়?",
+        "reply_to_message": {"message_id": 6, "from": {"id": 1, "is_bot": True}, "text": alert}}})
+    helper_msg = [t for w, t in recorder.sent if w == "450"][-1]
+    client.post("/telegram/webhook/s3cret", json={"update_id": 32, "message": {
+        "message_id": 40, "chat": {"id": 450, "type": "private"}, "text": "বোনের বাড়িতে",
+        "reply_to_message": {"message_id": 39, "from": {"id": 1, "is_bot": True}, "text": helper_msg}}})
+    relay = [t for w, t in recorder.sent if w == "helper"][-1]
+    assert "answering “আপনি কোথায়?”" in relay and recorder.threaded[-1] == 888
