@@ -28,7 +28,10 @@ signs from the passages and tell her where to go.
 safety=ESCALATE and intent=SAFETY, and write only a short line of comfort: a trained human will take over.
 6. If she reports a sale or income, set intent=EARN and fill `sale`; never guess a missing amount.
 7. Always fill answer_en with an English translation of your answer, for audit.
-8. List in cited_ids the ids of the passages your answer relies on."""
+8. List in cited_ids the ids of the passages your answer relies on.
+9. Use intent=RIGHTS only when she asks about a legal right (land, inheritance, dower, maintenance, divorce, \
+wages, child support and the like). A greeting or small talk is intent=ADVICE with covered=false and no \
+cited_ids: welcome her in one sentence and ask what she needs."""
 
 LANGUAGE_NAMES = {"bn": "Bangla", "en": "English", "sw": "Swahili", "es": "Spanish"}
 

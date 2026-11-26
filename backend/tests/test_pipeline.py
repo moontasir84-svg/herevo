@@ -160,3 +160,11 @@ def test_fallback_gives_closest_checked_passage_with_its_source(recorder):
 def test_fallback_without_a_keyword_match_admits_it(recorder):
     r = handle(uid=_uid(), channel="test", text="zzqx blorf")
     assert r.citations == [] and r.reply.startswith("I don't have a reliable answer")
+
+
+def test_greeting_labelled_rights_by_the_ai_is_not_counted_as_a_case(fake_llm, recorder):
+    fake_llm.next = {"intent": "RIGHTS", "confidence": 1.0, "safety": "OK", "covered": False,
+                     "answer": "Hello sister, I am HerEvo.", "answer_en": "Hello sister, I am HerEvo.", "cited_ids": []}
+    r = handle(uid=_uid(), channel="test", text="Hi")
+    assert r.intent == "ADVICE" and r.gap is None and r.language == "en"
+    assert db.evidence(min_count=1) == []

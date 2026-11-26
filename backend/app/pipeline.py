@@ -57,6 +57,7 @@ class TurnResult:
     sale: dict | None = None
     gap: str | None = None  # evidence-map category this turn added to, if any
     fallback_reason: str | None = None  # why the AI was not used (plain words, never a key)
+    language: str = "en"  # detected language of her message
     latency_ms: int = 0
 
     def to_dict(self) -> dict:
@@ -197,7 +198,10 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
                             answered_by="fallback", sale=sale, citations=cites,
                             fallback_reason=why_fallback(failure, llm is not None))
 
-    # 5. Records.
+    # 5. Records. The evidence map must stay clean: a greeting, or a "rights" label the AI gave without
+    # citing a rights passage and without any rights word in her message, is not counted as a case.
+    if result.intent == "RIGHTS" and (is_greeting(text) or not (result.citations or fallback_intent(text) == "RIGHTS")):
+        result.intent = "ADVICE"
     if result.intent == "EARN" and result.sale:
         db.add_sale(uid, result.sale)
     if result.intent == "RIGHTS":
@@ -224,6 +228,7 @@ def _escalate(uid, channel, cc, district, lang, pack, *, reason, message, answer
 
 def _finish(result: TurnResult, uid, channel, lang, text, t0, model) -> TurnResult:
     result.latency_ms = int((time.monotonic() - t0) * 1000)
+    result.language = lang
     db.log_turn({"user_id": uid, "channel": channel, "language": lang, "intent": result.intent,
                  "confidence": result.confidence, "safety": result.safety,
                  "cited_ids": [c.id for c in result.citations], "answered_by": result.answered_by,

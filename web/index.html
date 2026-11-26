@@ -371,7 +371,8 @@ function renderTrace(t){
   const conf = el('div','bar'); const fill = el('i'); fill.style.width = Math.round((t.conf||0)*100) + '%'; conf.append(fill);
   intent.append(el('span','small muted',`  confidence ${Math.round((t.conf||0)*100)}%`), conf);
   add('Intent', intent);
-  add('Language', el('span',null,`${CALLERS[current].langName} in, ${CALLERS[current].langName} out`));
+  const LN = {bn:'Bangla', en:'English', sw:'Swahili', es:'Spanish'}, ln = LN[t.language] || CALLERS[current].langName;
+  add('Language', el('span',null,`${ln} in, ${ln} out`));
   add('Grounded in', el('span',null,t.source || 'Approved knowledge base'));
   if (t.aid) add('Nearest legal aid', el('span',null,t.aid + ' (demo directory)'));
   const s = el('span','pill ' + (t.safety === 'ESCALATE' ? 'esc' : 'ok'), t.safety === 'ESCALATE' ? 'ESCALATE → human helper' : 'OK');
@@ -505,7 +506,7 @@ async function askApi(text, saysEn){
         ? `${cites ? 'Closest pre-checked pack passage · ' + cites : 'Pre-checked fallback message'} · AI unavailable${r.fallback_reason ? ': ' + r.fallback_reason : ''}`
         : cites || ({safety_rule:'Safety rule, before any AI'})[r.answered_by] || 'Country pack',
       safety: r.safety, sale: r.sale ? {item: r.sale.product || 'Sale', amt: r.sale.amount} : null,
-      gap: GAP_NAME[r.gap] || null, live: true, api: true, answeredBy: r.answered_by, escalationId: r.escalation_id, latency: r.latency_ms});
+      gap: GAP_NAME[r.gap] || null, live: true, api: true, answeredBy: r.answered_by, escalationId: r.escalation_id, latency: r.latency_ms, language: r.language});
     $('freeText').value = ''; $('hint').textContent = `Answered by the HerEvo backend in ${r.latency_ms} ms.`;
   }catch(err){
     const why = /^HTTP \d+/.test(err.message) ? `The server had an error (${err.message})` : 'No connection';
