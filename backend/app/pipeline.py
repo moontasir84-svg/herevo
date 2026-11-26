@@ -56,6 +56,7 @@ class TurnResult:
     escalation_id: int | None = None
     sale: dict | None = None
     gap: str | None = None  # evidence-map category this turn added to, if any
+    fallback_reason: str | None = None  # why the AI was not used (plain words, never a key)
     latency_ms: int = 0
 
     def to_dict(self) -> dict:
@@ -89,6 +90,24 @@ def fallback_sale(text: str, currency: str) -> dict | None:
             "amount": float(m.group(1).replace(",", "")), "currency": currency}
 
 
+def why_fallback(exc: Exception | None, llm_configured: bool) -> str:
+    """A short, safe reason for the fallback. Built from fixed phrases so no key or URL can leak."""
+    if not llm_configured:
+        return "no AI key is set on the server"
+    msg = str(exc or "")
+    if re.search(r"HTTP (401|403)|API key not valid|UNAUTHENTICATED|PERMISSION_DENIED|authentication", msg, re.I):
+        return "the AI provider rejected the API key"
+    if re.search(r"HTTP 429|RESOURCE_EXHAUSTED|rate.?limit", msg, re.I):
+        return "the free AI limit was reached; try again in a minute"
+    if re.search(r"HTTP 404|NOT_FOUND", msg):
+        return "the AI model name was not found"
+    if re.search(r"HTTP 5\d\d|timed? ?out|Timeout|connect", msg, re.I):
+        return "the AI provider did not respond"
+    if isinstance(exc, (ValidationError, ValueError, KeyError, TypeError)):
+        return "the AI reply failed HerEvo's checks"
+    return "the AI call failed"
+
+
 def handle(*, uid: str, channel: str, text: str, country: str | None = None, district: str | None = None) -> TurnResult:
     t0 = time.monotonic()
     text = text.strip()[:2000]
@@ -110,12 +129,15 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
     # 3. One Claude call.
     llm = get_llm()
     parsed = None
+    failure: Exception | None = None
     if llm is not None:
         try:
             parsed = parse(llm.respond(lang, passages, text), set(by_id))
         except (ValidationError, ValueError, KeyError, TypeError) as exc:
+            failure = exc
             log.warning("invalid model output, using fallback: %s", exc)
         except Exception as exc:  # network / API errors must never break the call
+            failure = exc
             log.error("model call failed, using fallback: %s", exc)
 
     if parsed is not None and parsed.safety == "ESCALATE":
@@ -144,7 +166,8 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
         else:
             reply, reply_en = _msg(pack, "not_covered", lang), _msg(pack, "not_covered", "en")
         result = TurnResult(reply=reply, reply_en=reply_en, intent=intent, confidence=None, safety="OK",
-                            answered_by="fallback", sale=sale)
+                            answered_by="fallback", sale=sale,
+                            fallback_reason=why_fallback(failure, llm is not None))
 
     # 5. Records.
     if result.intent == "EARN" and result.sale:

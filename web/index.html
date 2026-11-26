@@ -501,7 +501,7 @@ async function askApi(text, saysEn){
     const cites = (r.citations || []).map(x => `${x.title} (${x.source}${x.review_status === 'draft' ? ', awaiting expert review' : ''})`).join('; ');
     setTimeout(loadEvidence, 0);
     commit({intent: r.intent, conf: r.confidence ?? 0.7, says: text, saysEn: saysEn || '', reply: r.reply, replyEn: r.reply_en,
-      source: cites || ({fallback:'Pre-checked fallback message (AI unavailable)', safety_rule:'Safety rule, before any AI'})[r.answered_by] || 'Country pack',
+      source: cites || ({fallback:`Pre-checked fallback message (AI unavailable${r.fallback_reason ? ': ' + r.fallback_reason : ''})`, safety_rule:'Safety rule, before any AI'})[r.answered_by] || 'Country pack',
       safety: r.safety, sale: r.sale ? {item: r.sale.product || 'Sale', amt: r.sale.amount} : null,
       gap: GAP_NAME[r.gap] || null, live: true, api: true, answeredBy: r.answered_by, escalationId: r.escalation_id, latency: r.latency_ms});
     $('freeText').value = ''; $('hint').textContent = `Answered by the HerEvo backend in ${r.latency_ms} ms.`;

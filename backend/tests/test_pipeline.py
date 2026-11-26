@@ -74,7 +74,15 @@ def test_invalid_model_output_falls_back(fake_llm, recorder):
 def test_model_error_falls_back(fake_llm, recorder):
     fake_llm.next = RuntimeError("API down")
     r = handle(uid=_uid(), channel="test", text="সঞ্চয় কীভাবে করব?")
-    assert r.answered_by == "fallback"
+    assert r.answered_by == "fallback" and r.fallback_reason == "the AI call failed"
+
+
+def test_fallback_reason_names_a_rejected_key_without_leaking_it(fake_llm, recorder):
+    fake_llm.next = ValueError("Gemini HTTP 400 (gemini-flash-latest): INVALID_ARGUMENT: API key not valid")
+    r = handle(uid=_uid(), channel="test", text="সঞ্চয় কীভাবে করব?")
+    assert r.fallback_reason == "the AI provider rejected the API key"
+    fake_llm.next = ValueError("Gemini HTTP 429 (gemini-flash-latest): RESOURCE_EXHAUSTED: quota")
+    assert handle(uid=_uid(), channel="test", text="সঞ্চয় কীভাবে করব?").fallback_reason.startswith("the free AI limit")
 
 
 def test_sale_is_recorded(fake_llm, recorder):
@@ -89,6 +97,7 @@ def test_sale_fallback_without_claude(recorder):
     uid = _uid()
     r = handle(uid=uid, channel="test", text="আজ ধান বিক্রি করেছি ১২০০ টাকা")
     assert r.answered_by == "fallback" and r.intent == "EARN"
+    assert r.fallback_reason == "no AI key is set on the server"
     assert float(db.ledger(uid)[0]["amount"]) == 1200
     assert "১,২০০" in r.reply and "1,200" in r.reply_en
 
