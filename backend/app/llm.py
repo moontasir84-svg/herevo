@@ -48,7 +48,10 @@ answer by confirming what was recorded (the product and the amount, in her curre
 11. Use intent=RIGHTS only when she asks about a legal right (land, inheritance, dower, maintenance, divorce, \
 wages, child support and the like). A greeting or small talk is intent=ADVICE with covered=false and no \
 cited_ids: welcome her in one sentence and ask what she needs.
-12. Always fill answer_en (and steps_en) with English translations, for audit. List in cited_ids the ids of the \
+12. Set for_helper=true when she asks to talk to a person or a helper, or, if the note says a safety case is \
+open, when she is answering the helper or telling more about her safety. Greetings and questions about other \
+topics stay with you: for_helper=false, and answer them normally.
+13. Always fill answer_en (and steps_en) with English translations, for audit. List in cited_ids the ids of the \
 passages your answer relies on."""
 
 LANGUAGE_NAMES = {"bn": "Bangla", "en": "English", "sw": "Swahili", "es": "Spanish"}
@@ -66,6 +69,8 @@ RESPOND_TOOL = {
             "answer": {"type": "string", "description": "2-5 plain sentences in the caller's language"},
             "answer_en": {"type": "string", "description": "English translation of answer"},
             "cited_ids": {"type": "array", "items": {"type": "string"}},
+            "for_helper": {"type": "boolean",
+                           "description": "true if this message is for her trained human helper (see rule 12)"},
             "steps": {"type": "array", "items": {"type": "string"},
                       "description": "up to 6 short concrete next steps in the caller's language"},
             "steps_en": {"type": "array", "items": {"type": "string"}, "description": "English translation of steps"},
@@ -166,6 +171,7 @@ class Respond(BaseModel):
     answer_en: str = Field(min_length=1, max_length=2000)
     cited_ids: list[str] = []
     sale: Sale | None = None
+    for_helper: bool = False
     steps: list[str] = Field(default_factory=list, max_length=8)
     steps_en: list[str] = Field(default_factory=list, max_length=8)
     inheritance: InheritanceFacts | None = None
@@ -185,7 +191,8 @@ class Respond(BaseModel):
 class LLM(Protocol):
     model: str
 
-    def respond(self, language: str, passages: list[dict], message: str, history: list[dict] | None = None) -> dict: ...
+    def respond(self, language: str, passages: list[dict], message: str, history: list[dict] | None = None,
+                note: str | None = None) -> dict: ...
 
 
 def format_history(history: list[dict] | None) -> str:
@@ -213,9 +220,10 @@ class ClaudeLLM:
         self.model = model
         self.max_tokens = max_tokens
 
-    def respond(self, language: str, passages: list[dict], message: str, history: list[dict] | None = None) -> dict:
+    def respond(self, language: str, passages: list[dict], message: str, history: list[dict] | None = None,
+                note: str | None = None) -> dict:
         system = SYSTEM_PROMPT.format(language_name=LANGUAGE_NAMES.get(language, "the caller's language"))
-        user = f"{format_history(history)}Knowledge passages:\n{format_passages(passages)}\n\nCaller says now:\n{message}"
+        user = f"{format_history(history)}{(note + chr(10) + chr(10)) if note else ''}Knowledge passages:\n{format_passages(passages)}\n\nCaller says now:\n{message}"
         msg = self.client.messages.create(
             model=self.model,
             max_tokens=self.max_tokens,
@@ -274,11 +282,12 @@ class GeminiLLM:
                 return r2
         return r
 
-    def respond(self, language: str, passages: list[dict], message: str, history: list[dict] | None = None) -> dict:
+    def respond(self, language: str, passages: list[dict], message: str, history: list[dict] | None = None,
+                note: str | None = None) -> dict:
         import httpx
 
         system = SYSTEM_PROMPT.format(language_name=LANGUAGE_NAMES.get(language, "the caller's language"))
-        user = f"{format_history(history)}Knowledge passages:\n{format_passages(passages)}\n\nCaller says now:\n{message}"
+        user = f"{format_history(history)}{(note + chr(10) + chr(10)) if note else ''}Knowledge passages:\n{format_passages(passages)}\n\nCaller says now:\n{message}"
         body = {
             "systemInstruction": {"parts": [{"text": system}]},
             "contents": [{"role": "user", "parts": [{"text": user}]}],

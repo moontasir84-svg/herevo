@@ -255,17 +255,43 @@ def test_telegram_sends_steps_and_the_paper(fake_llm, recorder):
     assert texts[-1].startswith("📄 বিনামূল্যে আইনি সহায়তার আবেদন") and "দেনমোহর পাইনি" in texts[-1]
 
 
-def test_during_an_open_case_her_messages_go_to_the_helper_not_the_ai(fake_llm, recorder):
-    first = client.post("/v1/ask", json={"session_id": "s-web-relay", "text": "My husband is beating me"}).json()
-    case = first["escalation_id"]
-    r = client.post("/v1/ask", json={"session_id": "s-web-relay", "text": "He locked the door. I am at my sister's now."}).json()
-    assert r["answered_by"] == "helper_relay" and r["escalation_id"] == case and fake_llm.calls == []
+def _ai_reply(**kw):
+    return {"intent": "ADVICE", "confidence": 0.8, "safety": "OK", "covered": False, "answer": "a", "answer_en": "a",
+            "cited_ids": [], **kw}
+
+
+def test_during_an_open_case_only_messages_for_the_helper_go_to_the_helper(fake_llm, recorder):
+    sid = "s-web-relay"
+    case = client.post("/v1/ask", json={"session_id": sid, "text": "My husband is beating me"}).json()["escalation_id"]
+    # A greeting is answered by HerEvo as usual, and the AI knows a case is open.
+    fake_llm.next = _ai_reply(answer="Hello, how can I help?", answer_en="Hello, how can I help?")
+    r = client.post("/v1/ask", json={"session_id": sid, "text": "hi"}).json()
+    assert r["answered_by"] != "helper_relay" and f"open safety case (#{case})" in fake_llm.calls[-1]["note"]
+    n_helper = len([1 for w, _ in recorder.sent if w == "helper"])
+    # The helper asks; her answer goes to the helper because the AI says it is for the helper.
+    tg(int(HELPER), f"/reply {case} Are you safe right now?")
+    assert 'last message to her: "Are you safe right now?"' in (client.post(
+        "/v1/ask", json={"session_id": sid, "text": "what is dower?"}).json() and fake_llm.calls[-1]["note"])
+    fake_llm.next = _ai_reply(for_helper=True)
+    r = client.post("/v1/ask", json={"session_id": sid, "text": "Yes, I am at my sister's now."}).json()
+    assert r["answered_by"] == "helper_relay" and r["escalation_id"] == case
     relay = [t for w, t in recorder.sent if w == "helper"][-1]
-    assert f"Case #{case} · she says:" in relay and "I am at my sister's now." in relay and f"/close {case}" in relay
+    assert f"Case #{case} · she says:" in relay and "I am at my sister's now." in relay
+    # With the AI down, an answer right after the helper wrote still reaches the helper.
+    fake_llm.next = RuntimeError("AI down")
+    r = client.post("/v1/ask", json={"session_id": sid, "text": "He went to the market."}).json()
+    assert r["answered_by"] == "helper_relay"
     tg(int(HELPER), f"/close {case}")
-    assert recorder.sent[-1][1].startswith(f"Case {case} closed")
-    r = client.post("/v1/ask", json={"session_id": "s-web-relay", "text": "How do I save money?"}).json()
-    assert r["answered_by"] != "helper_relay"
+    fake_llm.next = _ai_reply(for_helper=False)
+    assert client.post("/v1/ask", json={"session_id": sid, "text": "How do I save money?"}).json()["answered_by"] != "helper_relay"
+
+
+def test_asking_for_a_person_opens_a_case(fake_llm, recorder):
+    r = client.post("/v1/ask", json={"session_id": "s-web-person", "text": "I want to talk to a person"}).json()
+    assert r["safety"] == "ESCALATE" and r["escalation_id"] and r["answered_by"] == "rule" and fake_llm.calls == []
+    r = client.post("/v1/ask", json={"session_id": "s-web-person2", "text": "আমি কারো সাথে কথা বলতে চাই"}).json()
+    assert r["safety"] == "ESCALATE"
+
 
 
 def _swipe(text, replied_to):
@@ -281,6 +307,8 @@ def test_helper_swipes_to_reply_on_the_alert_and_on_her_relayed_message(fake_llm
     assert "Swipe to reply" in alert
     _swipe("Are you safe right now?", alert)                       # reply on the alert, no command
     assert recorder.sent[-1][1].startswith(f"Sent to case {case}")
+    fake_llm.next = {"intent": "SAFETY", "confidence": 0.8, "safety": "OK", "covered": False, "answer": "a",
+                     "answer_en": "a", "cited_ids": [], "for_helper": True}
     client.post("/v1/ask", json={"session_id": "s-web-swipe", "text": "Yes, I am at my sister's house."})
     relayed = [t for w, t in recorder.sent if w == "helper"][-1]
     _swipe("Good. Stay there tonight.", relayed)                  # reply on her follow-up

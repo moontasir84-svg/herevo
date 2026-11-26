@@ -272,5 +272,6 @@ def _deliver(case_id: int, message: str, quote: str | None, sender, helper) -> N
         return
     head = f"↩ “{quote}”\n" if quote else ""
     sender.send(user["address"], f"{head}HerEvo সহায়তাকর্মী / helper: {message}")
+    db.add_inbox(case["user_id"], case["id"], message, quote, delivered=True)  # so HerEvo knows what the helper asked
     db.mark_contacted(case["id"])
     sender.send(helper, f"Sent to case {case['id']}.")

@@ -182,20 +182,21 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
         db.set_preferred_language(uid, channel, cc, asked)
     lang = asked or db.preferred_language(uid) or lang_in  # once she asks for a language, keep using it
 
-    # 0. While a safety case is open, she is talking to her trained helper, not to the AI.
-    case = db.active_case(uid)
-    if case and "sent_to_helper" in pack["messages"]:
-        prefix = "[TEST MODE · made-up message] " if get_settings().is_test else ""
-        if get_notifier().notify_helper(f"{prefix}💬 Case #{case['id']} · she says:\n{text[:1000]}\n\n"
-                                        f"👉 Swipe to reply (or /reply {case['id']} <message>). Close: /close {case['id']}"):
-            result = TurnResult(reply=_msg(pack, "sent_to_helper", lang), reply_en=_msg(pack, "sent_to_helper", "en"),
-                                intent="SAFETY", confidence=None, safety="ESCALATE", answered_by="helper_relay",
-                                escalation_id=case["id"], helper_alerted=True)
-            return _finish(result, uid, channel, lang, text, t0, model=None)
+    case = db.active_case(uid)  # an open safety case: some of her messages belong with her trained helper
+
+    # 0. She asks for a person: a helper, not the AI.
+    if wants_a_person(text):
+        relayed = _relay(case, uid, pack, lang, text) if case else None
+        result = relayed or _escalate(uid, channel, cc, district, lang, pack, reason="asked_for_person",
+                                      message=text, answered_by="rule")
+        return _finish(result, uid, channel, lang, text, t0, model=None)
 
     # 1. Safety first, before any AI.
     screen = safety.screen(text)
     if screen.escalate:
+        relayed = _relay(case, uid, pack, lang, text) if case else None  # same case, not a new one
+        if relayed:
+            return _finish(relayed, uid, channel, lang, text, t0, model=None)
         result = _escalate(uid, channel, cc, district, lang, pack, reason="rule:" + ",".join(screen.matched),
                            message=text, answered_by="safety_rule")
         return _finish(result, uid, channel, lang, text, t0, model=None)
@@ -216,7 +217,7 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
     failure: Exception | None = None
     if llm is not None:
         try:
-            parsed = parse(llm.respond(lang, passages, text, history=history), set(by_id))
+            parsed = parse(llm.respond(lang, passages, text, history=history, note=_case_note(case, uid)), set(by_id))
         except (ValidationError, ValueError, KeyError, TypeError) as exc:
             failure = exc
             log.warning("invalid model output, using fallback: %s", exc)
@@ -224,7 +225,19 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
             failure = exc
             log.error("model call failed, using fallback: %s", exc)
 
+    if case and (parsed.for_helper if parsed is not None else _answering_helper(uid)):
+        # She is answering her helper or telling more about her situation: it goes to the person, not the AI.
+        relayed = _relay(case, uid, pack, lang, text)
+        if relayed:
+            return _finish(relayed, uid, channel, lang, text, t0, model=None)
+    if parsed is not None and parsed.for_helper and not case:
+        result = _escalate(uid, channel, cc, district, lang, pack, reason="asked_for_person", message=text,
+                           answered_by=get_settings().llm_provider)
+        return _finish(result, uid, channel, lang, text, t0, model=llm.model)
     if parsed is not None and parsed.safety == "ESCALATE":
+        relayed = _relay(case, uid, pack, lang, text) if case else None
+        if relayed:
+            return _finish(relayed, uid, channel, lang, text, t0, model=llm.model)
         result = _escalate(uid, channel, cc, district, lang, pack, reason="model", message=text,
                            answered_by=get_settings().llm_provider)
         return _finish(result, uid, channel, lang, text, t0, model=llm.model)
@@ -285,6 +298,46 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
         db.add_case(cc, district, "RIGHTS", gap)
         result.gap = gap
     return _finish(result, uid, channel, lang, text, t0, model=getattr(llm, "last_model", llm.model) if parsed is not None else None)
+
+
+_PERSON = re.compile(
+    r"\b(talk|speak|chat)\s+(to|with)\s+(a\s+|an\s+|the\s+|my\s+)?(person|human|helper|someone|somebody|counsel+or|real person)"
+    r"|\b(need|want)\s+(a\s+|an\s+)?(human|helper|counsel+or|real person)\b|\bconnect me\b"
+    r"|মানুষের সাথে কথা|মানুষের সঙ্গে কথা|কারো সাথে কথা বলতে চাই|কারও সাথে কথা বলতে চাই|সহায়তাকর্মীর সাথে|হেল্পারের সাথে"
+    r"|nataka kuongea na mtu|nataka kuzungumza na mtu|mhudumu"
+    r"|hablar con (una persona|alguien|un humano)|necesito (una persona|hablar con alguien)", re.IGNORECASE)
+
+
+def wants_a_person(text: str) -> bool:
+    return bool(_PERSON.search(text))
+
+
+def _case_note(case, uid: str) -> str | None:
+    if not case:
+        return None
+    last = db.last_helper_message(uid, minutes=60)
+    said = f' The helper\'s last message to her: "{last["text"][:300]}"' if last else " The helper has not written yet."
+    return (f"Note: she has an open safety case (#{case['id']}) with a trained human helper.{said} "
+            "Set for_helper=true only if this message answers the helper, tells more about her safety, or asks "
+            "for a person. Otherwise help her yourself as usual.")
+
+
+def _answering_helper(uid: str) -> bool:
+    """Without the AI: if her helper wrote in the last 30 minutes, her message is most likely the answer."""
+    return db.last_helper_message(uid, minutes=30) is not None
+
+
+def _relay(case, uid: str, pack: dict, lang: str, text: str) -> TurnResult | None:
+    """Pass her message to the helper on her open case. None if no helper channel took it."""
+    if not case or "sent_to_helper" not in pack["messages"]:
+        return None
+    prefix = "[TEST MODE · made-up message] " if get_settings().is_test else ""
+    if not get_notifier().notify_helper(f"{prefix}💬 Case #{case['id']} · she says:\n{text[:1000]}\n\n"
+                                        f"👉 Swipe to reply (or /reply {case['id']} <message>). Close: /close {case['id']}"):
+        return None
+    return TurnResult(reply=_msg(pack, "sent_to_helper", lang), reply_en=_msg(pack, "sent_to_helper", "en"),
+                      intent="SAFETY", confidence=None, safety="ESCALATE", answered_by="helper_relay",
+                      escalation_id=case["id"], helper_alerted=True)
 
 
 REFER_TO_LAWYER = {

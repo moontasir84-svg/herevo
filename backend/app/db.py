@@ -269,10 +269,19 @@ def recent_turns(uid: str, limit: int = 6, hours: int = 12) -> list[dict]:
     return list(reversed(rows))
 
 
-def add_inbox(uid: str, escalation_id: int, text: str, quote: str | None = None) -> None:
+def add_inbox(uid: str, escalation_id: int, text: str, quote: str | None = None, delivered: bool = False) -> None:
     with pool().connection() as conn:
-        conn.execute("INSERT INTO inbox (user_id, escalation_id, text, quote) VALUES (%s, %s, %s, %s)",
-                     (uid, escalation_id, text, quote))
+        conn.execute("INSERT INTO inbox (user_id, escalation_id, text, quote, delivered) VALUES (%s, %s, %s, %s, %s)",
+                     (uid, escalation_id, text, quote, delivered))
+
+
+def last_helper_message(uid: str, minutes: int = 30) -> dict | None:
+    """What her helper last said to her, if recent: so HerEvo can tell when she is answering the helper."""
+    with pool().connection() as conn:
+        return conn.execute(
+            """SELECT text, created_at FROM inbox WHERE user_id = %s
+                 AND created_at > now() - make_interval(mins => %s) ORDER BY id DESC LIMIT 1""",
+            (uid, minutes)).fetchone()
 
 
 def take_inbox(uid: str) -> list[dict]:

@@ -22,8 +22,9 @@ class FakeLLM:
         self.calls = []
         self.next = None  # override the next response (dict) or exception
 
-    def respond(self, language, passages, message, history=None):
-        self.calls.append({"language": language, "passages": passages, "message": message, "history": history or []})
+    def respond(self, language, passages, message, history=None, note=None):
+        self.calls.append({"language": language, "passages": passages, "message": message, "history": history or [],
+                           "note": note})
         if self.next is not None:
             nxt, self.next = self.next, None
             if isinstance(nxt, Exception):
