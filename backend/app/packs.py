@@ -123,3 +123,4 @@ if __name__ == "__main__":  # python -m app.packs  -> ingest every pack
     db.init_schema()
     for cc in available_countries():
         print(ingest(cc))
+    db.close()  # close the connection pool now, so start-up does not wait for its threads
