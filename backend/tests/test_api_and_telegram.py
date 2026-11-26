@@ -216,3 +216,9 @@ def test_new_user_writing_in_english_gets_the_english_welcome(fake_llm, recorder
     assert "Hello, I am HerEvo" in recorder.sent[-1][1] and "⚠️ Test version" in recorder.sent[-1][1]
     tg(445, "হ্যাঁ")
     assert recorder.sent[-1][1] == "ধন্যবাদ। এখন আপনার প্রশ্ন লিখুন বা বলুন।"
+
+
+def test_unknown_command_in_her_chat_shows_her_commands_not_the_ai(fake_llm, recorder):
+    tg(446, "yes")
+    tg(446, "/reply 3 hello")
+    assert recorder.sent[-1][1].startswith("যা লিখতে পারেন / What you can type") and fake_llm.calls == []

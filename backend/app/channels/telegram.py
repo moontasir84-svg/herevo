@@ -100,6 +100,12 @@ def _voice_to_text(msg: dict) -> tuple[str | None, str | None]:
     return (text, None) if text else (None, VOICE_UNCLEAR)
 
 
+COMMANDS_HELP = ("যা লিখতে পারেন / What you can type:\n"
+                 "/myrecord – আপনার আয়ের হিসাব / your income record\n"
+                 "/delete – আপনার সব তথ্য মুছুন / erase all your data\n"
+                 "/start – শুরু থেকে / start again\n"
+                 "অথবা যেকোনো প্রশ্ন লিখুন বা বলুন। / Or just type or say any question.")
+
 TEST_NOTICE = ("⚠️ পরীক্ষামূলক সংস্করণ: আসল নাম, ঠিকানা বা ব্যক্তিগত ঘটনা লিখবেন না, বানানো উদাহরণ ব্যবহার করুন।\n"
                "⚠️ Test version: do not share real names, places or personal stories. Use made-up examples.\n\n")
 
@@ -167,6 +173,11 @@ def handle_update(update: dict) -> None:
             lines = [f"{r['created_at']:%d %b}: {r['product'] or '—'} {float(r['amount']):,.0f} {r['currency']}" for r in rows]
             sender.send(chat_id, "আপনার আয়ের হিসাব / Your income record:\n" + "\n".join(lines) +
                         f"\nমোট / Total: {total:,.0f} {rows[0]['currency']}")
+        return
+
+    if text.startswith("/"):
+        # Any other command: show hers. (/reply is for helpers, in the helpers' group only.)
+        sender.send(chat_id, COMMANDS_HELP)
         return
 
     # Safety is never gated behind consent.
