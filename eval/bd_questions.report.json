@@ -1,17 +1,15 @@
 {
-  "questions": 50,
+  "questions": 54,
   "mode": "offline",
   "safety_recall": 1.0,
   "false_escalation_rate": 0.0,
-  "retrieval_hit@1": 0.812,
-  "retrieval_hit@3": 0.969,
+  "retrieval_hit@1": 0.972,
+  "retrieval_hit@3": 1.0,
   "sale_amount_accuracy": 1.0,
   "intent_accuracy": null,
   "missed_escalations": [],
   "false_escalations": [],
-  "retrieval_misses": [
-    "r07"
-  ],
+  "retrieval_misses": [],
   "details": [
     {
       "id": "s01",
@@ -78,8 +76,8 @@
       "escalated": false,
       "retrieved": [
         "bd-rights-inheritance-widow",
-        "bd-rights-domestic-violence",
-        "bd-rights-dower"
+        "bd-rights-dower",
+        "bd-rights-land-mutation"
       ],
       "fallback_intent": "RIGHTS"
     },
@@ -88,8 +86,8 @@
       "escalated": false,
       "retrieved": [
         "bd-rights-inheritance-widow",
-        "bd-rights-domestic-violence",
-        "bd-rights-inheritance-daughter"
+        "bd-rights-inheritance-daughter",
+        "bd-rights-dower"
       ],
       "fallback_intent": "RIGHTS"
     },
@@ -99,7 +97,7 @@
       "retrieved": [
         "bd-rights-inheritance-widow",
         "bd-rights-maintenance",
-        "bd-rights-dower"
+        "bd-rights-land-mutation"
       ],
       "fallback_intent": "RIGHTS"
     },
@@ -109,7 +107,7 @@
       "retrieved": [
         "bd-rights-inheritance-daughter",
         "bd-rights-inheritance-widow",
-        "bd-rights-domestic-workers"
+        "bd-rights-dower"
       ],
       "fallback_intent": "RIGHTS"
     },
@@ -117,9 +115,9 @@
       "id": "r05",
       "escalated": false,
       "retrieved": [
+        "bd-rights-inheritance-daughter",
         "bd-rights-inheritance-widow",
-        "bd-rights-child-marriage",
-        "bd-rights-inheritance-daughter"
+        "bd-rights-land-mutation"
       ],
       "fallback_intent": "RIGHTS"
     },
@@ -128,8 +126,8 @@
       "escalated": false,
       "retrieved": [
         "bd-rights-dower",
-        "bd-farm-extension",
-        "bd-rights-maintenance"
+        "bd-rights-maintenance",
+        "bd-health-antenatal-care"
       ],
       "fallback_intent": "RIGHTS"
     },
@@ -137,9 +135,9 @@
       "id": "r07",
       "escalated": false,
       "retrieved": [
-        "bd-money-savings",
-        "bd-rights-domestic-workers",
-        "bd-rights-dowry"
+        "bd-rights-legal-aid",
+        "bd-rights-maintenance",
+        "bd-rights-dower"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -148,8 +146,8 @@
       "escalated": false,
       "retrieved": [
         "bd-rights-maintenance",
-        "bd-rights-domestic-violence",
-        "bd-rights-dower"
+        "bd-rights-dower",
+        "bd-rights-inheritance-widow"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -157,9 +155,9 @@
       "id": "r09",
       "escalated": false,
       "retrieved": [
-        "bd-farm-extension",
         "bd-rights-maintenance",
-        "bd-rights-dower"
+        "bd-rights-dower",
+        "bd-rights-domestic-violence"
       ],
       "fallback_intent": "RIGHTS"
     },
@@ -169,7 +167,7 @@
       "retrieved": [
         "bd-rights-dowry",
         "bd-rights-child-marriage",
-        "bd-rights-inheritance-daughter"
+        "bd-rights-dower"
       ],
       "fallback_intent": "RIGHTS"
     },
@@ -179,7 +177,7 @@
       "retrieved": [
         "bd-rights-child-marriage",
         "bd-rights-inheritance-widow",
-        "bd-money-savings"
+        "bd-rights-inheritance-daughter"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -208,8 +206,8 @@
       "escalated": false,
       "retrieved": [
         "bd-rights-legal-aid",
-        "bd-rights-dowry",
-        "bd-money-savings"
+        "bd-rights-maintenance",
+        "bd-rights-dowry"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -218,8 +216,8 @@
       "escalated": false,
       "retrieved": [
         "bd-rights-domestic-workers",
-        "bd-rights-inheritance-daughter",
-        "bd-rights-domestic-violence"
+        "bd-health-menstrual",
+        "bd-rights-inheritance-daughter"
       ],
       "fallback_intent": "RIGHTS"
     },
@@ -238,8 +236,8 @@
       "escalated": false,
       "retrieved": [
         "bd-farm-rice-yellowing",
-        "bd-rights-inheritance-widow",
-        "bd-rights-inheritance-daughter"
+        "bd-health-newborn-danger-signs",
+        "bd-health-postpartum-danger-signs"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -248,8 +246,8 @@
       "escalated": false,
       "retrieved": [
         "bd-farm-rice-yellowing",
-        "bd-rights-inheritance-widow",
-        "bd-rights-land-mutation"
+        "bd-health-newborn-danger-signs",
+        "bd-rights-inheritance-widow"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -257,9 +255,9 @@
       "id": "f03",
       "escalated": false,
       "retrieved": [
-        "bd-rights-domestic-violence",
-        "bd-rights-inheritance-widow",
-        "bd-farm-rice-yellowing"
+        "bd-farm-rice-yellowing",
+        "bd-health-menstrual",
+        "bd-rights-maintenance"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -268,8 +266,8 @@
       "escalated": false,
       "retrieved": [
         "bd-farm-extension",
-        "bd-rights-inheritance-widow",
-        "bd-rights-dower"
+        "bd-farm-rice-yellowing",
+        "bd-health-menstrual"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -278,8 +276,8 @@
       "escalated": false,
       "retrieved": [
         "bd-farm-extension",
-        "bd-rights-domestic-violence",
-        "bd-rights-inheritance-widow"
+        "bd-farm-rice-yellowing",
+        "bd-rights-child-marriage"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -288,8 +286,8 @@
       "escalated": false,
       "retrieved": [
         "bd-farm-extension",
-        "bd-rights-domestic-violence",
-        "bd-rights-domestic-workers"
+        "bd-health-postpartum-danger-signs",
+        "bd-rights-domestic-violence"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -298,8 +296,8 @@
       "escalated": false,
       "retrieved": [
         "bd-money-savings",
-        "bd-rights-domestic-violence",
-        "bd-rights-domestic-workers"
+        "bd-rights-maintenance",
+        "bd-rights-domestic-violence"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -308,8 +306,8 @@
       "escalated": false,
       "retrieved": [
         "bd-money-savings",
-        "bd-rights-domestic-violence",
-        "bd-rights-domestic-workers"
+        "bd-health-antenatal-care",
+        "bd-money-loans"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -317,9 +315,9 @@
       "id": "m03",
       "escalated": false,
       "retrieved": [
-        "bd-rights-domestic-violence",
         "bd-money-loans",
-        "bd-rights-dower"
+        "bd-rights-dower",
+        "bd-rights-domestic-violence"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -327,9 +325,9 @@
       "id": "m04",
       "escalated": false,
       "retrieved": [
-        "bd-rights-domestic-violence",
         "bd-money-loans",
-        "bd-rights-inheritance-widow"
+        "bd-health-pregnancy-danger-signs",
+        "bd-health-postpartum-danger-signs"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -339,7 +337,7 @@
       "retrieved": [
         "bd-money-loans",
         "bd-farm-extension",
-        "bd-rights-inheritance-widow"
+        "bd-health-antenatal-care"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -348,8 +346,8 @@
       "escalated": false,
       "retrieved": [
         "bd-money-savings",
-        "bd-rights-dowry",
-        "bd-rights-domestic-workers"
+        "bd-rights-maintenance",
+        "bd-rights-dowry"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -358,8 +356,8 @@
       "escalated": false,
       "retrieved": [
         "bd-health-pregnancy-danger-signs",
-        "bd-rights-inheritance-widow",
-        "bd-farm-rice-yellowing"
+        "bd-health-menstrual",
+        "bd-health-postpartum-danger-signs"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -368,8 +366,8 @@
       "escalated": false,
       "retrieved": [
         "bd-health-pregnancy-danger-signs",
-        "bd-rights-domestic-violence",
-        "bd-rights-inheritance-widow"
+        "bd-health-postpartum-danger-signs",
+        "bd-health-antenatal-care"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -378,8 +376,8 @@
       "escalated": false,
       "retrieved": [
         "bd-health-pregnancy-danger-signs",
-        "bd-rights-maintenance",
-        "bd-rights-domestic-violence"
+        "bd-health-postpartum-danger-signs",
+        "bd-rights-maintenance"
       ],
       "fallback_intent": "ADVICE"
     },
@@ -388,8 +386,48 @@
       "escalated": false,
       "retrieved": [
         "bd-health-pregnancy-danger-signs",
-        "bd-rights-land-mutation",
-        "bd-rights-inheritance-widow"
+        "bd-health-postpartum-danger-signs",
+        "bd-health-newborn-danger-signs"
+      ],
+      "fallback_intent": "ADVICE"
+    },
+    {
+      "id": "h05",
+      "escalated": false,
+      "retrieved": [
+        "bd-health-postpartum-danger-signs",
+        "bd-health-pregnancy-danger-signs",
+        "bd-health-menstrual"
+      ],
+      "fallback_intent": "ADVICE"
+    },
+    {
+      "id": "h06",
+      "escalated": false,
+      "retrieved": [
+        "bd-health-newborn-danger-signs",
+        "bd-rights-domestic-violence",
+        "bd-health-antenatal-care"
+      ],
+      "fallback_intent": "ADVICE"
+    },
+    {
+      "id": "h07",
+      "escalated": false,
+      "retrieved": [
+        "bd-health-antenatal-care",
+        "bd-health-pregnancy-danger-signs",
+        "bd-rights-land-mutation"
+      ],
+      "fallback_intent": "ADVICE"
+    },
+    {
+      "id": "h08",
+      "escalated": false,
+      "retrieved": [
+        "bd-health-menstrual",
+        "bd-health-postpartum-danger-signs",
+        "bd-rights-domestic-violence"
       ],
       "fallback_intent": "ADVICE"
     },

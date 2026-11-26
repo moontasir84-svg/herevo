@@ -8,6 +8,8 @@ version: "2026-11-25"
 languages: [bn, en]
 currency: BDT
 reviewed_by: null
+# `local` gives each entry in the local language. Translations are drafts until a native speaker checks them.
+translations_reviewed_by: null
 
 messages:
   escalate:
@@ -19,8 +21,11 @@ messages:
   sale_recorded:
     bn: "লিখে রাখলাম: {amount} টাকা। আপনার আয়ের হিসাবে যোগ হলো।"
     en: "Recorded: {amount} taka. It is added to your income history."
-  closest:
+  closest_en_only:
     bn: "এআই এখন পাওয়া যাচ্ছে না। আমার কাছে সবচেয়ে কাছের যাচাই করা তথ্য (এখনো ইংরেজিতে):"
+    en: "The AI is not available right now. The closest checked information I have:"
+  closest:
+    bn: "এআই এখন পাওয়া যাচ্ছে না। আমার কাছে সবচেয়ে কাছের যাচাই করা তথ্য:"
     en: "The AI is not available right now. The closest checked information I have:"
   hello:
     bn: "আসসালামু আলাইকুম! আমি HerEvo। জমি, ফসল, আয়, অধিকার বা নিরাপত্তা নিয়ে আপনার প্রশ্নটি লিখুন বা বলুন।"
@@ -81,6 +86,14 @@ entries:
       that portion equally. Her share includes land. No relative can lawfully take it from her. Hindu,
       Christian and Buddhist personal laws give different shares, so she should ask free legal aid.
     keywords: জমি সম্পত্তি উত্তরাধিকার বিধবা স্বামী মারা গেছে ভাগ অংশ দেবর ভাসুর শ্বশুর জমি নিয়ে নিচ্ছে
+    local:
+      bn:
+        title: "মুসলিম বিধবার স্বামীর সম্পত্তিতে অংশ"
+        text: >-
+          বাংলাদেশে প্রযোজ্য মুসলিম পারিবারিক আইন অনুযায়ী স্বামীর সন্তান থাকলে বিধবা স্ত্রী স্বামীর সম্পত্তির
+          আট ভাগের এক ভাগ পান, আর সন্তান না থাকলে চার ভাগের এক ভাগ পান। একাধিক স্ত্রী থাকলে তাঁরা এই অংশ
+          সমানভাবে ভাগ করে নেন। এই অংশের মধ্যে জমিও আছে। কোনো আত্মীয় আইনত তা কেড়ে নিতে পারেন না। হিন্দু,
+          খ্রিষ্টান ও বৌদ্ধ পারিবারিক আইনে অংশ ভিন্ন, তাই বিনামূল্যে আইনি সহায়তা নেওয়া উচিত।
     source: "Muslim Personal Law (Shariat) Application Act 1937 (bdlaws.minlaw.gov.bd); World Bank Women, Business and the Law 2026, Assets"
     source_url: https://wbl.worldbank.org/
   - id: bd-rights-inheritance-daughter
@@ -93,6 +106,14 @@ entries:
       each daughter gets half of a son's share. A single daughter with no sons gets one-half of the estate;
       two or more daughters with no sons share two-thirds. Brothers cannot lawfully deny a sister her share.
     keywords: মেয়ে কন্যা বাবার সম্পত্তি ভাই ভাগ দিচ্ছে না উত্তরাধিকার জমি
+    local:
+      bn:
+        title: "মুসলিম আইনে মেয়ের অংশ"
+        text: >-
+          বাংলাদেশে মুসলিম পারিবারিক আইন অনুযায়ী মেয়ে বাবা-মায়ের সম্পত্তির উত্তরাধিকারী হন। ছেলে থাকলে
+          প্রত্যেক মেয়ে একজন ছেলের অর্ধেক অংশ পান। ছেলে না থাকলে একমাত্র মেয়ে সম্পত্তির অর্ধেক পান; ছেলে না
+          থাকলে দুই বা তার বেশি মেয়ে মিলে তিন ভাগের দুই ভাগ পান। ভাইয়েরা আইনত বোনকে তাঁর অংশ থেকে বঞ্চিত
+          করতে পারেন না।
     source: "Muslim Personal Law (Shariat) Application Act 1937 (bdlaws.minlaw.gov.bd)"
     source_url: http://bdlaws.minlaw.gov.bd/
   - id: bd-rights-dower
@@ -105,6 +126,13 @@ entries:
       husband owes her, also after divorce. If the husband dies, unpaid dower must be paid from his estate
       before the inheritance is divided. She can claim it in the Family Court.
     keywords: দেনমোহর মোহরানা কাবিন তালাক স্বামী দেয়নি পাওনা
+    local:
+      bn:
+        title: "দেনমোহর স্ত্রীর অধিকার"
+        text: >-
+          বিয়ের সময় প্রতিশ্রুত দেনমোহর স্ত্রীর প্রাপ্য। তা পরিশোধ না হলে তালাকের পরেও এটি স্বামীর কাছে
+          স্ত্রীর পাওনা ঋণ হিসেবে থেকে যায়। স্বামী মারা গেলে উত্তরাধিকার ভাগ করার আগে তাঁর সম্পত্তি থেকে
+          বকেয়া দেনমোহর পরিশোধ করতে হয়। স্ত্রী পারিবারিক আদালতে দেনমোহর দাবি করতে পারেন।
     source: "Family Courts Ordinance 1985; Muslim Family Laws Ordinance 1961 (bdlaws.minlaw.gov.bd)"
     source_url: http://bdlaws.minlaw.gov.bd/
   - id: bd-rights-maintenance
@@ -118,6 +146,14 @@ entries:
       to the chairman of the Union Parishad (Arbitration Council) or file a case in the Family Court for
       maintenance. Free legal aid can file it for her.
     keywords: ভরণপোষণ খোরপোশ সন্তানের খরচ স্বামী টাকা দেয় না তালাক বাচ্চা
+    local:
+      bn:
+        title: "স্ত্রী ও সন্তানের ভরণপোষণ"
+        text: >-
+          মুসলিম স্বামীকে বিয়ে চলাকালীন স্ত্রীর ভরণপোষণ দিতে হয় এবং তালাকের পর ইদ্দতকালীন ভরণপোষণ দিতে হয়।
+          বাবাকে সন্তানদের ভরণপোষণ দিতে হয়। তিনি না দিলে স্ত্রী ইউনিয়ন পরিষদের চেয়ারম্যানের কাছে (সালিশি
+          পরিষদ) আবেদন করতে পারেন অথবা পারিবারিক আদালতে ভরণপোষণের মামলা করতে পারেন। বিনামূল্যে আইনি সহায়তা
+          তাঁর হয়ে মামলা করে দিতে পারে।
     source: "Muslim Family Laws Ordinance 1961, section 9; Family Courts Ordinance 1985 (bdlaws.minlaw.gov.bd)"
     source_url: http://bdlaws.minlaw.gov.bd/
   - id: bd-rights-dowry
@@ -129,6 +165,13 @@ entries:
       Demanding, giving or taking dowry is a criminal offence in Bangladesh under the Dowry Prohibition Act
       2018. A woman pressured or harmed for dowry can report it to the police, call 109, or get free legal aid.
     keywords: যৌতুক টাকা চাইছে শ্বশুরবাড়ি নির্যাতন
+    local:
+      bn:
+        title: "যৌতুক দাবি করা অপরাধ"
+        text: >-
+          বাংলাদেশে যৌতুক নিরোধ আইন ২০১৮ অনুযায়ী যৌতুক দাবি করা, দেওয়া বা নেওয়া ফৌজদারি অপরাধ। যৌতুকের জন্য
+          চাপ বা ক্ষতির শিকার নারী পুলিশে জানাতে পারেন, ১০৯ নম্বরে কল করতে পারেন অথবা বিনামূল্যে আইনি সহায়তা
+          নিতে পারেন।
     source: "Dowry Prohibition Act 2018 (bdlaws.minlaw.gov.bd)"
     source_url: http://bdlaws.minlaw.gov.bd/
   - id: bd-rights-child-marriage
@@ -141,6 +184,12 @@ entries:
       is an offence under the Child Marriage Restraint Act 2017. It can be reported to the Upazila Nirbahi
       Officer, the police, or the 109 helpline.
     keywords: বাল্যবিবাহ মেয়ের বিয়ে বয়স কম ১৮ জোর করে বিয়ে
+    local:
+      bn:
+        title: "বিয়ের ন্যূনতম বয়স"
+        text: >-
+          বাংলাদেশে বিয়ের ন্যূনতম বয়স মেয়েদের ১৮ বছর এবং ছেলেদের ২১ বছর। বাল্যবিবাহ নিরোধ আইন ২০১৭ অনুযায়ী
+          বাল্যবিবাহের আয়োজন করা অপরাধ। এ বিষয়ে উপজেলা নির্বাহী অফিসার, পুলিশ বা ১০৯ হেল্পলাইনে জানানো যায়।
     source: "Child Marriage Restraint Act 2017 (bdlaws.minlaw.gov.bd)"
     source_url: http://bdlaws.minlaw.gov.bd/
   - id: bd-rights-domestic-violence
@@ -153,6 +202,13 @@ entries:
       order and a residence order, which protects her right to stay in the shared home. Physical, mental,
       sexual and economic abuse are covered. Help: 109 helpline, police, or free legal aid.
     keywords: মারধর নির্যাতন স্বামী মারে বাড়ি থেকে বের করে দেবে হুমকি ভয় পারিবারিক সহিংসতা
+    local:
+      bn:
+        title: "পারিবারিক সহিংসতা থেকে সুরক্ষা"
+        text: >-
+          পারিবারিক সহিংসতা (প্রতিরোধ ও সুরক্ষা) আইন ২০১০ অনুযায়ী একজন নারী আদালতের কাছে সুরক্ষা আদেশ এবং
+          বসবাস আদেশ চাইতে পারেন; বসবাস আদেশ যৌথ বাড়িতে থাকার অধিকার রক্ষা করে। শারীরিক, মানসিক, যৌন ও আর্থিক
+          নির্যাতন এই আইনের আওতায় পড়ে। সাহায্য: ১০৯ হেল্পলাইন, পুলিশ অথবা বিনামূল্যে আইনি সহায়তা।
     source: "Domestic Violence (Prevention and Protection) Act 2010 (bdlaws.minlaw.gov.bd)"
     source_url: http://bdlaws.minlaw.gov.bd/
   - id: bd-rights-legal-aid
@@ -165,6 +221,13 @@ entries:
       District Legal Aid Office at the district judge court. The national legal aid helpline is 16430
       (toll-free). Legal aid can give advice, mediate, and file cases at no cost.
     keywords: উকিল আইনি সহায়তা বিনামূল্যে মামলা টাকা নেই লিগ্যাল এইড
+    local:
+      bn:
+        title: "বিনামূল্যে আইনি সহায়তা"
+        text: >-
+          যাঁদের আইনজীবী রাখার সামর্থ্য নেই, তাঁরা সরকারের কাছ থেকে বিনামূল্যে আইনি সহায়তা পেতে পারেন।
+          প্রতিটি জেলায় জেলা জজ আদালতে জেলা লিগ্যাল এইড অফিস আছে। জাতীয় আইনগত সহায়তা হেল্পলাইন ১৬৪৩০
+          (টোল-ফ্রি)। লিগ্যাল এইড বিনা খরচে পরামর্শ দিতে, মধ্যস্থতা করতে এবং মামলা করে দিতে পারে।
     source: "Legal Aid Act 2000; National Legal Aid Services Organisation (nlaso.gov.bd)"
     source_url: https://nlaso.gov.bd/
   - id: bd-rights-land-mutation
@@ -177,6 +240,13 @@ entries:
       Applications go to the Assistant Commissioner (Land) office of the upazila and can also be made online
       (e-mutation) through the government land service. A record in her own name protects her claim.
     keywords: নামজারি খারিজ খতিয়ান জমির কাগজ নিজের নামে এসি ল্যান্ড অনলাইন
+    local:
+      bn:
+        title: "উত্তরাধিকারের জমি নিজের নামে করা (নামজারি)"
+        text: >-
+          জমির উত্তরাধিকার পাওয়ার পর জমির রেকর্ডে নিজের নাম তুলতে নামজারির আবেদন করা উচিত। আবেদন করতে হয়
+          উপজেলার সহকারী কমিশনার (ভূমি) অফিসে, আর সরকারি ভূমি সেবার মাধ্যমে অনলাইনেও (ই-নামজারি) করা যায়।
+          নিজের নামে রেকর্ড থাকলে জমির দাবি সুরক্ষিত থাকে।
     source: "Ministry of Land e-mutation service (land.gov.bd)"
     source_url: https://land.gov.bd/
   - id: bd-rights-domestic-workers
@@ -190,6 +260,14 @@ entries:
       a policy, not a law, so for unpaid wages she should contact free legal aid (16430) or a workers'
       organisation.
     keywords: বেতন মজুরি টাকা দিচ্ছে না গৃহকর্মী কাজের বুয়া মালিক
+    local:
+      bn:
+        title: "গৃহকর্মীদের মজুরি"
+        text: >-
+          বাংলাদেশে গৃহকর্মীরা গৃহকর্মী সুরক্ষা ও কল্যাণ নীতি ২০১৫-এর আওতায় আছেন। এই নীতিতে বলা আছে, মজুরি
+          আগে থেকে ঠিক করে সময়মতো দিতে হবে এবং গৃহকর্মীদের সঙ্গে কোনো নির্যাতন করা যাবে না। এটি নীতি, আইন
+          নয়, তাই বকেয়া মজুরির জন্য বিনামূল্যে আইনি সহায়তা (১৬৪৩০) অথবা শ্রমিক সংগঠনের সঙ্গে যোগাযোগ করা
+          উচিত।
     source: "Domestic Workers Protection and Welfare Policy 2015, Ministry of Labour and Employment"
     source_url: https://mole.gov.bd/
   # ---------------- FARM ----------------
@@ -204,6 +282,14 @@ entries:
       field to the Sub-Assistant Agriculture Officer (SAAO) of her union or call the Krishi Call Centre 16123.
       HerEvo never gives fertilizer or pesticide doses.
     keywords: ধান পাতা হলুদ সার ইউরিয়া চারা রোগ ফসল
+    local:
+      bn:
+        title: "ধানের পাতা হলুদ হয়ে যাওয়া"
+        text: >-
+          যখন নিচের পুরোনো ধানের পাতাগুলো আগে হলুদ হয়, তখন সবচেয়ে সাধারণ কারণ নাইট্রোজেনের ঘাটতি। রোগ বা
+          জলাবদ্ধতার কারণেও পাতা হলুদ হতে পারে, তাই সার দেওয়ার আগে ইউনিয়নের উপসহকারী কৃষি কর্মকর্তাকে
+          (এসএএও) জমি দেখানো উচিত অথবা কৃষি কল সেন্টার ১৬১২৩ নম্বরে কল করা উচিত। HerEvo কখনো সার বা কীটনাশকের
+          মাত্রা বলে না।
     source: "Department of Agricultural Extension; Agriculture Information Service (ais.gov.bd)"
     source_url: https://ais.gov.bd/
   - id: bd-farm-extension
@@ -216,6 +302,13 @@ entries:
       pests, and the Upazila Agriculture Office runs trainings and input support. The Krishi Call Centre is
       16123.
     keywords: কৃষি অফিসার পরামর্শ বীজ পোকা ফসল কৃষি অফিস
+    local:
+      bn:
+        title: "সরকারের বিনামূল্যে কৃষি পরামর্শ"
+        text: >-
+          প্রতিটি ইউনিয়নে একজন উপসহকারী কৃষি কর্মকর্তা (এসএএও) আছেন, যিনি ফসল, বীজ ও পোকামাকড় নিয়ে
+          বিনামূল্যে পরামর্শ দেন। উপজেলা কৃষি অফিস প্রশিক্ষণ ও কৃষি উপকরণ সহায়তা দেয়। কৃষি কল সেন্টারের
+          নম্বর ১৬১২৩।
     source: "Department of Agricultural Extension (dae.gov.bd); Agriculture Information Service (ais.gov.bd)"
     source_url: https://dae.gov.bd/
   # ---------------- MONEY ----------------
@@ -229,6 +322,13 @@ entries:
       a bank or post office savings account, or a savings group run by a registered organisation. Keeping a
       record of her sales in HerEvo helps show her income later.
     keywords: সঞ্চয় টাকা জমানো বিকাশ নগদ সমিতি ব্যাংক
+    local:
+      bn:
+        title: "নিরাপদে টাকা জমানো"
+        text: >-
+          নিয়মিত অল্প অল্প করে টাকা জমানো যায় বিকাশ বা নগদের মতো মোবাইল আর্থিক সেবার অ্যাকাউন্টে, ব্যাংক বা
+          ডাকঘরের সঞ্চয়ী হিসাবে, অথবা নিবন্ধিত সংস্থার পরিচালিত সঞ্চয় দলে। HerEvo-তে বিক্রির হিসাব রাখলে পরে
+          আয় দেখাতে সুবিধা হয়।
     source: "Bangladesh Bank, mobile financial services (bb.org.bd)"
     source_url: https://www.bb.org.bd/
   - id: bd-money-loans
@@ -241,6 +341,13 @@ entries:
       Regulatory Authority (MRA), ask for the total cost and the instalment amount in writing, and avoid
       private moneylenders. A sales record helps show a lender she can repay.
     keywords: ঋণ লোন কিস্তি এনজিও সুদ মহাজন
+    local:
+      bn:
+        title: "নিরাপদে ঋণ নেওয়া"
+        text: >-
+          ঋণ নেওয়ার আগে দেখে নেওয়া উচিত যে ক্ষুদ্রঋণ প্রতিষ্ঠানটি মাইক্রোক্রেডিট রেগুলেটরি অথরিটির (এমআরএ)
+          লাইসেন্সপ্রাপ্ত কি না, মোট খরচ ও কিস্তির পরিমাণ লিখিতভাবে চেয়ে নেওয়া উচিত, এবং মহাজনের কাছ থেকে ঋণ
+          নেওয়া এড়িয়ে চলা উচিত। বিক্রির হিসাব থাকলে ঋণদাতাকে দেখানো যায় যে ঋণ শোধ করার সামর্থ্য আছে।
     source: "Microcredit Regulatory Authority (mra.gov.bd)"
     source_url: https://mra.gov.bd/
   # ---------------- HEALTH (v0, awaiting clinician review) ----------------
@@ -255,5 +362,105 @@ entries:
       fits, fever, severe belly pain, fast or difficult breathing, or the baby moving less. HerEvo does not
       diagnose. The national health call centre is 16263.
     keywords: গর্ভবতী রক্তপাত মাথাব্যথা খিঁচুনি জ্বর পেট ব্যথা বাচ্চা নড়ছে না প্রসব
+    local:
+      bn:
+        title: "গর্ভাবস্থার বিপদচিহ্ন: এখনই স্বাস্থ্যকেন্দ্রে যান"
+        text: >-
+          গর্ভাবস্থায় এগুলোর কোনোটি হলে সঙ্গে সঙ্গে নিকটতম স্বাস্থ্যকেন্দ্রে (ইউনিয়ন স্বাস্থ্য ও পরিবার
+          কল্যাণ কেন্দ্র, উপজেলা স্বাস্থ্য কমপ্লেক্স বা হাসপাতাল) যান: যোনিপথে রক্তপাত, তীব্র মাথাব্যথা বা
+          চোখে ঝাপসা দেখা, খিঁচুনি, জ্বর, পেটে তীব্র ব্যথা, দ্রুত বা কষ্ট করে শ্বাস নেওয়া, অথবা বাচ্চার
+          নড়াচড়া কমে যাওয়া। HerEvo রোগ নির্ণয় করে না। জাতীয় স্বাস্থ্য বাতায়ন ১৬২৬৩।
     source: "WHO recommendations on antenatal care; DGHS Shasthyo Batayon 16263 (dghs.gov.bd)"
     source_url: https://www.who.int/
+
+  - id: bd-health-postpartum-danger-signs
+    module: health
+    topic: after_birth
+    gap: null
+    title: "After giving birth: danger signs for the mother"
+    text: >-
+      In the weeks after giving birth, go to the nearest health facility immediately (Union Health and
+      Family Welfare Centre, Upazila Health Complex or hospital) for: heavy bleeding that soaks a pad or
+      cloth quickly, fever, fits, severe headache or blurred vision, foul-smelling discharge, severe belly
+      pain, or fast or difficult breathing. Every mother should have health checks after birth even if she
+      feels well. HerEvo does not diagnose. The national health call centre is 16263.
+    keywords: প্রসব পরবর্তী প্রসবের পরে বাচ্চা হওয়ার ডেলিভারি রক্তপাত রক্ত যাচ্ছে জ্বর খিঁচুনি দুর্গন্ধ স্রাব মা
+    local:
+      bn:
+        title: "প্রসবের পর মায়ের বিপদচিহ্ন"
+        text: >-
+          প্রসবের পরের সপ্তাহগুলোতে এগুলোর কোনোটি হলে সঙ্গে সঙ্গে নিকটতম স্বাস্থ্যকেন্দ্রে (ইউনিয়ন স্বাস্থ্য
+          ও পরিবার কল্যাণ কেন্দ্র, উপজেলা স্বাস্থ্য কমপ্লেক্স বা হাসপাতাল) যান: অনেক বেশি রক্তপাত, যাতে প্যাড
+          বা কাপড় দ্রুত ভিজে যায়; জ্বর; খিঁচুনি; তীব্র মাথাব্যথা বা চোখে ঝাপসা দেখা; দুর্গন্ধযুক্ত স্রাব;
+          পেটে তীব্র ব্যথা; অথবা দ্রুত বা কষ্ট করে শ্বাস নেওয়া। ভালো বোধ করলেও প্রসবের পর প্রত্যেক মায়ের
+          স্বাস্থ্য পরীক্ষা করানো উচিত। HerEvo রোগ নির্ণয় করে না। জাতীয় স্বাস্থ্য বাতায়ন ১৬২৬৩।
+    source: "WHO recommendations on maternal and newborn care for a positive postnatal experience (2022); DGHS Shasthyo Batayon 16263"
+    source_url: https://www.who.int/
+
+  - id: bd-health-newborn-danger-signs
+    module: health
+    topic: newborn
+    gap: null
+    title: "Newborn danger signs: take the baby to a health facility now"
+    text: >-
+      Take a newborn baby to the nearest health facility immediately if the baby is not feeding well or
+      stops feeding, has fits, breathes fast or with difficulty, is too hot (fever) or too cold, moves only
+      when touched or not at all, has yellow palms or soles, or has redness or pus around the cord stump.
+      HerEvo does not diagnose. The national health call centre is 16263.
+    keywords: নবজাতক নতুন বাচ্চা শিশু দুধ খাচ্ছে না বুকের দুধ খিঁচুনি জ্বর ঠান্ডা শ্বাস হলুদ জন্ডিস নাভি লাল পুঁজ
+    local:
+      bn:
+        title: "নবজাতকের বিপদচিহ্ন: এখনই স্বাস্থ্যকেন্দ্রে নিন"
+        text: >-
+          নবজাতকের এগুলোর কোনোটি হলে সঙ্গে সঙ্গে নিকটতম স্বাস্থ্যকেন্দ্রে নিয়ে যান: ঠিকমতো বুকের দুধ খাচ্ছে
+          না বা খাওয়া বন্ধ করেছে, খিঁচুনি হচ্ছে, দ্রুত বা কষ্ট করে শ্বাস নিচ্ছে, শরীর বেশি গরম (জ্বর) বা বেশি
+          ঠান্ডা, শুধু ছুঁলে নড়ে বা একেবারেই নড়ে না, হাতের তালু বা পায়ের তলা হলুদ, অথবা নাভির চারপাশ লাল বা
+          পুঁজ। HerEvo রোগ নির্ণয় করে না। জাতীয় স্বাস্থ্য বাতায়ন ১৬২৬৩।
+    source: "WHO and UNICEF, Integrated Management of Childhood Illness (IMCI); WHO postnatal care recommendations (2022)"
+    source_url: https://www.who.int/
+
+  - id: bd-health-antenatal-care
+    module: health
+    topic: pregnancy
+    gap: null
+    title: Check-ups during pregnancy
+    text: >-
+      WHO recommends at least eight antenatal care contacts during pregnancy, with the first in the first
+      three months. Check-ups find problems early and help plan a safe birth with a trained health worker.
+      In Bangladesh, community clinics, Union Health and Family Welfare Centres and Upazila Health Complexes
+      provide antenatal care at no or low cost. The national health call centre is 16263.
+    keywords: গর্ভকালীন চেকআপ গর্ভবতী পরীক্ষা কতবার ডাক্তার দেখাতে প্রসবপূর্ব সেবা কমিউনিটি ক্লিনিক নিরাপদ প্রসব
+    local:
+      bn:
+        title: "গর্ভাবস্থায় চেকআপ"
+        text: >-
+          বিশ্ব স্বাস্থ্য সংস্থা গর্ভাবস্থায় অন্তত আটবার প্রসবপূর্ব সেবা নেওয়ার পরামর্শ দেয়, প্রথমবার প্রথম
+          তিন মাসের মধ্যে। চেকআপে সমস্যা আগেভাগে ধরা পড়ে এবং প্রশিক্ষিত স্বাস্থ্যকর্মীর সাহায্যে নিরাপদ প্রসবের
+          পরিকল্পনা করা যায়। বাংলাদেশে কমিউনিটি ক্লিনিক, ইউনিয়ন স্বাস্থ্য ও পরিবার কল্যাণ কেন্দ্র এবং উপজেলা
+          স্বাস্থ্য কমপ্লেক্সে বিনামূল্যে বা কম খরচে প্রসবপূর্ব সেবা পাওয়া যায়। জাতীয় স্বাস্থ্য বাতায়ন ১৬২৬৩।
+    source: "WHO recommendations on antenatal care for a positive pregnancy experience (2016); DGHS Bangladesh"
+    source_url: https://www.who.int/
+
+  - id: bd-health-menstrual
+    module: health
+    topic: menstruation
+    gap: null
+    title: "Periods: hygiene and when to see a health worker"
+    text: >-
+      During a period she can use a sanitary pad or a clean cloth. Change it several times a day, and wash
+      reusable cloths with soap and clean water and dry them in sunlight. See a health worker if bleeding is
+      very heavy (soaking a pad or cloth every hour for several hours), lasts more than seven days, comes
+      with severe pain, or happens between periods, after sex, or after menopause. HerEvo does not diagnose.
+      The national health call centre is 16263.
+    keywords: মাসিক পিরিয়ড ঋতুস্রাব প্যাড কাপড় ন্যাপকিন রক্তপাত বেশি ব্যথা অনিয়মিত মাসিক পরিচ্ছন্নতা
+    local:
+      bn:
+        title: "মাসিক: পরিচ্ছন্নতা এবং কখন স্বাস্থ্যকর্মীর কাছে যাবেন"
+        text: >-
+          মাসিকের সময় স্যানিটারি প্যাড বা পরিষ্কার কাপড় ব্যবহার করা যায়। দিনে কয়েকবার তা বদলান, আর আবার
+          ব্যবহারের কাপড় সাবান ও পরিষ্কার পানিতে ধুয়ে রোদে শুকান। রক্তপাত খুব বেশি হলে (কয়েক ঘণ্টা ধরে প্রতি
+          ঘণ্টায় প্যাড বা কাপড় ভিজে গেলে), সাত দিনের বেশি চললে, তীব্র ব্যথা থাকলে, অথবা দুই মাসিকের মাঝে,
+          সহবাসের পরে বা মাসিক পুরোপুরি বন্ধ হয়ে যাওয়ার পরে রক্তপাত হলে স্বাস্থ্যকর্মীর কাছে যান। HerEvo রোগ
+          নির্ণয় করে না। জাতীয় স্বাস্থ্য বাতায়ন ১৬২৬৩।
+    source: "UNICEF Guidance on Menstrual Health and Hygiene (2019); WHO"
+    source_url: https://www.unicef.org/

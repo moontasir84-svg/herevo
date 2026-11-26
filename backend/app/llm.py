@@ -101,7 +101,10 @@ class LLM(Protocol):
 def format_passages(passages: list[dict]) -> str:
     lines = []
     for p in passages:
-        lines.append(f"[{p['id']}] {p['title']} — {p['body']} (Source: {p['source_name']})")
+        line = f"[{p['id']}] {p['title']} — {p['body']} (Source: {p['source_name']})"
+        if p.get("local"):  # the checked translation: reuse its wording and terms when replying in that language
+            line += f"\n    Same passage in the caller's language: {p['local']['title']} — {p['local']['text']}"
+        lines.append(line)
     return "\n".join(lines) or "(no passages found)"
 
 

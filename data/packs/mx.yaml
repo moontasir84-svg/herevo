@@ -5,6 +5,8 @@ version: "2026-11-25"
 languages: [es, en]
 currency: MXN
 reviewed_by: null
+# `local` gives each entry in the local language. Translations are drafts until a native speaker checks them.
+translations_reviewed_by: null
 
 messages:
   escalate:
@@ -16,8 +18,11 @@ messages:
   sale_recorded:
     es: "Anotado: {amount} pesos. Ya está en su historial de ingresos."
     en: "Recorded: {amount} pesos. It is now in your income history."
-  closest:
+  closest_en_only:
     es: "La IA no está disponible ahora. La información verificada más cercana que tengo (por ahora en inglés):"
+    en: "The AI is not available right now. The closest checked information I have:"
+  closest:
+    es: "La IA no está disponible ahora. La información verificada más cercana que tengo:"
     en: "The AI is not available right now. The closest checked information I have:"
   hello:
     es: "¡Hola! Soy HerEvo. Escriba o diga su pregunta sobre trabajo, dinero, derechos o seguridad."
@@ -44,6 +49,14 @@ entries:
       family judge, and the state Public Defender's Office (Defensoría Pública) or the DIF can help her
       for free. General information, not legal advice.
     keywords: pensión alimenticia hijos expareja no paga manutención alimentos child support
+    local:
+      es:
+        title: "Pensión alimenticia"
+        text: >-
+          En México, ambos padres están obligados por ley a dar pensión alimenticia, que cubre alimentación,
+          vivienda, escuela y salud, estén o no casados. La madre puede reclamarla ante un juez de lo
+          familiar, y la Defensoría Pública de su estado o el DIF pueden ayudarla gratis. Información general,
+          no asesoría legal.
     source: "State civil codes (e.g. Código Civil para el Estado de Oaxaca); World Bank Women, Business and the Law 2026, Parenthood"
     source_url: https://wbl.worldbank.org/
   - id: mx-rights-domestic-workers
@@ -57,6 +70,14 @@ entries:
       security through IMSS. Unpaid wages can be taken to the Federal Labour Defence Office (PROFEDET) or the
       state labour authorities for free.
     keywords: trabajadora del hogar salario no me paga patrona contrato imss aguinaldo wages domestic worker
+    local:
+      es:
+        title: "Derechos de las trabajadoras del hogar"
+        text: >-
+          Desde la reforma de 2019 a la Ley Federal del Trabajo, las personas trabajadoras del hogar en México
+          tienen derecho a un contrato por escrito, horario definido, días de descanso, vacaciones pagadas,
+          aguinaldo y seguridad social en el IMSS. Los salarios no pagados se pueden reclamar gratis ante la
+          Procuraduría Federal de la Defensa del Trabajo (PROFEDET) o las autoridades laborales del estado.
     source: "Ley Federal del Trabajo, reform of 2 July 2019 (gob.mx)"
     source_url: https://www.gob.mx/profedet
   - id: mx-rights-inheritance
@@ -69,6 +90,14 @@ entries:
       partner (concubina) and the children are among the first heirs, and daughters inherit equally with
       sons. Relatives cannot lawfully take her share. The Defensoría Pública can explain her case for free.
     keywords: herencia intestado esposo murió terreno casa hijas viuda inheritance widow
+    local:
+      es:
+        title: "Herencia cuando no hay testamento"
+        text: >-
+          Cuando una persona muere sin testamento en México, los códigos civiles señalan a los herederos: el
+          cónyuge o la concubina y los hijos están entre los primeros herederos, y las hijas heredan en partes
+          iguales con los hijos varones. Los familiares no pueden quitarle legalmente su parte. La Defensoría
+          Pública puede explicarle su caso gratis.
     source: "Código Civil Federal, Book III (successions); state civil codes"
     source_url: https://www.gob.mx/
   - id: mx-safety-violence
@@ -81,6 +110,13 @@ entries:
       protection orders (órdenes de protección) quickly when a woman is at risk. Help: 911 in an emergency,
       089 for anonymous reports, and the state women's institute.
     keywords: violencia amenaza golpes orden de protección violence threat protection order
+    local:
+      es:
+        title: "Protección contra la violencia"
+        text: >-
+          La Ley General de Acceso de las Mujeres a una Vida Libre de Violencia (2007) permite a las
+          autoridades dictar órdenes de protección rápidamente cuando una mujer está en riesgo. Ayuda: 911 en
+          una emergencia, 089 para denuncias anónimas y el instituto de las mujeres de su estado.
     source: "Ley General de Acceso de las Mujeres a una Vida Libre de Violencia (diputados.gob.mx)"
     source_url: https://www.diputados.gob.mx/
   - id: mx-money-loans
@@ -93,6 +129,13 @@ entries:
       microfinance institution. Before signing, compare the total annual cost (CAT) and check that the lender
       is registered with CONDUSEF.
     keywords: préstamo crédito puesto negocio banco del bienestar CAT condusef loan stall
+    local:
+      es:
+        title: "Conseguir un préstamo para un negocio pequeño"
+        text: >-
+          Un registro de ventas regulares ayuda a demostrar sus ingresos ante un prestamista como el Banco del
+          Bienestar o una institución de microfinanzas registrada. Antes de firmar, compare el costo anual
+          total (CAT) y verifique que el prestamista esté registrado ante la CONDUSEF.
     source: "CONDUSEF (gob.mx/condusef)"
     source_url: https://www.gob.mx/condusef
   - id: mx-money-savings
@@ -104,5 +147,12 @@ entries:
       She can save small amounts regularly in a bank account such as Banco del Bienestar or a registered
       savings cooperative, and avoid informal schemes that promise high returns.
     keywords: ahorro ahorrar dinero cuenta tanda cooperativa savings
+    local:
+      es:
+        title: "Ahorrar dinero de forma segura"
+        text: >-
+          Puede ahorrar pequeñas cantidades con regularidad en una cuenta bancaria, como en el Banco del
+          Bienestar, o en una cooperativa de ahorro registrada, y evitar esquemas informales que prometen
+          grandes ganancias.
     source: "CONDUSEF (gob.mx/condusef)"
     source_url: https://www.gob.mx/condusef

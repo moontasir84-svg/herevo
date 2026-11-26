@@ -17,7 +17,7 @@ from . import db, safety
 from .alerts import get_notifier
 from .config import get_settings
 from .llm import ValidationError, get_llm, parse
-from .packs import entry_gap, load_pack
+from .packs import entry_gap, load_pack, local_entry
 from .retrieval import retrieve
 
 log = logging.getLogger("herevo.pipeline")
@@ -184,6 +184,9 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
 
     # 2. Retrieve from her country pack.
     passages = retrieve(cc, text)
+    for p in passages:  # the checked translation in her language, when the pack has one
+        if lang != "en":
+            p["local"] = local_entry(cc, p["id"], lang)
     by_id = {p["id"]: p for p in passages}
 
     # 3. One Claude call.
@@ -230,8 +233,12 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
         elif passages and passages[0].get("keyword_match") and "closest" in pack["messages"]:
             # Same as the phone's offline mode: the best-matching pre-checked pack passage, with its source.
             top = passages[0]
-            passage = f"{top['title']}: {top['body']}"
-            reply = f"{_msg(pack, 'closest', lang)}\n\n{passage}"
+            passage = f"{top['title']}\n{top['body']}"
+            local = top.get("local")
+            if local or lang == "en":
+                reply = f"{_msg(pack, 'closest', lang)}\n\n" + (f"{local['title']}\n{local['text']}" if local else passage)
+            else:  # no translation yet: say so, then the English passage
+                reply = f"{_msg(pack, 'closest_en_only', lang)}\n\n{passage}"
             reply_en = f"{_msg(pack, 'closest', 'en')}\n\n{passage}"
             if intent == "RIGHTS":
                 reply += "\n\n" + _msg(pack, "not_covered", lang).split(". ", 1)[-1].split("। ", 1)[-1]

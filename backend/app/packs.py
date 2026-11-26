@@ -53,6 +53,9 @@ def validate_pack(pack: dict) -> None:
         for f in REQUIRED_ENTRY_FIELDS:
             if not e.get(f):
                 raise ValueError(f"entry {e.get('id')} missing '{f}'")
+        for lang, loc in (e.get("local") or {}).items():
+            if not (isinstance(loc, dict) and loc.get("title") and loc.get("text")):
+                raise ValueError(f"entry {e.get('id')} local '{lang}' needs title and text")
         if e["module"] not in MODULE_NAMES:
             raise ValueError(f"entry {e['id']} has unknown module {e['module']}")
         if e["id"] in seen:
@@ -79,7 +82,7 @@ def ingest(country: str) -> dict:
         db.upsert_chunk({
             "id": cid, "country": cc, "module": e["module"], "topic": e["topic"], "title": e["title"],
             "context": context_line(pack, e), "body": " ".join(e["text"].split()),
-            "keywords": e.get("keywords", ""), "source_name": e["source"], "source_url": e.get("source_url"),
+            "keywords": search_words(e), "source_name": e["source"], "source_url": e.get("source_url"),
             "review_status": "reviewed" if pack.get("reviewed_by") else "draft",
             "pack_version": str(pack["version"]), "embedding": vec,
         })
@@ -89,6 +92,23 @@ def ingest(country: str) -> dict:
                            "phone": c.get("phone"), "area": c.get("area"), "free": c.get("free", True),
                            "source": c["source"]})
     return {"country": cc, "chunks": len(ids), "removed": removed, "contacts": len(pack["contacts"])}
+
+
+def search_words(entry: dict) -> str:
+    """Local-language keywords plus the entry in her language, so a question in Bangla, Swahili or Spanish
+    finds the entry by its own words, not only by the keywords someone thought of."""
+    local = " ".join(f"{v['title']} {' '.join(v['text'].split())}" for v in (entry.get("local") or {}).values())
+    return f"{entry.get('keywords', '')} {local}".strip()
+
+
+def local_entry(country: str, chunk_id: str, lang: str) -> dict | None:
+    """The entry in her language ({title, text}), if the pack has it."""
+    eid = chunk_id.split("#")[0]
+    for e in load_pack(country)["entries"]:
+        if e["id"] == eid:
+            loc = (e.get("local") or {}).get(lang)
+            return {"title": loc["title"], "text": " ".join(loc["text"].split())} if loc else None
+    return None
 
 
 def entry_gap(country: str, chunk_id: str) -> str | None:

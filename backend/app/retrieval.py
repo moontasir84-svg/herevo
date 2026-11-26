@@ -23,7 +23,13 @@ def retrieve(country: str, query: str, top_k: int | None = None) -> list[dict]:
     qvec = get_embedder().embed([query], input_type="query")[0]
     vec_hits = db.vector_search(country, qvec, top_k * 2)
     kw_hits = db.keyword_search(country, query_terms(query), top_k * 2)
-    # Keyword hits carry more weight with the offline hash embedder, which is not semantic.
-    lists = [kw_hits, kw_hits, vec_hits] if get_settings().embeddings_provider != "voyage" else [vec_hits, kw_hits]
+    if get_settings().embeddings_provider != "voyage":
+        # The offline hash embedder is not semantic (close to random for Bangla), so it must not outrank a
+        # keyword match: keyword hits come first in keyword order, and the embedder only fills empty places.
+        seen = {h["id"] for h in kw_hits}
+        ordered = list(kw_hits) + [h for h in vec_hits if h["id"] not in seen]
+        kw_ids = {h["id"] for h in kw_hits}
+        return [{**p, "rrf": None, "keyword_match": p["id"] in kw_ids} for p in ordered[:top_k]]
+    lists = [vec_hits, kw_hits]
     kw_ids = {h["id"] for h in kw_hits}
     return [{**p, "keyword_match": p["id"] in kw_ids} for p in rrf(lists)[:top_k]]

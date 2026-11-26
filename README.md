@@ -13,7 +13,7 @@ Finalist, International AI Builders Congress 2026 · Team Headless Chickens
 | [`data/packs/`](data/packs/) | Country packs: reviewed knowledge for Bangladesh, Kenya and Mexico, every statement with its source. A new country is a new pack, not new code. |
 | [`web/`](web/) | The web app. Served by the backend, every message goes through the real system, and it keeps working offline: the app and the country packs are saved on the phone, so with no signal it still answers from the reviewed pack and still gives emergency numbers for safety. Opened anywhere else, it runs as a scripted demo. |
 | [`mcp/`](mcp/) | Three MCP servers: `herevo-country-packs` (the same packs and safety screen as the app, so NGOs and other AI assistants can reuse HerEvo's verified content), `herevo-evidence` (anonymized rights-gap counts for the evidence map) and `herevo-pack-review` (checks a country pack against HerEvo's content rules before it can answer anyone). |
-| [`eval/`](eval/) | Evaluation set (50 questions) and its latest report. |
+| [`eval/`](eval/) | Evaluation set (54 questions) and its latest report. |
 | [`docs/`](docs/) | Architecture. |
 
 ## How one message is handled
@@ -31,17 +31,18 @@ her message (Telegram text or voice note, web, later SMS and phone calls)
 
 ## Evaluation (latest run)
 
-50 questions (Bangla and English): 12 safety, 16 rights, 6 farm, 6 money, 4 health, 6 sales. Retrieval and safety are scored without an AI model; GitHub Actions reruns this on every push.
+54 questions (Bangla and English): 12 safety, 16 rights, 6 farm, 6 money, 8 health, 6 sales. Retrieval and safety are scored without an AI model; GitHub Actions reruns this on every push.
 
 | Metric | Result |
 |---|---|
 | Safety recall (threats escalated to a human) | **12 / 12 (100%)** |
-| False escalations | **0 / 38 (0%)** |
-| Right knowledge in the top 3 | **31 / 32 (97%)** |
-| Right knowledge first | 26 / 32 (81%) |
+| False escalations | **0 / 42 (0%)** |
+| Right knowledge in the top 3 | **36 / 36 (100%)** |
+| Right knowledge first | 35 / 36 (97%) |
 | Sale amounts recorded correctly | **6 / 6** |
 
-Known miss: "কাবিনের টাকা কীভাবে আদায় করব?" (dower) ranks savings advice first. Semantic embeddings (Voyage) are the planned fix.
+With the free offline search, keyword matches rank first and the simple embedder only fills empty places; a
+semantic embedder (Voyage) is the next step for questions worded unlike any keyword.
 
 The questions were written by the team; the next version adds real questions from field interviews. Run it yourself: see [backend/README.md](backend/README.md#evaluation).
 
@@ -56,7 +57,7 @@ About USD 0.10 per 3-minute call; about USD 2.30 per woman per year. Free for wo
 
 ## Data and safety
 
-Country packs use public sources (World Bank Women, Business and the Law 2026, national laws, government services). Every statement is marked **draft** until a named lawyer, agriculture officer or clinician reviews it. HerEvo gives general information, not legal or medical advice. No names or phone numbers are stored; users are identified by a salted hash, and `/delete` erases her data.
+Country packs use public sources (World Bank Women, Business and the Law 2026, national laws, government services). Every statement is marked **draft** until a named lawyer, agriculture officer or clinician reviews it, and every entry carries a Bangla, Swahili or Spanish version that a native speaker must also check. HerEvo gives general information, not legal or medical advice. No names or phone numbers are stored; users are identified by a salted hash, `/delete` erases her data, and the text of every message is deleted automatically after 30 days (only anonymized counts remain).
 
 ## Team
 

@@ -32,7 +32,7 @@ jobs:
           cache-dependency-path: backend/requirements*.txt
       - run: pip install -r requirements-dev.txt -r ../mcp/requirements.txt
       - run: python -m pytest -q
-      - name: Evaluation (offline mode, 50 questions)
+      - name: Evaluation (offline mode, 54 questions)
         env:
           DATABASE_URL: postgresql://herevo:herevo@localhost:5432/herevo_test
           PACKS_DIR: ${{ github.workspace }}/data/packs

@@ -175,6 +175,8 @@ def test_fallback_gives_closest_checked_passage_with_its_source(recorder):
     r = handle(uid=_uid(), channel="test", text="স্বামী মারা যাওয়ার পর দেবর বলছে জমি আমার না।")
     assert r.answered_by == "fallback" and r.intent == "RIGHTS"
     assert r.reply.startswith("এআই এখন পাওয়া যাচ্ছে না") and "১৬৪৩০" in r.reply
+    assert "এখনো ইংরেজিতে" not in r.reply and "Under Muslim" not in r.reply  # the Bangla version, not English
+    assert "Under Muslim" in r.reply_en
     assert r.citations and r.citations[0].id.startswith("bd-rights") and r.citations[0].review_status == "draft"
     assert r.gap == "land_inheritance"
 
@@ -223,3 +225,23 @@ def test_safety_case_without_a_helper_group_says_nobody_was_alerted(fake_llm):
 
 def test_safety_case_with_a_helper_group_says_alerted(recorder):
     assert handle(uid=_uid(), channel="web", text="My husband is beating me").helper_alerted is True
+
+
+def test_every_entry_has_its_local_language_version():
+    from app.packs import load_pack
+    for cc, lang in (("BD", "bn"), ("KE", "sw"), ("MX", "es")):
+        for e in load_pack(cc)["entries"]:
+            assert e["local"][lang]["text"].strip(), e["id"]
+
+
+def test_ai_gets_the_translation_with_the_passage(fake_llm, recorder):
+    handle(uid=_uid(), channel="test", text="Mwajiri wangu hajanilipa mshahara kwa miezi miwili.", country="KE")
+    passages = fake_llm.calls[-1]["passages"]
+    assert passages and passages[0]["local"]["text"].startswith(("Sheria", "Chini", "Katiba", "Anaweza", "Kabla"))
+
+
+def test_offline_pack_carries_translations():
+    from fastapi.testclient import TestClient
+    from app.main import app
+    body = TestClient(app).get("/v1/packs/BD").json()
+    assert all(e["local"]["bn"]["text"] for e in body["entries"])

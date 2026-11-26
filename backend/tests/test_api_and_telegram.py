@@ -144,3 +144,18 @@ def test_ai_health_check_reports_failure_without_the_key(fake_llm):
 def test_page_and_offline_helper_are_never_served_stale():
     for path in ("/", "/sw.js", "/health"):
         assert client.get(path).headers.get("cache-control") == "no-cache"
+
+
+def test_message_text_is_deleted_after_30_days():
+    from app import db
+    from app.main import purge_once
+    with db.pool().connection() as conn:
+        conn.execute("INSERT INTO turns (user_id, channel, language, intent, safety, answered_by, message, created_at) "
+                     "VALUES (NULL, 'purge-old', 'bn', 'ADVICE', 'OK', 'fallback', 'very old message', now() - interval '31 days')")
+        conn.execute("INSERT INTO turns (user_id, channel, language, intent, safety, answered_by, message) "
+                     "VALUES (NULL, 'purge-new', 'bn', 'ADVICE', 'OK', 'fallback', 'recent message')")
+    assert purge_once() >= 1
+    with db.pool().connection() as conn:
+        rows = {r["channel"]: r["message"] for r in conn.execute(
+            "SELECT channel, message FROM turns WHERE channel IN ('purge-old', 'purge-new')").fetchall()}
+    assert rows == {"purge-old": None, "purge-new": "recent message"}

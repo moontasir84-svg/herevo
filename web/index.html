@@ -152,7 +152,9 @@ tr.new td{background:var(--accent-soft)}
 
   <section aria-label="Ways she can reach HerEvo" class="channels">
     <span class="label" style="margin-right:4px">Reach her anywhere</span>
-    <div class="ch live"><em>In this demo</em><strong>Voice call</strong><span>Any phone, no internet</span></div>
+    <div class="ch live"><em>In this demo</em><strong>Web chat</strong><span>Any phone browser, works offline</span></div>
+    <div class="ch live"><em>Built</em><strong>Telegram</strong><span>Text and voice notes</span></div>
+    <div class="ch"><em>Planned</em><strong>Voice call</strong><span>Any phone, no internet</span></div>
     <div class="ch"><em>Planned</em><strong>SMS</strong><span>Offline</span></div>
     <div class="ch"><em>Planned</em><strong>Offline-first app</strong><span>On-device AI, syncs later</span></div>
     <div class="ch"><em>Planned</em><strong>WhatsApp</strong><span>Online, photos and documents</span></div>
@@ -164,17 +166,17 @@ tr.new td{background:var(--accent-soft)}
     <div class="ch live"><em>In this demo</em><strong>Money &amp; work</strong><span>Income record, savings, loans</span></div>
     <div class="ch live"><em>In this demo</em><strong>Rights</strong><span>Her country's law, free legal aid</span></div>
     <div class="ch live"><em>In this demo</em><strong>Safety</strong><span>Straight to a trained human</span></div>
-    <div class="ch"><em>Next</em><strong>Health</strong><span>Maternal and menstrual care</span></div>
+    <div class="ch live"><em>In this demo</em><strong>Health</strong><span>Pregnancy, newborn and period care</span></div>
     <div class="ch"><em>Next</em><strong>Learning</strong><span>Skills and literacy by voice</span></div>
   </section>
 
   <section aria-label="Choose a caller" class="callers" id="callers"></section>
 
   <div class="grid">
-    <section class="call" aria-label="The call">
+    <section class="call" aria-label="The chat">
       <div class="callbar">
         <div><span class="dot"></span><span class="who" id="who">Rina</span> <span class="meta" id="place"></span></div>
-        <div class="meta"><span class="pin">PIN verified</span> · nothing saved on this phone · <span id="timer">00:00</span></div>
+        <div class="meta"><span class="pin">Private</span> · no name or number stored · <span id="timer">00:00</span></div>
       </div>
       <div class="thread" id="thread" aria-live="polite"></div>
       <div class="say">
@@ -354,7 +356,7 @@ function renderThread(){
   const c = CALLERS[current], box = $('thread'); box.textContent = '';
   $('who').textContent = c.name; $('place').textContent = '· ' + c.place;
   const turns = turnsBy[current];
-  if (!turns.length && !(pending && pending.caller === current)){ box.append(el('div','empty',`${c.name} has called HerEvo from a basic phone. Pick what she says below.`)); return; }
+  if (!turns.length && !(pending && pending.caller === current)){ box.append(el('div','empty',`${c.name} is asking HerEvo for help. Pick what she says below, or type her words in any language.`)); return; }
   for (const t of turns.concat(pending && pending.caller === current ? [{says: pending.text, saysEn: pending.saysEn, waiting: true}] : [])){
     if (t.waiting){
       const her = el('div','turn her'); her.append(el('div','bubble',t.says)); box.append(her);
@@ -607,10 +609,10 @@ function offlineSafety(pack, text){
 }
 const BN_DIGITS = (s) => String(s).replace(/[0-9]/g, d => '০১২৩৪৫৬৭৮৯'[d]);
 const OFFLINE_TXT = {
-  bn: {safe:'আপনি একা নন। এখন ইন্টারনেট নেই, তাই সহায়তাকর্মীকে জানানো যাচ্ছে না। এখনই বিপদে থাকলে {e} নম্বরে কল করুন। সহায়তা হেল্পলাইন {h}, ইন্টারনেট ছাড়াই কাজ করে।', pre:'অফলাইন উত্তর, ডাউনলোড করা তথ্য থেকে (এখনো ইংরেজিতে): '},
-  sw: {safe:'Hauko peke yako. Hakuna mtandao sasa, kwa hivyo siwezi kumjulisha mhudumu. Ukiwa hatarini sasa, piga {e}. Simu ya msaada: {h}, inafanya kazi bila mtandao.', pre:'Jibu la nje ya mtandao (bado kwa Kiingereza): '},
-  es: {safe:'No está sola. Ahora no hay internet, así que no puedo avisar a una persona capacitada. Si está en peligro ahora, llame al {e}. Línea de ayuda: {h}, funciona sin internet.', pre:'Respuesta sin conexión (por ahora en inglés): '},
-  en: {safe:'You are not alone. There is no internet now, so I cannot alert a helper. If you are in danger now, call {e}. Helpline: {h}, works without internet.', pre:'Offline answer from the downloaded pack: '}
+  bn: {safe:'আপনি একা নন। এখন ইন্টারনেট নেই, তাই সহায়তাকর্মীকে জানানো যাচ্ছে না। এখনই বিপদে থাকলে {e} নম্বরে কল করুন। সহায়তা হেল্পলাইন {h}, ইন্টারনেট ছাড়াই কাজ করে।', pre:'অফলাইন উত্তর, ডাউনলোড করা তথ্য থেকে (এখনো ইংরেজিতে): ', preLocal:'অফলাইন উত্তর, ফোনে রাখা যাচাই করা তথ্য থেকে: '},
+  sw: {safe:'Hauko peke yako. Hakuna mtandao sasa, kwa hivyo siwezi kumjulisha mhudumu. Ukiwa hatarini sasa, piga {e}. Simu ya msaada: {h}, inafanya kazi bila mtandao.', pre:'Jibu la nje ya mtandao (bado kwa Kiingereza): ', preLocal:'Jibu la nje ya mtandao, kutoka taarifa iliyohakikiwa kwenye simu hii: '},
+  es: {safe:'No está sola. Ahora no hay internet, así que no puedo avisar a una persona capacitada. Si está en peligro ahora, llame al {e}. Línea de ayuda: {h}, funciona sin internet.', pre:'Respuesta sin conexión (por ahora en inglés): ', preLocal:'Respuesta sin conexión, con información verificada guardada en este teléfono: '},
+  en: {safe:'You are not alone. There is no internet now, so I cannot alert a helper. If you are in danger now, call {e}. Helpline: {h}, works without internet.', pre:'Offline answer from the downloaded pack: ', preLocal:'Offline answer from the downloaded pack: '}
 };
 async function loadPacks(){
   for (const cc of ['BD','KE','MX']){
@@ -636,7 +638,7 @@ function offlinePackAnswer(text){
     }
     if (best){
       commit({intent: best.module === 'rights' ? 'RIGHTS' : 'ADVICE', conf: Math.min(.9, .4 + .15 * bestScore), says:text, saysEn:'',
-              reply: L.pre + best.text, replyEn: best.text, source: `Offline pack · ${best.title} (${best.source}${pack.review_status === 'draft' ? ', awaiting expert review' : ''})`,
+              reply: (best.local && best.local[c.lang]) ? L.preLocal + best.local[c.lang].text : L.pre + best.text, replyEn: best.text, source: `Offline pack · ${best.title} (${best.source}${pack.review_status === 'draft' ? ', awaiting expert review' : ''})`,
               safety:'OK', gap: GAP_NAME[best.gap] || null, live:true, api:true, answeredBy:'offline'});
     } else {
       const m = pack.messages.not_covered;

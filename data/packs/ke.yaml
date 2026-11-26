@@ -5,6 +5,8 @@ version: "2026-11-25"
 languages: [sw, en]
 currency: KES
 reviewed_by: null
+# `local` gives each entry in the local language. Translations are drafts until a native speaker checks them.
+translations_reviewed_by: null
 
 messages:
   escalate:
@@ -16,8 +18,11 @@ messages:
   sale_recorded:
     sw: "Nimeandika: shilingi {amount}. Imeongezwa kwenye historia ya mapato yako."
     en: "Recorded: {amount} shillings. It is added to your income history."
-  closest:
+  closest_en_only:
     sw: "AI haipatikani sasa hivi. Taarifa iliyohakikiwa iliyo karibu zaidi (bado kwa Kiingereza):"
+    en: "The AI is not available right now. The closest checked information I have:"
+  closest:
+    sw: "AI haipatikani sasa hivi. Taarifa iliyohakikiwa iliyo karibu zaidi:"
     en: "The AI is not available right now. The closest checked information I have:"
   hello:
     sw: "Habari! Mimi ni HerEvo. Andika au sema swali lako kuhusu kazi, pesa, haki au usalama."
@@ -44,6 +49,14 @@ entries:
       unpaid wages can be reported free of charge to the County Labour Office, which can call the employer
       to a meeting. The domestic workers' union is KUDHEIHA. General information, not legal advice.
     keywords: mshahara kazi mwajiri hajanilipa mfanyakazi wa nyumbani house help wages salary unpaid employer
+    local:
+      sw:
+        title: "Wafanyakazi wa nyumbani lazima walipwe"
+        text: >-
+          Sheria ya Ajira ya Kenya ya 2007 inawalinda wafanyakazi wa nyumbani. Mwajiri lazima alipe mshahara
+          unaodaiwa, na mshahara ambao haujalipwa unaweza kuripotiwa bila malipo kwa Ofisi ya Kazi ya Kaunti,
+          ambayo inaweza kumwita mwajiri kwenye mkutano. Chama cha wafanyakazi wa nyumbani ni KUDHEIHA. Hii ni
+          taarifa ya jumla, si ushauri wa kisheria.
     source: "Employment Act 2007 (kenyalaw.org); World Bank Women, Business and the Law 2026, Pay"
     source_url: http://kenyalaw.org/
   - id: ke-rights-land-equality
@@ -57,6 +70,14 @@ entries:
       sons inherit equally, and a surviving spouse is protected. Relatives cannot lawfully take a widow's
       home or land. She can get free help from NLAS or FIDA Kenya.
     keywords: ardhi shamba urithi mjane mume amefariki mali land inheritance widow property husband died
+    local:
+      sw:
+        title: "Haki sawa ya wanawake kwa ardhi na urithi"
+        text: >-
+          Katiba ya Kenya ya 2010 inataka ubaguzi wa kijinsia uondolewe katika sheria, mila na desturi
+          zinazohusu ardhi na mali (Kifungu cha 60). Chini ya Sheria ya Urithi, mabinti na wana wanarithi kwa
+          usawa, na mjane au mgane aliyebaki analindwa. Ndugu hawawezi kisheria kuchukua nyumba au ardhi ya
+          mjane. Anaweza kupata msaada wa bure kutoka NLAS au FIDA Kenya.
     source: "Constitution of Kenya 2010, Article 60; Law of Succession Act, Cap 160 (kenyalaw.org)"
     source_url: http://kenyalaw.org/
   - id: ke-rights-child-support
@@ -69,6 +90,13 @@ entries:
       child's food, school and health, whether or not they were married. A mother can apply to the
       Children's Court for maintenance. FIDA Kenya and NLAS give free legal help.
     keywords: matunzo mtoto baba hatoi pesa watoto child support maintenance father children
+    local:
+      sw:
+        title: "Wazazi wote wawili lazima wawasaidie watoto wao"
+        text: >-
+          Chini ya Sheria ya Watoto ya Kenya ya 2022, wazazi wote wawili wanashiriki jukumu la malezi, ikiwemo
+          kulipia chakula, shule na afya ya mtoto, iwe walikuwa wameoana au la. Mama anaweza kuomba matunzo
+          katika Mahakama ya Watoto. FIDA Kenya na NLAS hutoa msaada wa kisheria bila malipo.
     source: "Children Act 2022 (kenyalaw.org)"
     source_url: http://kenyalaw.org/
   - id: ke-safety-domestic-violence
@@ -81,6 +109,13 @@ entries:
       against a person who abuses her, including physical, sexual, emotional and economic abuse. Help: GBV
       helpline 1195, police 999 or 112.
     keywords: ukatili kupigwa vitisho unyanyasaji violence abuse beaten protection order
+    local:
+      sw:
+        title: "Ulinzi dhidi ya ukatili wa nyumbani"
+        text: >-
+          Sheria ya Ulinzi Dhidi ya Ukatili wa Nyumbani ya 2015 inamruhusu mwanamke kuiomba mahakama amri ya
+          ulinzi dhidi ya mtu anayemdhulumu, ikiwemo ukatili wa kimwili, wa kingono, wa kihisia na wa
+          kiuchumi. Msaada: simu ya msaada wa ukatili wa kijinsia 1195, polisi 999 au 112.
     source: "Protection Against Domestic Violence Act 2015 (kenyalaw.org)"
     source_url: http://kenyalaw.org/
   - id: ke-money-savings
@@ -92,6 +127,13 @@ entries:
       She can save small amounts regularly in a registered chama (savings group) or a mobile savings account
       such as M-Shwari. Keeping a record of her sales in HerEvo helps show her income later.
     keywords: akiba kuweka pesa chama mshwari m-pesa savings save money
+    local:
+      sw:
+        title: "Kuweka akiba kwa usalama"
+        text: >-
+          Anaweza kuweka akiba kidogo kidogo mara kwa mara katika chama kilichosajiliwa (kikundi cha akiba) au
+          akaunti ya akiba ya simu kama M-Shwari. Kuweka rekodi ya mauzo yake katika HerEvo husaidia kuonyesha
+          mapato yake baadaye.
     source: "Central Bank of Kenya, financial inclusion (centralbank.go.ke)"
     source_url: https://www.centralbank.go.ke/
   - id: ke-money-loans
@@ -103,5 +145,12 @@ entries:
       Before borrowing she should use a lender licensed by the Central Bank of Kenya, ask for the total cost
       of the loan in writing, and be careful with unlicensed digital lenders that charge very high fees.
     keywords: mkopo kukopa riba loan borrow lender interest
+    local:
+      sw:
+        title: "Kukopa kwa usalama"
+        text: >-
+          Kabla ya kukopa, anapaswa kutumia mkopeshaji aliye na leseni ya Benki Kuu ya Kenya, aombe gharama
+          kamili ya mkopo kwa maandishi, na awe mwangalifu na wakopeshaji wa kidijitali wasio na leseni
+          wanaotoza ada kubwa sana.
     source: "Central Bank of Kenya, licensed digital credit providers (centralbank.go.ke)"
     source_url: https://www.centralbank.go.ke/

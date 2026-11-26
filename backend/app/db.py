@@ -246,5 +246,6 @@ def log_turn(row: dict) -> None:
 
 def purge_old_messages(days: int = 30) -> int:
     with pool().connection() as conn:
-        cur = conn.execute("UPDATE turns SET message = NULL WHERE created_at < now() - make_interval(days => %s)", (days,))
+        cur = conn.execute("UPDATE turns SET message = NULL WHERE message IS NOT NULL "
+                           "AND created_at < now() - make_interval(days => %s)", (days,))
         return cur.rowcount

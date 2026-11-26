@@ -28,13 +28,40 @@ from .config import get_settings
 from .packs import available_countries
 from .pipeline import handle
 
+log = logging.getLogger("herevo.api")
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+
+
+PURGE_EVERY_SECONDS = 6 * 3600
+
+
+def purge_once() -> int:
+    """Privacy promise: the text of her messages is deleted after 30 days. (Anonymized counts stay.)"""
+    try:
+        n = db.purge_old_messages(30)
+        if n:
+            log.info("privacy purge: deleted the text of %s messages older than 30 days", n)
+        return n
+    except Exception as exc:  # never let the purge take the service down; it runs again later
+        log.error("privacy purge failed: %s", exc)
+        return -1
+
+
+async def _purge_forever():
+    import asyncio
+    while True:
+        await asyncio.to_thread(purge_once)
+        await asyncio.sleep(PURGE_EVERY_SECONDS)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    import asyncio
     db.init_schema()
+    purger = asyncio.create_task(_purge_forever())  # at start-up, then every 6 hours
     yield
+    purger.cancel()
     db.close()
 
 
@@ -189,6 +216,8 @@ def offline_pack(country: str):
         "messages": pack["messages"], "contacts": pack["contacts"],
         "entries": [{"id": e["id"], "module": e["module"], "topic": e["topic"], "gap": e.get("gap"),
                      "title": e["title"], "text": " ".join(e["text"].split()), "keywords": e.get("keywords", ""),
+                     "local": {k: {"title": v["title"], "text": " ".join(v["text"].split())}
+                               for k, v in (e.get("local") or {}).items()},
                      "source": e["source"]} for e in pack["entries"]],
         "safety_terms": sorted({t for terms in safety.TERMS.values() for t in terms}),
     }
