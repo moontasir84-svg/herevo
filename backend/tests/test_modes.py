@@ -140,3 +140,34 @@ def test_gemini_retries_key_as_query_param(monkeypatch):
     monkeypatch.setattr(httpx, "post", fake_post)
     assert GeminiLLM(" AQ.key \n", "m", 100).respond("bn", [], "x") == {"ok": 1}
     assert calls == ["header", "param"]
+
+
+def test_read_aloud_uses_gemini_tts_and_returns_wav(monkeypatch):
+    import base64
+
+    from fastapi.testclient import TestClient
+
+    import app.main as m
+    from app import speech
+    calls = []
+
+    class R:
+        def __init__(self, code, body): self.status_code, self._b, self.text = code, body, str(body)[:50]
+        def json(self): return self._b
+
+    monkeypatch.setattr(httpx, "get", lambda *a, **k: R(200, {"models": [{"name": "models/gemini-x-flash-preview-tts"}]}))
+
+    def fake_post(url, headers=None, json=None, timeout=None):
+        calls.append(url)
+        return R(200, {"candidates": [{"content": {"parts": [{"inlineData": {
+            "mimeType": "audio/L16;codec=pcm;rate=24000", "data": base64.b64encode(b"\x00\x01" * 2400).decode()}}]}}]})
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    monkeypatch.setattr(speech, "_speech", speech.GeminiSpeech("k", "m"))
+    monkeypatch.setattr(speech, "_checked", True)
+    m._tts_cache.clear()
+    r = TestClient(m.app).post("/v1/tts", json={"text": "আপনি একা নন।", "lang": "bn", "session_id": "s-tts-0001"})
+    assert r.status_code == 200 and r.headers["content-type"] == "audio/wav" and r.content[:4] == b"RIFF"
+    assert "gemini-x-flash-preview-tts" in calls[0]
+    TestClient(m.app).post("/v1/tts", json={"text": "আপনি একা নন।", "lang": "bn", "session_id": "s-tts-0001"})
+    assert len(calls) == 1  # the same text is served from the cache

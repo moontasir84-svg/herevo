@@ -401,7 +401,7 @@ function renderThread(){
     if (t.steps && t.steps.length){ const ol = el('ol','steps'); t.steps.forEach(x => ol.append(el('li',null,x))); bub.append(ol); }
     ai.append(bub);
     const row = el('div','ai-row'); if (t.replyEn) row.append(el('div','gloss',t.replyEn));
-    const sp = el('button','speak','Play'); sp.type = 'button'; sp.setAttribute('aria-label','Play this answer aloud'); sp.onclick = () => speak(t.reply, c.lang);
+    const sp = el('button','speak','Play'); sp.type = 'button'; sp.setAttribute('aria-label','Play this answer aloud'); sp.onclick = () => speak(t.reply, t.replyLanguage || c.lang, sp);
     row.append(sp); ai.append(row);
     if (t.doc) ai.append(docCard(t.doc));
     box.append(ai);
@@ -747,8 +747,28 @@ function offline(text){
   $('freeText').value = '';
 }
 
-async function speak(text, lang){
+const VOICE_LANG = {bn:'bn-BD', sw:'sw-KE', es:'es-MX', en:'en-US'};
+function hasBrowserVoice(lang){
+  try{ const p = (VOICE_LANG[lang] || 'en').slice(0, 2); return speechSynthesis.getVoices().some(v => (v.lang || '').toLowerCase().startsWith(p)); }
+  catch(e){ return false; }
+}
+let playing = null;
+async function speak(text, lang, btn){
   if (tts){ try{ await tts.speak(text, {language:lang}); return; }catch(e){ /* fall back below */ } }
+  // Most phones and PCs have no Bangla voice: ask HerEvo's server to read it aloud.
+  if (api && lang !== 'en' && !hasBrowserVoice(lang)){
+    const label = btn ? btn.textContent : '';
+    try{
+      if (btn){ btn.textContent = 'Loading…'; btn.disabled = true; }
+      const r = await fetch('/v1/tts', {method:'POST', headers:{'content-type':'application/json'},
+        body: JSON.stringify({text: text.slice(0, 1500), lang, session_id: sessionFor(current)})});
+      if (r.ok){
+        if (playing) playing.pause();
+        playing = new Audio(URL.createObjectURL(await r.blob())); await playing.play(); return;
+      }
+    }catch(e){ /* fall back to the browser's voice */ }
+    finally{ if (btn){ btn.textContent = label; btn.disabled = false; } }
+  }
   try{ if ('speechSynthesis' in window){ speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = {bn:'bn-BD', sw:'sw-KE', es:'es-MX'}[lang] || 'en'; speechSynthesis.speak(u); } }catch(e){}
 }
 

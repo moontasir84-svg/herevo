@@ -183,6 +183,36 @@ def ask(body: AskIn):
                   reply_to=body.reply_to).to_dict()
 
 
+class SpeakIn(BaseModel):
+    text: str = Field(min_length=1, max_length=1500)
+    lang: str = Field(default="bn", max_length=5)
+    session_id: str = Field(default="anon-000", min_length=8, max_length=100)
+
+
+_tts_cache: dict[tuple[str, str], bytes] = {}
+
+
+@app.post("/v1/tts")
+def tts(body: SpeakIn):
+    """Read an answer aloud (WAV) for browsers that have no voice for her language, such as Bangla on Windows."""
+    from fastapi.responses import Response
+
+    from .speech import get_speech
+    key = (body.lang, body.text)
+    if key not in _tts_cache:
+        if rate_limited("tts:" + body.session_id):
+            raise HTTPException(429, "Too many voice requests. Please wait a few minutes.")
+        sp = get_speech()
+        speak = getattr(sp, "speak_wav", None)
+        wav = speak(body.text, body.lang) if speak else None
+        if not wav:
+            raise HTTPException(503, "Voice is not available right now.")
+        if len(_tts_cache) > 200:
+            _tts_cache.clear()
+        _tts_cache[key] = wav
+    return Response(_tts_cache[key], media_type="audio/wav", headers={"Cache-Control": "no-store"})
+
+
 @app.get("/v1/inbox/{session_id}")
 def inbox(session_id: str):
     """Messages from a trained helper for a woman on the website (polled by her open page)."""

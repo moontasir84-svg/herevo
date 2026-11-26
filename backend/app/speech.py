@@ -5,6 +5,7 @@ Test: Gemini free-tier transcription (made-up voice notes only). Audio is proces
 from __future__ import annotations
 
 import base64
+import re
 import logging
 from typing import Protocol
 
@@ -83,7 +84,64 @@ class GeminiSpeech:
             return None
 
     def synthesize(self, text: str, language: str) -> bytes | None:
-        return None  # test mode answers voice notes with text only
+        return None  # Telegram voice notes need OGG; in test mode they are answered with text
+
+    # ---- Read-aloud for the web chat (WAV), with Gemini's text-to-speech models ----
+    _tts_model: str | None = None
+    TTS_FALLBACKS = ("gemini-2.5-flash-preview-tts", "gemini-2.5-flash-tts", "gemini-2.5-pro-preview-tts")
+
+    def _tts_models(self) -> list[str]:
+        """Ask Google which text-to-speech models this key can use (names change over time)."""
+        if self._tts_model:
+            return [self._tts_model]
+        names: list[str] = []
+        try:
+            r = httpx.get("https://generativelanguage.googleapis.com/v1beta/models", params={"pageSize": 200},
+                          headers={"x-goog-api-key": self.key}, timeout=15)
+            if r.status_code == 200:
+                names = [m["name"].split("/", 1)[-1] for m in r.json().get("models", []) if "tts" in m.get("name", "")]
+        except (httpx.HTTPError, ValueError, KeyError) as exc:
+            log.warning("could not list TTS models: %s", exc)
+        names.sort(key=lambda n: ("flash" not in n, "preview" in n, n))  # flash first, stable before preview
+        return names + [m for m in self.TTS_FALLBACKS if m not in names]
+
+    def speak_wav(self, text: str, language: str) -> bytes | None:
+        body = {"contents": [{"parts": [{"text": text}]}],
+                "generationConfig": {"responseModalities": ["AUDIO"],
+                                     "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": "Kore"}}}}}
+        for model in self._tts_models()[:4]:
+            try:
+                r = httpx.post(self.URL.format(model=model), headers={"x-goog-api-key": self.key}, json=body, timeout=45)
+            except httpx.HTTPError as exc:
+                log.warning("TTS %s network %s", model, type(exc).__name__)
+                continue
+            if r.status_code != 200:
+                log.warning("TTS %s HTTP %s %s", model, r.status_code, r.text[:200])
+                continue
+            try:
+                part = r.json()["candidates"][0]["content"]["parts"][0]["inlineData"]
+                pcm = base64.b64decode(part["data"])
+            except (KeyError, IndexError, ValueError):
+                continue
+            self._tts_model = model
+            rate = 24000
+            m = re.search(r"rate=(\d+)", part.get("mimeType", ""))
+            if m:
+                rate = int(m.group(1))
+            return pcm_to_wav(pcm, rate)
+        return None
+
+
+def pcm_to_wav(pcm: bytes, rate: int = 24000) -> bytes:
+    import io
+    import wave
+    buf = io.BytesIO()
+    with wave.open(buf, "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(rate)
+        w.writeframes(pcm)
+    return buf.getvalue()
 
 
 _speech: Speech | None = None
