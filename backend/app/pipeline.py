@@ -269,7 +269,9 @@ def _escalate(uid, channel, cc, district, lang, pack, *, reason, message, answer
     db.add_case(cc, district, "SAFETY", "safety_threats")
     prefix = "[TEST MODE · made-up message] " if get_settings().is_test else ""
     alert = (f"{prefix}🔴 HerEvo safety case #{eid}\nCountry: {cc}  District: {district or 'unknown'}  Channel: {channel}\n"
-             f"Language: {lang}\nShe said: {message[:500]}\n\nReply to her through the bot with:\n/reply {eid} <your message>")
+             f"Language: {lang}\nShe said: {message[:500]}\n\n" +
+             (f"Reply to her through the bot with:\n/reply {eid} <your message>" if channel.startswith("telegram")
+              else "She wrote on the website chat, which cannot receive replies. She was given the helpline numbers."))
     sent = get_notifier().notify_helper(alert)
     if not sent:
         log.error("escalation %s could not alert a helper", eid)

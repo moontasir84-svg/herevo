@@ -222,3 +222,16 @@ def test_unknown_command_in_her_chat_shows_her_commands_not_the_ai(fake_llm, rec
     tg(446, "yes")
     tg(446, "/reply 3 hello")
     assert recorder.sent[-1][1].startswith("যা লিখতে পারেন / What you can type") and fake_llm.calls == []
+
+
+def test_helper_reply_formats_and_website_cases(fake_llm, recorder):
+    tg(447, "স্বামী আমাকে মারধর করে")
+    case = int([t for w, t in recorder.sent if w == "helper"][-1].split("#")[1].split()[0])
+    tg(int(HELPER), f"/reply case {case} আমি আছি")
+    assert ("447", "HerEvo সহায়তাকর্মী / helper: আমি আছি") in recorder.sent
+    tg(int(HELPER), f"/reply #{case} আবার লিখছি")
+    assert ("447", "HerEvo সহায়তাকর্মী / helper: আবার লিখছি") in recorder.sent
+    web = client.post("/v1/ask", json={"session_id": "s-web-0001", "text": "My husband is beating me"}).json()
+    assert "website chat" in [t for w, t in recorder.sent if w == "helper"][-1]
+    tg(int(HELPER), f"/reply {web['escalation_id']} hello")
+    assert "came from the website chat" in recorder.sent[-1][1]

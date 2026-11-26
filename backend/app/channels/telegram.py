@@ -6,6 +6,7 @@ Commands for women:  /start  /myrecord (her income history)  /delete (erase all 
 from __future__ import annotations
 
 import logging
+import re
 from typing import Protocol
 
 import httpx
@@ -207,13 +208,18 @@ def _handle_helper(text: str, helper) -> None:
     if not text.startswith("/reply"):
         sender.send(helper, "Use: /reply <case number> <your message>")
         return
-    parts = text.split(maxsplit=2)
+    # Accept "/reply 3 ...", "/reply #3 ..." and "/reply case 3 ..."
+    parts = re.sub(r"^(/reply(?:@\w+)?)\s+(?:case\s+|#)?", r"\1 ", text, flags=re.IGNORECASE).split(maxsplit=2)
     if len(parts) < 3 or not parts[1].isdigit():
         sender.send(helper, "Use: /reply <case number> <your message>")
         return
     case = db.escalation(int(parts[1]))
     if not case:
         sender.send(helper, f"Case {parts[1]} not found.")
+        return
+    if not str(case["channel"]).startswith("telegram"):
+        sender.send(helper, f"Case {case['id']} came from the website chat, which cannot receive replies. "
+                            "Replies reach women who use HerEvo on Telegram.")
         return
     user = db.get_user(case["user_id"])
     if not user or not user.get("address"):
