@@ -102,4 +102,14 @@ CREATE TABLE IF NOT EXISTS turns (
 -- Upgrades for databases created by earlier versions
 ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS preferred_language TEXT;
-ALTER TABLE turns ADD COLUMN IF NOT EXISTS reply TEXT;  -- HerEvo's answer, so the conversation can continue (deleted after 30 days)  -- set when she asks for a language
+ALTER TABLE turns ADD COLUMN IF NOT EXISTS reply TEXT;
+-- Helper replies waiting for a woman who wrote on the website (picked up by her open page; deleted after 30 days)
+CREATE TABLE IF NOT EXISTS inbox (
+    id            BIGSERIAL PRIMARY KEY,
+    user_id       TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    escalation_id BIGINT,
+    text          TEXT,
+    delivered     BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS inbox_user_idx ON inbox (user_id, delivered);  -- HerEvo's answer, so the conversation can continue (deleted after 30 days)  -- set when she asks for a language

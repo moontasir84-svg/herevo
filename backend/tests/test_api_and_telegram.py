@@ -232,9 +232,15 @@ def test_helper_reply_formats_and_website_cases(fake_llm, recorder):
     tg(int(HELPER), f"/reply #{case} আবার লিখছি")
     assert ("447", "HerEvo সহায়তাকর্মী / helper: আবার লিখছি") in recorder.sent
     web = client.post("/v1/ask", json={"session_id": "s-web-0001", "text": "My husband is beating me"}).json()
-    assert "website chat" in [t for w, t in recorder.sent if w == "helper"][-1]
-    tg(int(HELPER), f"/reply {web['escalation_id']} hello")
-    assert "came from the website chat" in recorder.sent[-1][1]
+    alert = [t for w, t in recorder.sent if w == "helper"][-1]
+    assert "website chat" in alert and f"/reply {web['escalation_id']}" in alert
+    assert client.get("/v1/inbox/s-web-0001").json() == {"messages": []}
+    tg(int(HELPER), f"/reply {web['escalation_id']} I am here. Are you safe now?")
+    assert recorder.sent[-1][1].startswith(f"Sent to case {web['escalation_id']} (website chat")
+    got = client.get("/v1/inbox/s-web-0001").json()["messages"]
+    assert [m["text"] for m in got] == ["I am here. Are you safe now?"] and got[0]["case"] == web["escalation_id"]
+    assert client.get("/v1/inbox/s-web-0001").json() == {"messages": []}  # delivered once
+    assert client.get("/v1/inbox/someone-else").json() == {"messages": []}
 
 
 def test_telegram_sends_steps_and_the_paper(fake_llm, recorder):
@@ -247,3 +253,16 @@ def test_telegram_sends_steps_and_the_paper(fake_llm, recorder):
     texts = [t for who, t in recorder.sent if who == "448"]
     assert "১. আবেদনটি চেয়ারম্যানকে দিন\n২. কপি রেখে দিন" in texts[-2]
     assert texts[-1].startswith("📄 বিনামূল্যে আইনি সহায়তার আবেদন") and "দেনমোহর পাইনি" in texts[-1]
+
+
+def test_during_an_open_case_her_messages_go_to_the_helper_not_the_ai(fake_llm, recorder):
+    first = client.post("/v1/ask", json={"session_id": "s-web-relay", "text": "My husband is beating me"}).json()
+    case = first["escalation_id"]
+    r = client.post("/v1/ask", json={"session_id": "s-web-relay", "text": "He locked the door. I am at my sister's now."}).json()
+    assert r["answered_by"] == "helper_relay" and r["escalation_id"] == case and fake_llm.calls == []
+    relay = [t for w, t in recorder.sent if w == "helper"][-1]
+    assert f"Case #{case} · she says:" in relay and "I am at my sister's now." in relay and f"/close {case}" in relay
+    tg(int(HELPER), f"/close {case}")
+    assert recorder.sent[-1][1].startswith(f"Case {case} closed")
+    r = client.post("/v1/ask", json={"session_id": "s-web-relay", "text": "How do I save money?"}).json()
+    assert r["answered_by"] != "helper_relay"

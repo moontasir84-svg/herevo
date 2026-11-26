@@ -76,6 +76,8 @@ h2{font-family:var(--display); font-weight:600; font-size:18px; margin:0}
 .ai .bubble.thinking{font-style:italic; opacity:.75; animation:think 1.4s ease-in-out infinite}
 @keyframes think{50%{opacity:.4}}
 @media (prefers-reduced-motion: reduce){.ai .bubble.thinking{animation:none}}
+.turn.helper .bubble{background:#DCEFE4; color:#0F2A1C; border-bottom-left-radius:4px}
+.turn.helper .who{font-size:12px; font-weight:600; color:var(--call-muted); padding:0 4px}
 .ai.esc .bubble{background:#F7D9D6; color:#3B0D09}
 .gloss{font-size:12.5px; color:var(--call-muted); padding:0 4px}
 .ai-row{display:flex; align-items:center; gap:8px}
@@ -368,6 +370,10 @@ function renderThread(){
   const turns = turnsBy[current];
   if (!turns.length && !(pending && pending.caller === current)){ box.append(el('div','empty',`${c.name} is asking HerEvo for help. Pick what she says below, or type her words in any language.`)); return; }
   for (const t of turns.concat(pending && pending.caller === current ? [{says: pending.text, saysEn: pending.saysEn, waiting: true}] : [])){
+    if (t.helper){
+      const h = el('div','turn ai helper'); h.append(el('div','who','Trained helper · case #' + t.caseId), el('div','bubble',t.reply)); box.append(h);
+      continue;
+    }
     if (t.waiting){
       const her = el('div','turn her'); her.append(el('div','bubble',t.says)); box.append(her);
       const ai = el('div','turn ai'); ai.append(el('div','bubble thinking','HerEvo is thinking…')); box.append(ai);
@@ -421,7 +427,7 @@ function renderTrace(t){
   if (t.safety === 'ESCALATE') add('Handed to', el('span',null,(t.escalationId ? (t.helperAlerted === false ? `Case #${t.escalationId} opened. No helper group is connected yet (test setup), so no one was alerted. ` : `Helper alerted on Telegram · case #${t.escalationId}. `) : '') + 'Trained helper at a partner hotline, who can also refer her to the nearest clinic or police women\'s desk. The AI does not counsel.'));
   if (t.calculation) add('Worked out by', el('span',null,'HerEvo\'s inheritance calculator (exact fractions, not the AI)'));
   if (t.doc) add('Wrote for her', el('span',null, t.doc.title + ' (her name and address left blank)'));
-  add('Answered by', el('span','small', t.api ? `${t.answeredBy === 'offline' ? 'This phone' : 'HerEvo backend'} · ${({claude:'Claude, grounded in the country pack', gemini:'Gemini (free test tier), grounded in the country pack', offline:'offline pack on this phone (no internet)', fallback:'rules + pre-checked text', safety_rule:'safety rule (no AI)'})[t.answeredBy] || t.answeredBy}${t.latency != null ? ` · ${t.latency} ms` : ''}` : (t.live ? 'Claude, live (quick tier)' : 'Scripted demo answer')));
+  add('Answered by', el('span','small', t.api ? `${t.answeredBy === 'offline' ? 'This phone' : 'HerEvo backend'} · ${({claude:'Claude, grounded in the country pack', gemini:'Gemini (free test tier), grounded in the country pack', offline:'offline pack on this phone (no internet)', fallback:'rules + pre-checked text', safety_rule:'safety rule (no AI)', helper_relay:'relayed to the trained helper (no AI)'})[t.answeredBy] || t.answeredBy}${t.latency != null ? ` · ${t.latency} ms` : ''}` : (t.live ? 'Claude, live (quick tier)' : 'Scripted demo answer')));
 }
 
 function renderLedger(){
@@ -516,7 +522,33 @@ async function loadEvidence(){
   }catch(e){ /* the sample map still works */ }
 }
 
-function render(){ renderCallers(); renderChips(); renderThread(); renderLedger(); renderHeat(); const tt = turnsBy[current]; renderTrace(tt[tt.length-1]); }
+function render(){ renderCallers(); renderChips(); renderThread(); renderLedger(); renderHeat(); const tt = turnsBy[current].filter(t => !t.helper); renderTrace(tt[tt.length-1]); }
+
+/* Replies from a trained helper (sent with /reply in the helpers' Telegram group) reach her open page. */
+const inboxTimers = {};
+function watchInbox(key){
+  if (!api || inboxTimers[key]) return;
+  try{ localStorage.setItem('herevo-case-' + key, String(Date.now())); }catch(e){}
+  const until = Date.now() + 60 * 60 * 1000;  // keep listening for an hour after the case was opened
+  const poll = async () => {
+    if (Date.now() > until){ clearInterval(inboxTimers[key]); delete inboxTimers[key]; return; }
+    try{
+      const r = await fetch('/v1/inbox/' + encodeURIComponent(sessionFor(key)), {cache:'no-store'});
+      if (!r.ok) return;
+      const {messages} = await r.json();
+      if (!messages || !messages.length) return;
+      for (const m of messages) turnsBy[key].push({helper:true, reply:m.text, caseId:m.case, says:'', intent:'SAFETY'});
+      if (key === current){ renderThread(); $('hint').textContent = 'A trained helper replied.'; }
+    }catch(e){ /* offline: try again next time */ }
+  };
+  inboxTimers[key] = setInterval(poll, 8000); poll();
+}
+function resumeInboxes(){
+  for (const key of Object.keys(CALLERS)){
+    let at = 0; try{ at = Number(localStorage.getItem('herevo-case-' + key)) || 0; }catch(e){}
+    if (at && Date.now() - at < 60 * 60 * 1000) watchInbox(key);
+  }
+}
 
 function addSale(sale){
   const c = CALLERS[current]; c.ledger.forEach(r => r.fresh = false);
@@ -566,11 +598,12 @@ async function askApi(text, saysEn){
     commit({intent: r.intent, conf: r.confidence ?? 0.7, says: text, saysEn: saysEn || '', reply: r.reply, replyEn: r.reply_en,
       source: r.answered_by === 'fallback'
         ? `${cites ? 'Closest pre-checked pack passage · ' + cites : 'Pre-checked fallback message'} · AI unavailable${r.fallback_reason ? ': ' + r.fallback_reason : ''}`
-        : cites || ({safety_rule:'Safety rule, before any AI'})[r.answered_by] || 'Country pack',
+        : cites || ({safety_rule:'Safety rule, before any AI', helper_relay:`Sent to her trained helper (case #${r.escalation_id}), not to the AI`})[r.answered_by] || 'Country pack',
       safety: r.safety, sale: r.sale ? {item: r.sale.product || 'Sale', amt: r.sale.amount} : null,
       gap: GAP_NAME[r.gap] || null, live: true, api: true, answeredBy: r.answered_by, escalationId: r.escalation_id, latency: r.latency_ms, language: r.language, replyLanguage: r.reply_language, helperAlerted: r.helper_alerted,
       steps: r.steps || [], stepsEn: r.steps_en || [], calculation: r.calculation, doc: r.document});
     $('freeText').value = ''; $('hint').textContent = `Answered by the HerEvo backend in ${r.latency_ms} ms.`;
+    if (r.safety === 'ESCALATE' && r.helper_alerted) watchInbox(c.key);
   }catch(err){
     pending = null;
     const why = err.name === 'AbortError' ? 'No answer from the server in 60 s' : /^HTTP \d+/.test(err.message) ? `The server had an error (${err.message})` : 'No connection';
@@ -712,7 +745,7 @@ render(); setMode();
 
 const ON_BACKEND = /^https?:$/.test(location.protocol) && !/(^|\.)claude(usercontent)?\.(ai|com)$/.test(location.hostname);
 if (ON_BACKEND){
-  api = true; apiTest = true; setMode(); loadPacks();
+  api = true; apiTest = true; setMode(); loadPacks(); resumeInboxes();
   try{ if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js'); }catch(e){}
 }
 (async () => {

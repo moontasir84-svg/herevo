@@ -182,6 +182,17 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
         db.set_preferred_language(uid, channel, cc, asked)
     lang = asked or db.preferred_language(uid) or lang_in  # once she asks for a language, keep using it
 
+    # 0. While a safety case is open, she is talking to her trained helper, not to the AI.
+    case = db.active_case(uid)
+    if case and "sent_to_helper" in pack["messages"]:
+        prefix = "[TEST MODE · made-up message] " if get_settings().is_test else ""
+        if get_notifier().notify_helper(f"{prefix}💬 Case #{case['id']} · she says:\n{text[:1000]}\n\n"
+                                        f"Reply: /reply {case['id']} <message>   Close the case: /close {case['id']}"):
+            result = TurnResult(reply=_msg(pack, "sent_to_helper", lang), reply_en=_msg(pack, "sent_to_helper", "en"),
+                                intent="SAFETY", confidence=None, safety="ESCALATE", answered_by="helper_relay",
+                                escalation_id=case["id"], helper_alerted=True)
+            return _finish(result, uid, channel, lang, text, t0, model=None)
+
     # 1. Safety first, before any AI.
     screen = safety.screen(text)
     if screen.escalate:
@@ -315,7 +326,8 @@ def _escalate(uid, channel, cc, district, lang, pack, *, reason, message, answer
     alert = (f"{prefix}🔴 HerEvo safety case #{eid}\nCountry: {cc}  District: {district or 'unknown'}  Channel: {channel}\n"
              f"Language: {lang}\nShe said: {message[:500]}\n\n" +
              (f"Reply to her through the bot with:\n/reply {eid} <your message>" if channel.startswith("telegram")
-              else "She wrote on the website chat, which cannot receive replies. She was given the helpline numbers."))
+              else f"She wrote on the website chat. Reply with:\n/reply {eid} <your message>\n"
+                   "She sees it while her page is open."))
     sent = get_notifier().notify_helper(alert)
     if not sent:
         log.error("escalation %s could not alert a helper", eid)

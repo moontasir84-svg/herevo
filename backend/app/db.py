@@ -228,6 +228,20 @@ def escalation(eid: int) -> dict | None:
         return conn.execute("SELECT * FROM escalations WHERE id = %s", (eid,)).fetchone()
 
 
+def active_case(uid: str, minutes: int = 60) -> dict | None:
+    """Her open safety case, if it was opened or answered within the last hour."""
+    with pool().connection() as conn:
+        return conn.execute(
+            """SELECT * FROM escalations WHERE user_id = %s AND status <> 'closed'
+                 AND GREATEST(created_at, COALESCE(contacted_at, created_at)) > now() - make_interval(mins => %s)
+               ORDER BY id DESC LIMIT 1""", (uid, minutes)).fetchone()
+
+
+def close_case(eid: int) -> bool:
+    with pool().connection() as conn:
+        return conn.execute("UPDATE escalations SET status = 'closed' WHERE id = %s", (eid,)).rowcount > 0
+
+
 def mark_contacted(eid: int) -> None:
     with pool().connection() as conn:
         conn.execute("UPDATE escalations SET status = 'contacted', contacted_at = now() WHERE id = %s", (eid,))
@@ -255,8 +269,23 @@ def recent_turns(uid: str, limit: int = 6, hours: int = 12) -> list[dict]:
     return list(reversed(rows))
 
 
+def add_inbox(uid: str, escalation_id: int, text: str) -> None:
+    with pool().connection() as conn:
+        conn.execute("INSERT INTO inbox (user_id, escalation_id, text) VALUES (%s, %s, %s)", (uid, escalation_id, text))
+
+
+def take_inbox(uid: str) -> list[dict]:
+    """Helper replies she has not seen yet; marked as delivered once handed to her page."""
+    with pool().connection() as conn:
+        return conn.execute(
+            """UPDATE inbox SET delivered = TRUE WHERE id IN (
+                   SELECT id FROM inbox WHERE user_id = %s AND NOT delivered ORDER BY id)
+               RETURNING id, escalation_id, text, created_at""", (uid,)).fetchall()
+
+
 def purge_old_messages(days: int = 30) -> int:
     with pool().connection() as conn:
         cur = conn.execute("UPDATE turns SET message = NULL, reply = NULL WHERE (message IS NOT NULL OR reply IS NOT NULL) "
                            "AND created_at < now() - make_interval(days => %s)", (days,))
+        conn.execute("DELETE FROM inbox WHERE created_at < now() - make_interval(days => %s)", (days,))
         return cur.rowcount

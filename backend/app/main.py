@@ -181,6 +181,13 @@ def ask(body: AskIn):
     return handle(uid=uid, channel="web", text=body.text, country=country, district=body.district).to_dict()
 
 
+@app.get("/v1/inbox/{session_id}")
+def inbox(session_id: str):
+    """Messages from a trained helper for a woman on the website (polled by her open page)."""
+    rows = db.take_inbox(db.user_id_for("web", session_id))
+    return {"messages": [{"case": r["escalation_id"], "text": r["text"], "at": r["created_at"].isoformat()} for r in rows]}
+
+
 @app.get("/v1/ledger/{session_id}")
 def ledger(session_id: str):
     rows = db.ledger(db.user_id_for("web", session_id))

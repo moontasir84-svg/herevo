@@ -15,6 +15,9 @@ messages:
   escalate:
     bn: "আপনি একা নন। আমি এখনই একজন প্রশিক্ষিত সহায়তাকর্মীকে জানাচ্ছি, তিনি এই চ্যাটে আপনার সাথে যোগাযোগ করবেন। এখনই বিপদে থাকলে ৯৯৯ নম্বরে কল করুন। নারী ও শিশু নির্যাতন প্রতিরোধ হেল্পলাইন ১০৯ (টোল-ফ্রি)।"
     en: "You are not alone. I am alerting a trained helper right now, who will contact you in this chat. If you are in danger now, call 999. Helpline for violence against women and children: 109 (toll-free)."
+  sent_to_helper:
+    bn: "আপনার বার্তা সহায়তাকর্মীর কাছে পাঠানো হয়েছে। তিনি এই চ্যাটেই উত্তর দেবেন। এখনই বিপদে থাকলে ৯৯৯ নম্বরে কল করুন।"
+    en: "Your message has been sent to your helper, who will answer in this chat. If you are in danger now, call 999."
   not_covered:
     bn: "এই প্রশ্নের নির্ভরযোগ্য উত্তর আমার কাছে এখনো নেই। বিনামূল্যে আইনি সহায়তার জন্য জাতীয় আইনগত সহায়তা হেল্পলাইন ১৬৪৩০ নম্বরে কল করুন।"
     en: "I don't have a reliable answer to this yet. For free legal help, call the National Legal Aid helpline 16430."

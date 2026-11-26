@@ -218,8 +218,14 @@ def handle_update(update: dict) -> None:
 def _handle_helper(text: str, helper) -> None:
     """/reply <case_id> <message>: the helper answers a woman without ever seeing her identity."""
     sender = get_sender()  # answers go back to the helpers' chat the command came from
+    m = re.match(r"^/close(?:@\w+)?\s+(?:case\s+|#)?(\d+)", text, flags=re.IGNORECASE)
+    if m:
+        ok = db.close_case(int(m.group(1)))
+        sender.send(helper, f"Case {m.group(1)} closed: her next messages go to HerEvo again." if ok
+                    else f"Case {m.group(1)} not found.")
+        return
     if not text.startswith("/reply"):
-        sender.send(helper, "Use: /reply <case number> <your message>")
+        sender.send(helper, "Use: /reply <case number> <your message>   or   /close <case number>")
         return
     # Accept "/reply 3 ...", "/reply #3 ..." and "/reply case 3 ..."
     parts = re.sub(r"^(/reply(?:@\w+)?)\s+(?:case\s+|#)?", r"\1 ", text, flags=re.IGNORECASE).split(maxsplit=2)
@@ -231,8 +237,10 @@ def _handle_helper(text: str, helper) -> None:
         sender.send(helper, f"Case {parts[1]} not found.")
         return
     if not str(case["channel"]).startswith("telegram"):
-        sender.send(helper, f"Case {case['id']} came from the website chat, which cannot receive replies. "
-                            "Replies reach women who use HerEvo on Telegram.")
+        # She wrote on the website: her open page picks the reply up within seconds.
+        db.add_inbox(case["user_id"], case["id"], parts[2])
+        db.mark_contacted(case["id"])
+        sender.send(helper, f"Sent to case {case['id']} (website chat: she sees it while her page is open).")
         return
     user = db.get_user(case["user_id"])
     if not user or not user.get("address"):

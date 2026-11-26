@@ -12,6 +12,9 @@ messages:
   escalate:
     sw: "Hauko peke yako. Ninamjulisha mhudumu aliyefunzwa sasa hivi, atawasiliana nawe hapa. Ukiwa hatarini sasa, piga 999 au 112. Simu ya msaada wa ukatili wa kijinsia: 1195 (bure)."
     en: "You are not alone. I am alerting a trained helper right now, who will contact you here. If you are in danger now, call 999 or 112. Gender-based violence helpline: 1195 (free)."
+  sent_to_helper:
+    sw: "Ujumbe wako umetumwa kwa mhudumu wako, atakujibu hapa. Ukiwa hatarini sasa, piga 999 au 112."
+    en: "Your message has been sent to your helper, who will answer here. If you are in danger now, call 999 or 112."
   not_covered:
     sw: "Sina jibu la uhakika kwa swali hili bado. Kwa msaada wa kisheria bila malipo, wasiliana na Huduma ya Kitaifa ya Msaada wa Kisheria (NLAS) au FIDA Kenya."
     en: "I don't have a reliable answer to this yet. For free legal help, contact the National Legal Aid Service (NLAS) or FIDA Kenya."

@@ -12,6 +12,9 @@ messages:
   escalate:
     es: "No está sola. Estoy avisando ahora mismo a una persona capacitada, que la contactará aquí. Si está en peligro ahora, llame al 911. Para denuncias anónimas: 089."
     en: "You are not alone. I am alerting a trained helper right now, who will contact you here. If you are in danger now, call 911. For anonymous reports: 089."
+  sent_to_helper:
+    es: "Su mensaje fue enviado a la persona que la acompaña, que le responderá aquí. Si está en peligro ahora, llame al 911."
+    en: "Your message has been sent to your helper, who will answer here. If you are in danger now, call 911."
   not_covered:
     es: "Todavía no tengo una respuesta confiable para esta pregunta. Para asesoría legal gratuita, acuda a la Defensoría Pública de su estado."
     en: "I don't have a reliable answer to this yet. For free legal advice, go to your state's Public Defender's Office (Defensoría Pública)."
