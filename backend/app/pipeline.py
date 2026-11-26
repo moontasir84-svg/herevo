@@ -15,6 +15,7 @@ from dataclasses import asdict, dataclass, field
 
 from . import db, safety
 from .alerts import get_notifier
+from .config import get_settings
 from .llm import ValidationError, get_llm, parse
 from .packs import entry_gap, load_pack
 from .retrieval import retrieve
@@ -157,7 +158,8 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
 def _escalate(uid, channel, cc, district, lang, pack, *, reason, message, answered_by) -> TurnResult:
     eid = db.add_escalation(uid, channel, reason)
     db.add_case(cc, district, "SAFETY", "safety_threats")
-    alert = (f"🔴 HerEvo safety case #{eid}\nCountry: {cc}  District: {district or 'unknown'}  Channel: {channel}\n"
+    prefix = "[TEST MODE · made-up message] " if get_settings().is_test else ""
+    alert = (f"{prefix}🔴 HerEvo safety case #{eid}\nCountry: {cc}  District: {district or 'unknown'}  Channel: {channel}\n"
              f"Language: {lang}\nShe said: {message[:500]}\n\nReply to her through the bot with:\n/reply {eid} <your message>")
     sent = get_notifier().notify_helper(alert)
     if not sent:

@@ -122,8 +122,62 @@ class ClaudeLLM:
         raise ValueError("Claude did not call the respond tool")
 
 
+def to_gemini_schema(schema: dict) -> dict:
+    """Convert our JSON Schema to Gemini's OpenAPI-style schema (upper-case types, nullable flag)."""
+    out: dict = {}
+    t = schema.get("type")
+    if isinstance(t, list):
+        non_null = [x for x in t if x != "null"]
+        out["nullable"] = "null" in t
+        t = non_null[0] if non_null else "string"
+    if t:
+        out["type"] = t.upper()
+    for key in ("description", "enum", "required", "minimum", "maximum"):
+        if key in schema:
+            out[key] = schema[key]
+    if "properties" in schema:
+        out["properties"] = {k: to_gemini_schema(v) for k, v in schema["properties"].items()}
+    if "items" in schema:
+        out["items"] = to_gemini_schema(schema["items"])
+    return out
+
+
+class GeminiLLM:
+    """Gemini free tier, for DATA_MODE=test with made-up messages only (see config.check_safe).
+    Same prompt and same forced structured output as Claude, through Gemini function calling."""
+
+    URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+
+    def __init__(self, api_key: str, model: str, max_tokens: int):
+        self.key = api_key
+        self.model = model
+        self.max_tokens = max_tokens
+
+    def respond(self, language: str, passages: list[dict], message: str) -> dict:
+        import httpx
+
+        system = SYSTEM_PROMPT.format(language_name=LANGUAGE_NAMES.get(language, "the caller's language"))
+        user = f"Knowledge passages:\n{format_passages(passages)}\n\nCaller says:\n{message}"
+        body = {
+            "systemInstruction": {"parts": [{"text": system}]},
+            "contents": [{"role": "user", "parts": [{"text": user}]}],
+            "tools": [{"functionDeclarations": [{"name": RESPOND_TOOL["name"],
+                                                 "description": RESPOND_TOOL["description"],
+                                                 "parameters": to_gemini_schema(RESPOND_TOOL["input_schema"])}]}],
+            "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames": ["respond"]}},
+            "generationConfig": {"maxOutputTokens": self.max_tokens, "temperature": 0.2},
+        }
+        r = httpx.post(self.URL.format(model=self.model), headers={"x-goog-api-key": self.key}, json=body, timeout=30)
+        r.raise_for_status()
+        for part in r.json()["candidates"][0]["content"]["parts"]:
+            call = part.get("functionCall")
+            if call and call.get("name") == "respond":
+                return dict(call.get("args") or {})
+        raise ValueError("Gemini did not call the respond function")
+
+
 def parse(raw: dict, passage_ids: set[str]) -> Respond:
-    """Validate Claude's output. Citations to passages it was not given are dropped."""
+    """Validate the model's output. Citations to passages it was not given are dropped."""
     r = Respond.model_validate(raw)
     r.cited_ids = [c for c in r.cited_ids if c in passage_ids]
     if r.safety == "ESCALATE":
@@ -138,7 +192,9 @@ def get_llm() -> LLM | None:
     global _llm
     if _llm is None:
         s = get_settings()
-        if s.anthropic_api_key:
+        if s.llm_provider == "gemini" and s.gemini_api_key:
+            _llm = GeminiLLM(s.gemini_api_key, s.gemini_model, s.claude_max_tokens)
+        elif s.llm_provider == "claude" and s.anthropic_api_key:
             _llm = ClaudeLLM(s.anthropic_api_key, s.claude_model, s.claude_max_tokens)
     return _llm
 

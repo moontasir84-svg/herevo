@@ -2,6 +2,24 @@
 
 FastAPI + PostgreSQL/pgvector + Claude. One endpoint per channel, one pipeline for everything.
 
+## Two modes: free test, then paid live
+
+| | Phase 1: **test** (free) | Phase 2: **live** (real women) |
+|---|---|---|
+| `DATA_MODE` | `test` | `live` |
+| Model (`LLM_PROVIDER`) | `gemini` (Google AI Studio free key) | `claude` (about USD 0.002 per message) |
+| Voice notes (`SPEECH_PROVIDER`) | `gemini`: transcription, text replies | `google`: transcription and voice replies (needs billing) |
+| Database, hosting, Telegram, embeddings | Supabase, Render, Telegram, Voyage: free | same |
+| Who uses it | the team, with **made-up** messages | real women, with consent |
+
+Free tiers such as Gemini's may use submitted content to improve the provider's products and may be read
+by human reviewers, and their terms say not to send personal information. So in test mode every user
+sees a "test version: use made-up examples" notice, helper alerts are labelled `[TEST MODE]`, and the
+server **refuses to start** in live mode with a free-tier provider.
+
+Switching to live is only settings: `DATA_MODE=live`, `LLM_PROVIDER=claude`, `ANTHROPIC_API_KEY=...`,
+`SPEECH_PROVIDER=google`, `GOOGLE_API_KEY=...`. No code changes.
+
 ## Run it locally
 
 Needs Python 3.12+ and PostgreSQL 15+ with the `pgvector` extension.
@@ -21,7 +39,7 @@ rule-based fallback. Add the key to get Claude's grounded answers.
 
 ```bash
 createdb herevo_test                  # once
-python -m pytest -q                   # 51 tests: safety, retrieval, pipeline, API, Telegram, voice, MCP
+python -m pytest -q                   # 58 tests: safety, retrieval, pipeline, API, Telegram, voice, MCP
 ```
 
 Tests use a real Postgres + pgvector database with a fake Claude, fake Telegram and fake speech service,
@@ -43,7 +61,7 @@ Re-run it after every change to a prompt, pack or safety term.
    **Session pooler** connection string (works on IPv4) as `DATABASE_URL`. pgvector is enabled
    automatically on first start.
 2. **API (Render, free):** *New → Blueprint →* this repo. Render reads `render.yaml`. Fill in the secret
-   values it asks for: `DATABASE_URL`, `ANTHROPIC_API_KEY`, `TELEGRAM_BOT_TOKEN`, `HELPER_CHAT_ID`,
+   values it asks for: `DATABASE_URL`, `GEMINI_API_KEY` (phase 1) or `ANTHROPIC_API_KEY` (phase 2), `TELEGRAM_BOT_TOKEN`, `HELPER_CHAT_ID`,
    optional `VOYAGE_API_KEY` (then set `EMBEDDINGS_PROVIDER=voyage`) and `GOOGLE_API_KEY` (voice notes).
 3. **Telegram:** after the first deploy, point the bot at the API (once):
    ```bash
@@ -61,12 +79,14 @@ Use a paid instance (or a ping) for the pilot and the Congress Day demo.
 
 | Variable | Purpose |
 |---|---|
+| `DATA_MODE` | `test` (made-up messages, free providers allowed) or `live` (real women) |
 | `DATABASE_URL` | Postgres with pgvector |
+| `LLM_PROVIDER`, `GEMINI_API_KEY`, `GEMINI_MODEL` | `gemini` (free, test only) or `claude` |
 | `ANTHROPIC_API_KEY`, `CLAUDE_MODEL` | Claude (default `claude-haiku-5-5`) |
 | `EMBEDDINGS_PROVIDER` | `hash` (offline, free) or `voyage` (multilingual semantic search, needs `VOYAGE_API_KEY`) |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET` | Telegram channel |
 | `HELPER_CHAT_ID` | Telegram chat that receives safety alerts |
-| `GOOGLE_API_KEY`, `VOICE_REPLIES` | Voice notes: Google Speech-to-Text and Text-to-Speech |
+| `SPEECH_PROVIDER`, `GOOGLE_API_KEY`, `VOICE_REPLIES` | Voice notes: `gemini` (free, test only) or `google` (Speech-to-Text + Text-to-Speech) |
 | `ID_SALT` | Secret salt for hashing user ids; never change after launch |
 
 ## API

@@ -60,8 +60,10 @@ def rate_limited(key: str) -> bool:
 @app.get("/health")
 def health():
     s = get_settings()
-    return {"ok": True, "version": __version__, "countries": available_countries(),
+    return {"ok": True, "version": __version__, "countries": available_countries(), "data_mode": s.data_mode,
+            "llm": s.llm_provider if (s.anthropic_api_key or s.gemini_api_key) else None,
             "claude": bool(s.anthropic_api_key), "embeddings": s.embeddings_provider,
+            "speech": s.speech_provider if (s.google_api_key or s.gemini_api_key) else None,
             "telegram": bool(s.telegram_bot_token), "helper_alerts": bool(s.helper_chat_id)}
 
 

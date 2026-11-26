@@ -314,7 +314,7 @@ let current = 'bd', turnsBy = {bd:[], ke:[], mx:[]}, lastBump = null, started = 
 let sample = null, tts = null, dictation = null, busy = false;
 /* Live backend mode: when this page is served by the HerEvo API, every message goes to the real system
    (safety screen, country-pack retrieval, Claude, records). */
-let api = false;
+let api = false, apiTest = false;
 const GAP_NAME = {land_inheritance:'Land & inheritance', unpaid_wages:'Unpaid wages', family_support:'Family support', safety_threats:'Safety threats'};
 function sessionFor(key){
   let base = null;
@@ -542,7 +542,7 @@ async function speak(text, lang){
 
 function setMode(){
   const m = $('mode'); m.textContent = '';
-  if (api){ m.append(el('b',null,'● Live backend'), document.createTextNode(' · every message goes through the real HerEvo system')); return; }
+  if (api){ m.append(el('b',null,'● Live backend'), document.createTextNode(apiTest ? ' · TEST MODE: use made-up messages only, never real personal information' : ' · every message goes through the real HerEvo system')); return; }
   if (sample){ m.append(el('b',null,'● Live AI'), document.createTextNode(' · typed questions answered by Claude')); }
   else m.textContent = 'Scripted demo · typed questions use the offline router';
 }
@@ -557,7 +557,7 @@ render(); setMode();
   try{
     const r = await fetch('/health', {cache:'no-store'});
     const h = r.ok ? await r.json() : null;
-    if (h && h.ok && Array.isArray(h.countries)){ api = true; setMode(); }
+    if (h && h.ok && Array.isArray(h.countries)){ api = true; apiTest = h.data_mode !== 'live'; setMode(); }
   }catch(e){ /* not served by the backend: keep the scripted / Claude demo */ }
 })();
 

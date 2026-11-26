@@ -94,6 +94,14 @@ def _voice_to_text(msg: dict) -> tuple[str | None, str | None]:
     return (text, None) if text else (None, VOICE_UNCLEAR)
 
 
+TEST_NOTICE = ("⚠️ পরীক্ষামূলক সংস্করণ: আসল নাম, ঠিকানা বা ব্যক্তিগত ঘটনা লিখবেন না, বানানো উদাহরণ ব্যবহার করুন।\n"
+               "⚠️ Test version: do not share real names, places or personal stories. Use made-up examples.\n\n")
+
+
+def _welcome(pack) -> str:
+    return (TEST_NOTICE if get_settings().is_test else "") + _text(pack, "welcome", "bn")
+
+
 def handle_update(update: dict) -> None:
     msg = update.get("message") or update.get("edited_message")
     if not msg or ("text" not in msg and "voice" not in msg):
@@ -124,7 +132,7 @@ def handle_update(update: dict) -> None:
     sender = get_sender()
 
     if text.startswith("/start"):
-        sender.send(chat_id, _text(pack, "welcome", "bn"))
+        sender.send(chat_id, _welcome(pack))
         return
     if text.startswith("/delete"):
         db.delete_user(uid)
@@ -147,7 +155,7 @@ def handle_update(update: dict) -> None:
             db.set_consent(uid, True)
             sender.send(chat_id, "ধন্যবাদ। এখন আপনার প্রশ্ন লিখুন। / Thank you. Now type your question.")
         else:
-            sender.send(chat_id, _text(pack, "welcome", "bn"))
+            sender.send(chat_id, _welcome(pack))
         return
 
     result = handle(uid=uid, channel="telegram-voice" if by_voice else "telegram", text=text, country=cc,

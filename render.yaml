@@ -9,9 +9,21 @@ services:
     region: singapore
     healthCheckPath: /health
     envVars:
+      # Phase 1 (free): DATA_MODE=test with Gemini. Phase 2 (pilot): DATA_MODE=live, LLM_PROVIDER=claude,
+      # SPEECH_PROVIDER=google. The server refuses to start if live mode uses a free-tier provider.
+      - key: DATA_MODE
+        value: test
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SPEECH_PROVIDER
+        value: gemini
       - key: DATABASE_URL
         sync: false
       - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: GOOGLE_API_KEY
         sync: false
       - key: CLAUDE_MODEL
         value: claude-haiku-5-5

@@ -1,7 +1,7 @@
 """Speech in and out, for women who prefer to talk rather than type.
 
-Google Cloud Speech-to-Text (Bangla: bn-BD) and Text-to-Speech, called over REST with a restricted API
-key. Audio is processed in memory and never stored."""
+Live: Google Cloud Speech-to-Text (Bangla: bn-BD) and Text-to-Speech over REST with a restricted API key.
+Test: Gemini free-tier transcription (made-up voice notes only). Audio is processed in memory, never stored."""
 from __future__ import annotations
 
 import base64
@@ -58,6 +58,34 @@ class GoogleSpeech:
             return None
 
 
+class GeminiSpeech:
+    """Free-tier transcription for DATA_MODE=test only (made-up voice notes). No voice replies."""
+
+    URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+
+    def __init__(self, api_key: str, model: str):
+        self.key = api_key
+        self.model = model
+
+    def transcribe(self, audio: bytes, language: str) -> str | None:
+        body = {"contents": [{"role": "user", "parts": [
+            {"text": "Transcribe this voice message exactly, in the language it is spoken in (usually Bangla). "
+                     "Return only the transcript, nothing else."},
+            {"inline_data": {"mime_type": "audio/ogg", "data": base64.b64encode(audio).decode()}}]}],
+            "generationConfig": {"temperature": 0}}
+        try:
+            r = httpx.post(self.URL.format(model=self.model), headers={"x-goog-api-key": self.key}, json=body, timeout=30)
+            r.raise_for_status()
+            parts = r.json()["candidates"][0]["content"]["parts"]
+            return " ".join(p.get("text", "") for p in parts).strip() or None
+        except (httpx.HTTPError, KeyError, IndexError, ValueError) as exc:
+            log.error("gemini transcription failed: %s", exc)
+            return None
+
+    def synthesize(self, text: str, language: str) -> bytes | None:
+        return None  # test mode answers voice notes with text only
+
+
 _speech: Speech | None = None
 _checked = False
 
@@ -65,8 +93,13 @@ _checked = False
 def get_speech() -> Speech | None:
     global _speech, _checked
     if not _checked:
-        key = get_settings().google_api_key
-        _speech = GoogleSpeech(key) if key else None
+        st = get_settings()
+        if st.speech_provider == "gemini" and st.gemini_api_key:
+            _speech = GeminiSpeech(st.gemini_api_key, st.gemini_model)
+        elif st.speech_provider == "google" and st.google_api_key:
+            _speech = GoogleSpeech(st.google_api_key)
+        else:
+            _speech = None
         _checked = True
     return _speech
 
