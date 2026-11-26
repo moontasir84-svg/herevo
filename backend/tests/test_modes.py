@@ -86,8 +86,40 @@ def test_test_mode_is_visible_to_users_and_helpers(fake_llm, recorder):
 def test_gemini_http_error_reports_reason(monkeypatch):
     monkeypatch.setattr(httpx, "post", lambda *a, **k: _Resp(
         {"error": {"status": "NOT_FOUND", "message": "models/x is not found"}}, status_code=404))
-    with pytest.raises(ValueError, match="404.*NOT_FOUND.*not found"):
+    with pytest.raises(ValueError, match="x HTTP 404 NOT_FOUND"):
         GeminiLLM("k", "x", 100).respond("bn", [], "x")
+
+
+def test_gemini_switches_model_when_overloaded(monkeypatch):
+    import app.llm as llm_mod
+    monkeypatch.setattr(llm_mod.time, "sleep", lambda s: None)
+    urls = []
+
+    def fake_post(url, json=None, timeout=None, headers=None, params=None):
+        urls.append(url.split("/models/")[1].split(":")[0])
+        if "main" in url:
+            return _Resp({"error": {"status": "UNAVAILABLE", "message": "The model is overloaded."}}, status_code=503)
+        if "gone" in url:
+            return _Resp({"error": {"status": "NOT_FOUND", "message": "retired"}}, status_code=404)
+        return _Resp({"candidates": [{"content": {"parts": [{"functionCall": {"name": "respond", "args": {"ok": 2}}}]}}]})
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    g = GeminiLLM("k", "main", 100, ("gone", "backup"))
+    assert g.respond("bn", [], "x") == {"ok": 2} and g.last_model == "backup"
+    assert urls == ["main", "main", "gone", "backup"]
+
+
+def test_gemini_bad_key_stops_without_trying_other_models(monkeypatch):
+    urls = []
+
+    def fake_post(url, **k):
+        urls.append(url)
+        return _Resp({"error": {"status": "UNAUTHENTICATED", "message": "API key not valid"}}, status_code=401)
+
+    monkeypatch.setattr(httpx, "post", fake_post)
+    with pytest.raises(ValueError, match="401"):
+        GeminiLLM("k", "main", 100, ("backup",)).respond("bn", [], "x")
+    assert all("main" in u for u in urls)
 
 
 def test_gemini_cut_off_response_is_explained(monkeypatch):

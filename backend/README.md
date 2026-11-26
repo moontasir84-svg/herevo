@@ -39,7 +39,7 @@ rule-based fallback. Add the key to get Claude's grounded answers.
 
 ```bash
 createdb herevo_test                  # once
-python -m pytest -q                   # 63 tests: safety, retrieval, pipeline, API, Telegram, voice, MCP, offline pack
+python -m pytest -q                   # 65 tests: safety, retrieval, pipeline, API, Telegram, voice, MCP, offline pack
 ```
 
 Tests use a real Postgres + pgvector database with a fake Claude, fake Telegram and fake speech service,
@@ -82,6 +82,7 @@ Use a paid instance (or a ping) for the pilot and the Congress Day demo.
 | `DATA_MODE` | `test` (made-up messages, free providers allowed) or `live` (real women) |
 | `DATABASE_URL` | Postgres with pgvector |
 | `LLM_PROVIDER`, `GEMINI_API_KEY`, `GEMINI_MODEL` | `gemini` (free, test only) or `claude` |
+| `GEMINI_BACKUP_MODELS` | Free Gemini models tried in order when the main one is overloaded, rate-limited or retired |
 | `ANTHROPIC_API_KEY`, `CLAUDE_MODEL` | Claude (default `claude-haiku-5-5`) |
 | `EMBEDDINGS_PROVIDER` | `hash` (offline, free) or `voyage` (multilingual semantic search, needs `VOYAGE_API_KEY`) |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET` | Telegram channel |

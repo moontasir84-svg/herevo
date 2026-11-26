@@ -2,6 +2,9 @@
 always structured; the result is validated with Pydantic before anything reaches the woman."""
 from __future__ import annotations
 
+import logging
+import time
+
 from typing import Literal, Protocol
 
 from pydantic import BaseModel, Field, ValidationError, field_validator
@@ -57,6 +60,9 @@ RESPOND_TOOL = {
         "required": ["intent", "confidence", "safety", "covered", "answer", "answer_en", "cited_ids"],
     },
 }
+
+
+log = logging.getLogger("herevo.llm")
 
 
 class Sale(BaseModel):
@@ -148,10 +154,22 @@ class GeminiLLM:
 
     URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
-    def __init__(self, api_key: str, model: str, max_tokens: int):
+    def __init__(self, api_key: str, model: str, max_tokens: int, backups: tuple[str, ...] = ()):
         self.key = api_key.strip()  # a stray space or newline from copy-paste makes Google reject the key
         self.model = model
+        self.models = [model] + [m for m in backups if m and m != model]
         self.max_tokens = max_tokens
+        self.last_model = model
+
+    def _post(self, httpx, model: str, body: dict):
+        url = self.URL.format(model=model)
+        r = httpx.post(url, headers={"x-goog-api-key": self.key}, json=body, timeout=25)
+        if r.status_code in (400, 401, 403):
+            # Some key formats are only accepted as the ?key= query parameter: try that once.
+            r2 = httpx.post(url, params={"key": self.key}, json=body, timeout=25)
+            if r2.status_code == 200 or r.status_code != 400:
+                return r2
+        return r
 
     def respond(self, language: str, passages: list[dict], message: str) -> dict:
         import httpx
@@ -169,22 +187,38 @@ class GeminiLLM:
             # so leave generous room or the function call gets cut off.
             "generationConfig": {"maxOutputTokens": max(self.max_tokens, 8192), "temperature": 0.2},
         }
-        url = self.URL.format(model=self.model)
-        r = httpx.post(url, headers={"x-goog-api-key": self.key}, json=body, timeout=60)
-        if r.status_code in (400, 401, 403):
-            # Some key formats are only accepted as the ?key= query parameter: try that once.
-            r2 = httpx.post(url, params={"key": self.key}, json=body, timeout=60)
-            if r2.status_code == 200 or r.status_code != 400:
-                r = r2
-        if r.status_code != 200:
-            # Google's error body names the reason (bad key, unknown model, invalid schema, quota). It never
-            # contains the key itself, so it is safe to log.
-            try:
-                err = r.json().get("error", {})
-                reason = f"{err.get('status')}: {err.get('message')}"
-            except ValueError:
-                reason = r.text[:300]
-            raise ValueError(f"Gemini HTTP {r.status_code} ({self.model}): {reason}")
+        data, notes = None, []
+        deadline = time.monotonic() + 50
+        for model in self.models:
+            for attempt in range(2):  # an overloaded model often answers on the second try
+                if time.monotonic() > deadline:
+                    break
+                try:
+                    r = self._post(httpx, model, body)
+                except httpx.HTTPError as exc:  # network trouble: class name only, never the URL (it may hold the key)
+                    notes.append(f"{model} network {type(exc).__name__}")
+                    continue
+                if r.status_code == 200:
+                    data = r.json()
+                    self.last_model = model
+                    break
+                try:
+                    err = r.json().get("error", {})
+                    status, detail = err.get("status") or "", err.get("message") or ""
+                except ValueError:
+                    status, detail = "", r.text[:200]
+                notes.append(f"{model} HTTP {r.status_code} {status}".strip())
+                log.warning("Gemini HTTP %s (%s): %s: %s", r.status_code, model, status, detail)
+                if r.status_code in (401, 403) or (r.status_code == 400 and "API key" in detail):
+                    # Bad key: every model will say the same, so stop here.
+                    raise ValueError(f"Gemini HTTP {r.status_code} ({model}): {status}: {detail}")
+                if r.status_code == 400 or r.status_code == 404:
+                    break  # this model can't take the request (unknown or retired): try the next one
+                time.sleep(1.5)  # 429 / 5xx: wait a moment, then retry or move on
+            if data is not None:
+                break
+        if data is None:
+            raise ValueError("Gemini failed: " + "; ".join(notes))
         data = r.json()
         cand = (data.get("candidates") or [{}])[0]
         for part in (cand.get("content") or {}).get("parts") or []:
@@ -212,7 +246,8 @@ def get_llm() -> LLM | None:
     if _llm is None:
         s = get_settings()
         if s.llm_provider == "gemini" and s.gemini_api_key:
-            _llm = GeminiLLM(s.gemini_api_key, s.gemini_model, s.claude_max_tokens)
+            _llm = GeminiLLM(s.gemini_api_key, s.gemini_model, s.claude_max_tokens,
+                             tuple(m.strip() for m in s.gemini_backup_models.split(",")))
         elif s.llm_provider == "claude" and s.anthropic_api_key:
             _llm = ClaudeLLM(s.anthropic_api_key, s.claude_model, s.claude_max_tokens)
     return _llm

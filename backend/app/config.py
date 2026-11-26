@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     # Gemini free tier (Google AI Studio key) - test mode only
     gemini_api_key: str = ""
     gemini_model: str = "gemini-flash-latest"
+    # Tried in order when the main model is overloaded, rate-limited or retired.
+    gemini_backup_models: str = "gemini-flash-lite-latest,gemini-2.5-flash,gemini-2.5-flash-lite"
 
     # Embeddings: "voyage" in production, "hash" for offline tests and local dev
     embeddings_provider: str = "hash"

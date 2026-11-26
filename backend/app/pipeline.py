@@ -97,12 +97,18 @@ def why_fallback(exc: Exception | None, llm_configured: bool) -> str:
     msg = str(exc or "")
     if re.search(r"HTTP (401|403)|API key not valid|UNAUTHENTICATED|PERMISSION_DENIED|authentication", msg, re.I):
         return "the AI provider rejected the API key"
-    if re.search(r"HTTP 429|RESOURCE_EXHAUSTED|rate.?limit", msg, re.I):
+    tried = re.findall(r"([\w.-]+) (HTTP \d{3}(?: [A-Z_]+)?|network \w+)", msg)
+    detail = " (" + "; ".join(f"{m}: {e}" for m, e in tried[:4]) + ")" if tried else ""
+    if tried and all("429" in e for _, e in tried):
+        return "the free AI limit was reached; try again in a minute" + detail
+    if tried:
+        return "the AI provider did not answer" + detail
+    if re.search(r"HTTP 429|RESOURCE_EXHAUSTED", msg):
         return "the free AI limit was reached; try again in a minute"
     if re.search(r"HTTP 404|NOT_FOUND", msg):
         return "the AI model name was not found"
-    if re.search(r"HTTP 5\d\d|timed? ?out|Timeout|connect", msg, re.I):
-        return "the AI provider did not respond"
+    if re.search(r"HTTP 5\d\d", msg):
+        return "the AI provider did not answer"
     if isinstance(exc, (ValidationError, ValueError, KeyError, TypeError)):
         return "the AI reply failed HerEvo's checks"
     return "the AI call failed"
@@ -177,7 +183,7 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
         gap = next((entry_gap(cc, i) for i in cited if entry_gap(cc, i)), "other")
         db.add_case(cc, district, "RIGHTS", gap)
         result.gap = gap
-    return _finish(result, uid, channel, lang, text, t0, model=llm.model if parsed is not None else None)
+    return _finish(result, uid, channel, lang, text, t0, model=getattr(llm, "last_model", llm.model) if parsed is not None else None)
 
 
 def _escalate(uid, channel, cc, district, lang, pack, *, reason, message, answered_by) -> TurnResult:

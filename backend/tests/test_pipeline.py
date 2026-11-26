@@ -83,6 +83,9 @@ def test_fallback_reason_names_a_rejected_key_without_leaking_it(fake_llm, recor
     assert r.fallback_reason == "the AI provider rejected the API key"
     fake_llm.next = ValueError("Gemini HTTP 429 (gemini-flash-latest): RESOURCE_EXHAUSTED: quota")
     assert handle(uid=_uid(), channel="test", text="সঞ্চয় কীভাবে করব?").fallback_reason.startswith("the free AI limit")
+    fake_llm.next = ValueError("Gemini failed: gemini-flash-latest HTTP 503 UNAVAILABLE; gemini-2.5-flash network ConnectTimeout")
+    assert handle(uid=_uid(), channel="test", text="সঞ্চয় কীভাবে করব?").fallback_reason == (
+        "the AI provider did not answer (gemini-flash-latest: HTTP 503 UNAVAILABLE; gemini-2.5-flash: network ConnectTimeout)")
 
 
 def test_sale_is_recorded(fake_llm, recorder):
