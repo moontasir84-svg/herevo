@@ -12,7 +12,7 @@ Finalist, International AI Builders Congress 2026 · Team Headless Chickens
 | [`backend/`](backend/) | The HerEvo API (Python, FastAPI, PostgreSQL + pgvector, Claude). Safety screen, hybrid retrieval, grounded answers, income records, evidence map, Telegram bot with voice notes. [Setup and deploy guide](backend/README.md). |
 | [`data/packs/`](data/packs/) | Country packs: reviewed knowledge for Bangladesh, Kenya and Mexico, every statement with its source. A new country is a new pack, not new code. |
 | [`web/`](web/) | The web app. Served by the backend, every message goes through the real system; opened anywhere else, it runs as a scripted demo. |
-| [`mcp/`](mcp/) | `herevo-country-packs` MCP server: the same packs and safety screen, so NGOs and other AI assistants can reuse HerEvo's verified content. |
+| [`mcp/`](mcp/) | Three MCP servers: `herevo-country-packs` (the same packs and safety screen as the app, so NGOs and other AI assistants can reuse HerEvo's verified content), `herevo-evidence` (anonymized rights-gap counts for the evidence map) and `herevo-pack-review` (checks a country pack against HerEvo's content rules before it can answer anyone). |
 | [`eval/`](eval/) | Evaluation set (50 questions) and its latest report. |
 | [`docs/`](docs/) | Architecture. |
 
