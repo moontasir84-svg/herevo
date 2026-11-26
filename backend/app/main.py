@@ -68,6 +68,59 @@ def health():
             "telegram": bool(s.telegram_bot_token), "helper_alerts": bool(s.helper_chat_id)}
 
 
+_ai_check: dict = {"at": 0.0, "result": None}
+
+
+@app.get("/health/ai")
+def health_ai():
+    """Tests the AI with one short, made-up question and shows exactly what the provider said.
+    Never shows the key. Cached for 60 seconds so opening it repeatedly does not use up the free quota."""
+    if _ai_check["result"] and time.monotonic() - _ai_check["at"] < 60:
+        return {**_ai_check["result"], "cached": True}
+    from .llm import get_llm
+    s = get_settings()
+    key = (s.gemini_api_key if s.llm_provider == "gemini" else s.anthropic_api_key) or ""
+    out: dict = {"provider": s.llm_provider, "data_mode": s.data_mode,
+                 "key": {"set": bool(key.strip()), "length": len(key.strip()),
+                         "has_spaces_or_quotes": key != key.strip() or any(c in key for c in " \"'\n"),
+                         "looks_like_google_key": key.strip().startswith("AIza")} if s.llm_provider == "gemini"
+                 else {"set": bool(key.strip()), "length": len(key.strip())}}
+    llm = get_llm()
+    if llm is None:
+        out.update(ok=False, verdict="No AI key is set on the server. Add it in Render → Environment.")
+    else:
+        t0 = time.monotonic()
+        try:
+            raw = llm.respond("en", [{"id": "test#0", "title": "Test", "context": "", "body": "Rice needs water.",
+                                      "source_name": "test", "review_status": "draft"}], "How do I grow rice?")
+            out.update(ok=True, model_used=getattr(llm, "last_model", llm.model),
+                       verdict="The AI works. HerEvo answers with it.", fields=sorted(raw))
+        except Exception as exc:  # report, never crash
+            msg = str(exc)
+            if s.llm_provider == "gemini":
+                msg = msg.replace(s.gemini_api_key.strip(), "[key]") if s.gemini_api_key.strip() else msg
+            out.update(ok=False, error=f"{type(exc).__name__}: {msg[:600]}", verdict=_ai_verdict(msg))
+        out["seconds"] = round(time.monotonic() - t0, 1)
+    _ai_check.update(at=time.monotonic(), result=out)
+    return out
+
+
+def _ai_verdict(msg: str) -> str:
+    if any(x in msg for x in ("API key not valid", "API_KEY_INVALID", "401", "UNAUTHENTICATED")):
+        return "Google rejected the key. Copy the key again from AI Studio into Render (no spaces), or make a new one."
+    if "PERMISSION_DENIED" in msg or "403" in msg:
+        return "The key is not allowed to use Gemini. In AI Studio, create a new key in a new project."
+    if "429" in msg or "RESOURCE_EXHAUSTED" in msg:
+        return "The free quota for this key is used up or zero. In AI Studio, create a new key in a new project."
+    if "404" in msg or "NOT_FOUND" in msg:
+        return "The model names were not found for this key."
+    if "503" in msg or "UNAVAILABLE" in msg or "500" in msg:
+        return "Google's servers are busy. Try again in a few minutes."
+    if "network" in msg:
+        return "The server could not reach Google."
+    return "Unexpected error; send this page to the developer."
+
+
 class AskIn(BaseModel):
     session_id: str = Field(min_length=8, max_length=100)
     text: str = Field(min_length=1, max_length=2000)

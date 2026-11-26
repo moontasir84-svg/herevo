@@ -39,7 +39,7 @@ rule-based fallback. Add the key to get Claude's grounded answers.
 
 ```bash
 createdb herevo_test                  # once
-python -m pytest -q                   # 68 tests: safety, retrieval, pipeline, API, Telegram, voice, MCP, offline pack
+python -m pytest -q                   # 69 tests: safety, retrieval, pipeline, API, Telegram, voice, MCP, offline pack
 ```
 
 Tests use a real Postgres + pgvector database with a fake Claude, fake Telegram and fake speech service,
@@ -95,6 +95,7 @@ Use a paid instance (or a ping) for the pilot and the Congress Day demo.
 | Method | Path | |
 |---|---|---|
 | GET | `/health` | Status and which features are configured |
+| GET | `/health/ai` | Tests the AI with one made-up question and shows the provider's exact answer or error (never the key; cached 60 s) |
 | POST | `/v1/ask` | `{session_id, text, country, district}` → answer, intent, confidence, safety, citations, sale, gap |
 | GET | `/v1/ledger/{session_id}` | Her income record (web) |
 | GET | `/v1/evidence?min_count=5` | Anonymized counts for the evidence map; small cells hidden |

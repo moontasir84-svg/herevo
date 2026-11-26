@@ -163,10 +163,10 @@ class GeminiLLM:
 
     def _post(self, httpx, model: str, body: dict):
         url = self.URL.format(model=model)
-        r = httpx.post(url, headers={"x-goog-api-key": self.key}, json=body, timeout=25)
+        r = httpx.post(url, headers={"x-goog-api-key": self.key}, json=body, timeout=20)
         if r.status_code in (400, 401, 403):
             # Some key formats are only accepted as the ?key= query parameter: try that once.
-            r2 = httpx.post(url, params={"key": self.key}, json=body, timeout=25)
+            r2 = httpx.post(url, params={"key": self.key}, json=body, timeout=20)
             if r2.status_code == 200 or r.status_code != 400:
                 return r2
         return r
@@ -188,7 +188,7 @@ class GeminiLLM:
             "generationConfig": {"maxOutputTokens": max(self.max_tokens, 8192), "temperature": 0.2},
         }
         data, notes = None, []
-        deadline = time.monotonic() + 50
+        deadline = time.monotonic() + 30  # she is waiting: give up and use the checked fallback after 30 s
         for model in self.models:
             for attempt in range(2):  # an overloaded model often answers on the second try
                 if time.monotonic() > deadline:

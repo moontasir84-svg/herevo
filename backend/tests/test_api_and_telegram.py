@@ -125,3 +125,17 @@ def test_offline_pack_download():
     assert any(c["phone"] == "109" for c in p["contacts"])
     assert "হুমকি" in p["safety_terms"] and "escalate" in p["messages"]
     assert client.get("/v1/packs/zz").status_code == 404
+
+
+def test_ai_health_check_reports_failure_without_the_key(fake_llm):
+    import app.main as m
+    m._ai_check.update(at=0.0, result=None)
+    fake_llm.next = ValueError("Gemini failed: gemini-flash-latest HTTP 429 RESOURCE_EXHAUSTED")
+    r = client.get("/health/ai").json()
+    assert r["ok"] is False and "quota" in r["verdict"] and "429" in r["error"]
+    assert client.get("/health/ai").json()["cached"] is True
+    m._ai_check.update(at=0.0, result=None)
+    fake_llm.next = {"intent": "ADVICE"}
+    r = client.get("/health/ai").json()
+    assert r["ok"] is True and r["verdict"].startswith("The AI works")
+    m._ai_check.update(at=0.0, result=None)

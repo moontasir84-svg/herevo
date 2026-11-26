@@ -508,7 +508,8 @@ async function askApi(text, saysEn){
       gap: GAP_NAME[r.gap] || null, live: true, api: true, answeredBy: r.answered_by, escalationId: r.escalation_id, latency: r.latency_ms});
     $('freeText').value = ''; $('hint').textContent = `Answered by the HerEvo backend in ${r.latency_ms} ms.`;
   }catch(err){
-    if (offlinePackAnswer(text)) $('hint').textContent = 'No connection, so HerEvo answered from the country pack saved on this phone.';
+    const why = /^HTTP \d+/.test(err.message) ? `The server had an error (${err.message})` : 'No connection';
+    if (offlinePackAnswer(text)) $('hint').textContent = `${why}, so HerEvo answered from the country pack saved on this phone.`;
     else { offline(text); $('hint').textContent = 'Backend unreachable, so this answer came from the scripted demo.'; }
   }finally{ busy = false; $('send').disabled = false; }
 }
