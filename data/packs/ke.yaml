@@ -16,6 +16,12 @@ messages:
   sale_recorded:
     sw: "Nimeandika: shilingi {amount}. Imeongezwa kwenye historia ya mapato yako."
     en: "Recorded: {amount} shillings. It is added to your income history."
+  closest:
+    sw: "AI haipatikani sasa hivi. Taarifa iliyohakikiwa iliyo karibu zaidi (bado kwa Kiingereza):"
+    en: "The AI is not available right now. The closest checked information I have:"
+  hello:
+    sw: "Habari! Mimi ni HerEvo. Andika au sema swali lako kuhusu kazi, pesa, haki au usalama."
+    en: "Hello! I am HerEvo. Write or say your question about work, money, rights or safety."
   welcome:
     sw: "Habari, mimi ni HerEvo. Uliza swali lolote kuhusu kazi, pesa, haki au usalama. Hatuhifadhi jina wala nambari yako ya simu. Andika 'ndiyo' kuendelea."
     en: "Hello, I am HerEvo. Ask any question about work, money, rights or safety. We do not store your name or phone number. Type 'yes' to continue."

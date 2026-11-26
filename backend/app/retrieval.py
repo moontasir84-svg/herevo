@@ -25,4 +25,5 @@ def retrieve(country: str, query: str, top_k: int | None = None) -> list[dict]:
     kw_hits = db.keyword_search(country, query_terms(query), top_k * 2)
     # Keyword hits carry more weight with the offline hash embedder, which is not semantic.
     lists = [kw_hits, kw_hits, vec_hits] if get_settings().embeddings_provider != "voyage" else [vec_hits, kw_hits]
-    return rrf(lists)[:top_k]
+    kw_ids = {h["id"] for h in kw_hits}
+    return [{**p, "keyword_match": p["id"] in kw_ids} for p in rrf(lists)[:top_k]]

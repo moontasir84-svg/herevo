@@ -140,3 +140,23 @@ def test_kenya_escalation_message_in_swahili(fake_llm, recorder):
 def test_fallback_rights_case_uses_top_passage_category(recorder):
     handle(uid=_uid(), channel="test", text="স্বামী মারা যাওয়ার পর দেবর বলছে জমি আমার না।")
     assert db.evidence() == [{"country": "BD", "gap": "land_inheritance", "n": 1}]
+
+
+def test_greeting_gets_a_hello_not_a_legal_aid_number(recorder):
+    r = handle(uid=_uid(), channel="test", text="Hi")
+    assert r.answered_by == "fallback" and r.reply.startswith("Hello! I am HerEvo") and "16430" not in r.reply
+    assert handle(uid=_uid(), channel="test", text="আসসালামু আলাইকুম").reply.startswith("আসসালামু আলাইকুম! আমি HerEvo")
+    assert handle(uid=_uid(), channel="test", text="Hola", country="MX").reply.startswith("¡Hola! Soy HerEvo")
+
+
+def test_fallback_gives_closest_checked_passage_with_its_source(recorder):
+    r = handle(uid=_uid(), channel="test", text="স্বামী মারা যাওয়ার পর দেবর বলছে জমি আমার না।")
+    assert r.answered_by == "fallback" and r.intent == "RIGHTS"
+    assert r.reply.startswith("এআই এখন পাওয়া যাচ্ছে না") and "১৬৪৩০" in r.reply
+    assert r.citations and r.citations[0].id.startswith("bd-rights") and r.citations[0].review_status == "draft"
+    assert r.gap == "land_inheritance"
+
+
+def test_fallback_without_a_keyword_match_admits_it(recorder):
+    r = handle(uid=_uid(), channel="test", text="zzqx blorf")
+    assert r.citations == [] and r.reply.startswith("I don't have a reliable answer")

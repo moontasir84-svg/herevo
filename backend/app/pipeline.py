@@ -29,9 +29,9 @@ def detect_language(text: str) -> str:
     if re.search(r"[ঀ-৿]", text):
         return "bn"
     lowered = text.lower()
-    if re.search(r"\b(nina|wangu|mshahara|sijui|tafadhali|habari)\b", lowered):
+    if re.search(r"\b(nina|wangu|mshahara|sijui|tafadhali|habari|jambo|hujambo|mambo)\b", lowered):
         return "sw"
-    if re.search(r"[ñ¿¡]|\b(mi|tengo|cómo|como|hijos|dinero|pesos)\b", lowered):
+    if re.search(r"[ñ¿¡]|\b(mi|tengo|cómo|como|hijos|dinero|pesos|hola|buenos|buenas)\b", lowered):
         return "es"
     return "en"
 
@@ -80,6 +80,14 @@ def fallback_intent(text: str) -> str:
                  r"divorce|dowry|child support|pensión|mshahara)", norm, re.IGNORECASE):
         return "RIGHTS"
     return "ADVICE"
+
+
+_GREETING = re.compile(r"^\W*(hi+|hello|hey|salam|assalamu ?alaikum|আসসালামু আলাইকুম|সালাম|হ্যালো|হাই|নমস্কার|"
+                       r"habari|jambo|mambo|hujambo|hola|buen[oa]s (d[ií]as|tardes|noches))\W*$", re.IGNORECASE)
+
+
+def is_greeting(text: str) -> bool:
+    return bool(_GREETING.match(text.strip()))
 
 
 def fallback_sale(text: str, currency: str) -> dict | None:
@@ -163,16 +171,30 @@ def handle(*, uid: str, channel: str, text: str, country: str | None = None, dis
     else:
         # 4. Fallback: rules + pre-checked text only. Never an unvalidated answer.
         intent = fallback_intent(text)
+        cites: list[Citation] = []
         sale = fallback_sale(text, pack.get("currency", "BDT")) if intent == "EARN" else None
         if sale and "sale_recorded" in pack["messages"]:
             amt = f"{sale['amount']:,.0f}"
             local_amt = amt.translate(str.maketrans("0123456789", "০১২৩৪৫৬৭৮৯")) if lang == "bn" else amt
             reply, reply_en = (_msg(pack, "sale_recorded", lang).format(amount=local_amt),
                                _msg(pack, "sale_recorded", "en").format(amount=amt))
+        elif is_greeting(text) and "hello" in pack["messages"]:
+            reply, reply_en = _msg(pack, "hello", lang), _msg(pack, "hello", "en")
+            intent = "ADVICE"
+        elif passages and passages[0].get("keyword_match") and "closest" in pack["messages"]:
+            # Same as the phone's offline mode: the best-matching pre-checked pack passage, with its source.
+            top = passages[0]
+            passage = f"{top['title']}: {top['body']}"
+            reply = f"{_msg(pack, 'closest', lang)}\n\n{passage}"
+            reply_en = f"{_msg(pack, 'closest', 'en')}\n\n{passage}"
+            if intent == "RIGHTS":
+                reply += "\n\n" + _msg(pack, "not_covered", lang).split(". ", 1)[-1].split("। ", 1)[-1]
+                reply_en += "\n\n" + _msg(pack, "not_covered", "en").split(". ", 1)[-1]
+            cites = [Citation(top["id"], top["title"], top["source_name"], top["review_status"])]
         else:
             reply, reply_en = _msg(pack, "not_covered", lang), _msg(pack, "not_covered", "en")
         result = TurnResult(reply=reply, reply_en=reply_en, intent=intent, confidence=None, safety="OK",
-                            answered_by="fallback", sale=sale,
+                            answered_by="fallback", sale=sale, citations=cites,
                             fallback_reason=why_fallback(failure, llm is not None))
 
     # 5. Records.
