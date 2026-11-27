@@ -363,3 +363,39 @@ def test_her_telegram_swipe_reply_goes_back_to_the_helper(fake_llm, recorder):
         "reply_to_message": {"message_id": 39, "from": {"id": 1, "is_bot": True}, "text": helper_msg}}})
     relay = [t for w, t in recorder.sent if w == "helper"][-1]
     assert "answering “আপনি কোথায়?”" in relay and recorder.threaded[-1] == 888
+
+
+def tg_photo(chat_id):
+    return client.post("/telegram/webhook/s3cret", json={"update_id": 3, "message": {
+        "message_id": 3, "chat": {"id": chat_id, "type": "private"},
+        "photo": [{"file_id": "SMALL", "width": 90, "height": 120}, {"file_id": "BIG", "width": 900, "height": 1200}]}})
+
+
+def test_photo_of_a_paper_is_read_and_warns(fake_llm, recorder, fake_speech):
+    from app import llm as llm_mod
+
+    class Lens:
+        model = "fake"
+        def respond(self, *a, **k):
+            return fake_llm.respond(*a, **k)
+        def generate(self, system, parts, tool, schema, seconds=25, temperature=0.4):
+            assert tool == "read_paper" and parts[0]["mime"] == "image/jpeg"
+            return {"is_document": True, "doc_type": "হেবা", "title": "দানের দলিল", "summary": "সই করলে জমি চলে যাবে।",
+                    "say": "সই করবেন না।", "verdict": "do_not_sign", "facts": [{"label": "জমি", "value": "১২.৫ শতাংশ"}],
+                    "flags": [{"level": "danger", "text": "চিরতরে দান"}], "steps": ["১৬৪৩০-এ ফোন করুন"],
+                    "dates": [{"what": "শুনানি", "date": "2026-12-15", "time": "10:30"}]}
+    tg_photo(888)                                   # before consent: the notice, no reading
+    assert "হ্যাঁ" in recorder.sent[-1][1] or "যা" in recorder.sent[-1][1]
+    tg(888, "হ্যাঁ")
+    llm_mod.set_llm(Lens())
+    tg_photo(888)
+    texts = [t for who, t in recorder.sent if who == "888" and isinstance(t, str)]
+    reading = texts[-1]
+    assert reading.startswith("🛑 সই করবেন না") and "চিরতরে দান" in reading and "2026-12-15 10:30" in reading
+    assert recorder.sent[-1] == ("888", ("VOICE", b"OggS-tts-bn"))   # and said aloud
+
+
+def test_photo_in_helper_group_is_ignored(fake_llm, recorder):
+    client.post("/telegram/webhook/s3cret", json={"update_id": 4, "message": {
+        "message_id": 4, "chat": {"id": 999000, "type": "group"}, "photo": [{"file_id": "X"}]}})
+    assert recorder.sent == []

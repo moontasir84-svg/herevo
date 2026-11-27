@@ -105,6 +105,7 @@ COMMANDS_HELP = ("যা লিখতে পারেন / What you can type:\n"
                  "/myrecord – আপনার আয়ের হিসাব / your income record\n"
                  "/delete – আপনার সব তথ্য মুছুন / erase all your data\n"
                  "/start – শুরু থেকে / start again\n"
+                 "📄 কোনো কাগজের ছবি পাঠালে পড়ে শোনাব, সই করার আগে সাবধান করব। / Send a photo of any paper and I'll read it and warn you before you sign.\n"
                  "অথবা যেকোনো প্রশ্ন লিখুন বা বলুন। / Or just type or say any question.")
 
 TEST_NOTICE = ("⚠️ পরীক্ষামূলক সংস্করণ: আসল নাম, ঠিকানা বা ব্যক্তিগত ঘটনা লিখবেন না, বানানো উদাহরণ ব্যবহার করুন।\n"
@@ -137,10 +138,75 @@ def format_reply(result) -> str:
     return result.reply + "\n\n" + "\n".join(f"{n}. {step}" for n, step in zip(nums, result.steps))
 
 
+VERDICT = {
+    "do_not_sign": ("🛑", "সই করবেন না", "Do not sign"),
+    "check_first": ("⚠️", "সই করার আগে যাচাই করুন", "Check before signing"),
+    "keep_safe": ("✅", "যত্ন করে রাখুন, সই করার কিছু নেই", "Keep this safe, nothing to sign"),
+    "unclear": ("❓", "পড়া যাচ্ছে না: আলোতে, সোজা করে আবার ছবি তুলুন", "Can't read it: retake it straight, in good light"),
+}
+FLAG_MARK = {"danger": "🛑", "warn": "⚠️", "good": "✅"}
+
+
+def format_paper(r: dict, lang: str) -> str:
+    """Paper Lens on Telegram: the verdict first, then what it means, warnings, facts, dates and steps."""
+    bn = lang == "bn"
+    icon, v_bn, v_en = VERDICT.get(r.get("verdict"), VERDICT["unclear"])
+    lines = [f"{icon} {v_bn if bn else v_en}"]
+    if r.get("title"):
+        lines.append(f"📄 {r['title']}")
+    lines += ["", r.get("summary") or ""]
+    if r.get("flags"):
+        lines.append("")
+        lines += [f"{FLAG_MARK.get(f['level'], '•')} {f['text']}" for f in r["flags"]]
+    if r.get("facts"):
+        lines += ["", "কাগজে যা আছে:" if bn else "What the paper says:"]
+        lines += [f"• {f['label']}: {f['value']}" for f in r["facts"]]
+    for d in r.get("dates") or []:
+        lines += ["", f"🗓 {d['what']}: {d['date']}" + (f" {d['time']}" if d.get("time") else "")]
+    if r.get("steps"):
+        lines += ["", "এখন কী করবেন:" if bn else "What to do now:"]
+        lines += [f"{i}. {st}" for i, st in enumerate(r["steps"], 1)]
+    lines += ["", "ছবিটা শুধু পড়ার জন্য ব্যবহার হয়েছে, রাখা হয়নি।" if bn else "The photo was only used to read it; it was not kept."]
+    return "\n".join(lines).strip()
+
+
+def _handle_photo(msg: dict, chat_id) -> None:
+    """She sends a photo of a paper: HerEvo reads it, warns her before she signs, and says it aloud."""
+    import base64
+
+    from .. import tools
+    s = get_settings()
+    sender = get_sender()
+    pack = load_pack(s.default_country)
+    uid = db.user_id_for("telegram", str(chat_id))
+    user = db.upsert_user(uid, "telegram", pack["country"], pack["languages"][0])
+    lang = db.preferred_language(uid) or pack["languages"][0]
+    if not user["consented"]:
+        sender.send(chat_id, _welcome(pack, lang))
+        return
+    photo = (msg.get("photo") or [None])[-1] or msg.get("document")  # the largest size Telegram offers
+    data = sender.download(photo["file_id"]) if photo and photo.get("file_id") else None
+    if not data:
+        sender.send(chat_id, "ছবিটা খুলতে পারছি না। আবার পাঠান। / I couldn't open the photo. Please send it again.")
+        return
+    sender.send(chat_id, "📄 কাগজটা পড়ছি… / Reading the paper…")
+    result = tools.read_paper(base64.b64encode(data).decode(), "image/jpeg", lang, pack["country"])
+    sender.send(chat_id, format_paper(result, lang))
+    if s.voice_replies and get_speech() is not None and result.get("say"):
+        audio = get_speech().synthesize(result["say"], lang)
+        if audio:
+            sender.send_voice(chat_id, audio)
+
+
 def handle_update(update: dict) -> None:
     msg = update.get("message") or update.get("edited_message")
+    if msg and msg.get("chat", {}).get("type", "private") == "private" and (
+            "photo" in msg or (msg.get("document") or {}).get("mime_type", "").startswith("image/")) \
+            and str(msg["chat"]["id"]) not in helper_chat_ids():
+        _handle_photo(msg, msg["chat"]["id"])
+        return
     if not msg or ("text" not in msg and "voice" not in msg):
-        return  # photos, stickers etc. are ignored
+        return  # stickers etc. are ignored
     chat_id = msg["chat"]["id"]
     s = get_settings()
     by_voice = "voice" in msg and "text" not in msg

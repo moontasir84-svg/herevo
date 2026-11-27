@@ -417,6 +417,35 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 .remind span{flex:1}
 .remind small{display:block;font-weight:500;opacity:.8;font-size:13.5px}
 
+/* ---- champion ---- */
+.forwho{max-width:150px;padding:0 12px 0 4px;text-decoration:none;gap:6px;border-width:2px}
+.forwho i{flex:none;width:30px;height:30px;border-radius:50%;color:#fff;font-style:normal;display:inline-flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:700;font-size:15px}
+.forwho{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.cstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:4px 0 6px}
+.cstats div{border-radius:18px;background:var(--surface);border:1px solid var(--line);padding:12px}
+.cstats b{display:block;font-family:var(--f-display);font-weight:800;font-size:30px;line-height:1}
+.cstats span{font-size:13px;color:var(--muted);font-weight:600}
+.cstats .hot{background:var(--danger);border-color:var(--danger);color:#fff}.cstats .hot span{color:#fff}
+.women{display:grid;gap:10px}
+.woman{display:grid;grid-template-columns:52px minmax(0,1fr);gap:12px;padding:14px;border-radius:22px;background:var(--surface);border:1px solid var(--line);text-align:left;width:100%;animation:rise .45s both;animation-delay:calc(var(--i)*60ms)}
+.woman.hot{border:2px solid var(--danger)}
+.woman .av{width:52px;height:52px;border-radius:18px;color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:700;font-size:22px}
+.woman b{font-family:var(--f-display);font-weight:600;font-size:18px;display:flex;gap:8px;align-items:center}
+.woman b small{font-family:var(--f-body);font-weight:500;font-size:12.5px;color:var(--muted)}
+.woman p{margin:2px 0 6px;font-size:14.5px;color:var(--muted);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.woman>span:last-child{display:block;min-width:0}
+.addw .btn{white-space:nowrap}
+.woman .prog{display:block;height:8px;border-radius:4px;background:var(--line);overflow:hidden}.woman .prog i{display:block;height:100%;background:var(--her)}
+.woman .nx{margin-top:8px;font-size:14px;font-weight:600;display:flex;gap:6px;align-items:center}
+.woman .nx svg{width:16px;height:16px;flex:none}
+.addw{margin-top:16px;border-radius:22px;background:var(--ink);color:#fff;padding:16px;display:grid;gap:10px}
+.addw b{font-family:var(--f-display);font-size:20px}
+.addw .inrow{display:flex;gap:8px}
+.addw input{flex:1;min-height:52px;border-radius:16px;border:0;background:rgba(255,255,255,.12);color:#fff;padding:0 14px;font-size:17px}
+.addw input::placeholder{color:rgba(255,255,255,.6)}
+.addw .btn{background:var(--her);color:var(--ink)}
+.addw small{color:#CFC5B6}
+
 /* ---- radar ---- */
 .warn-others{margin-top:4px;display:grid;gap:10px;padding:12px;border-radius:16px;background:var(--danger-2)}
 .warn-others b{color:#8E1F16;font-size:15px}
@@ -453,6 +482,7 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
       <li><i style="background:var(--rehearse)"></i><b>Rehearsal</b><span>The AI plays the brother-in-law, the bribe-asking clerk or the salish chairman. A coach scores every line.</span></li>
       <li><i style="background:var(--counter)"></i><b>Whisper</b><span>At the real desk: what the official said, the truth, and the one sentence to say back.</span></li>
       <li><i style="background:var(--witness)"></i><b>Witness</b><span>A PIN-locked diary sealed with a hash chain on her phone, turned into a dated statement for a protection order.</span></li>
+      <li><i style="background:#B0457A"></i><b>Champion</b><span>One trained village woman, one phone, many women: each with her own path, diary and code, and a list of who to check on today.</span></li>
       <li><i style="background:var(--danger)"></i><b>Radar</b><span>One tap warns the next woman: anonymous counts of bribes and pressure by office and area, evidence officials can't ignore.</span></li>
     </ol>
     <p class="meta">Test version: made-up data only · Bangladesh, Kenya, Mexico · Works with Gemini (test) and Claude</p>
@@ -526,6 +556,10 @@ bn:{
   // sos
   sosH:'এখনই সাহায্য', helper:'একজন সহায়তাকর্মীর সঙ্গে কথা বলুন', helperSub:'প্রশিক্ষিত মানুষ, গোপনে', exit:'দ্রুত বের হোন', exitSub:'এই পাতা বন্ধ হয়ে আবহাওয়ার পাতা খুলবে',
   cc:{BD:'বাংলাদেশ',KE:'কেনিয়া',MX:'মেক্সিকো'},
+  champ:'চ্যাম্পিয়ন', champMode:'চ্যাম্পিয়ন মোড: অনেকের পাশে', champH:'আপনি যাঁদের পাশে আছেন', champSub:'একটি ফোনে অনেক নারীর পথ। প্রত্যেকের তথ্য আলাদা থাকে, শুধু এই ফোনে।',
+  champWomen:'জন নারী', champSteps:'ধাপ বাকি', champDanger:'জন বিপদে', champToday:'আজ যাঁদের খোঁজ নেবেন', champAll:'সবাই', champAdd:'নতুন একজনের পাশে দাঁড়ান',
+  champNamePh:'ডাকনাম (আসল নাম নয়)', champStart:'শুরু করুন', champNoPath:'এখনো কিছু বলেননি', champNext:'পরের ধাপ', champMe:'নিজের জন্য ব্যবহার করুন', champOpen:'খুলুন',
+  champDays:(n)=>`${n} দিন আগে`, champToday0:'আজ', champConsent:'তাঁর অনুমতি নিয়ে, তাঁর সামনে ব্যবহার করুন।', champRemove:'সরিয়ে দিন',
   tellH:'কী হয়েছে, বলুন', tellSub:'নিজের ভাষায়, যেভাবে খুশি। HerEvo বুঝে আপনার পথ সাজিয়ে দেবে।', tellPh:'যেমন: স্বামী মারা গেছেন, দেবর জমি দিতে চাইছে না…', tellGo:'আমার পথ দেখাও',
   tellEx:['আমার স্বামী মারা গেছেন। দুই ছেলে এক মেয়ে, ৮০ শতাংশ জমি। দেবর একটা কাগজে টিপসই দিতে বলছে।','ভূমি অফিসের লোক নামজারির জন্য পাঁচ হাজার টাকা চাইছে।','স্বামী চার মাস টাকা দেয় না, দেনমোহরও দেয়নি।','শাশুড়ি যৌতুক চায়, না দিলে মারধর করে।'],
   orPick:'অথবা নিজেই বেছে নিন', resume:'আপনার পথ', resumeOf:(a,b)=>`${a}/${b} ধাপ`,
@@ -588,6 +622,10 @@ en:{
   samples:[['SAMPLE: At night my husband got angry and pushed me. I hit the wall and my arm is bruised.',-21],['SAMPLE: He took my phone and locked the door. He does not let me visit my parents.',-14],['SAMPLE: He threatens divorce if I do not bring dowry money. The neighbour aunty heard it.',-3]],
   sosH:'Help now', helper:'Talk to a trained helper', helperSub:'A real person, in confidence', exit:'Quick exit', exitSub:'This page closes and a weather page opens',
   cc:{BD:'Bangladesh',KE:'Kenya',MX:'Mexico'},
+  champ:'Champion', champMode:'Champion mode: helping many', champH:'The women you stand beside', champSub:'Many women’s paths on one phone. Each one’s data stays separate, and only on this phone.',
+  champWomen:' women', champSteps:' steps left', champDanger:' in danger', champToday:'Check on today', champAll:'Everyone', champAdd:'Stand beside someone new',
+  champNamePh:'A nickname (not her real name)', champStart:'Start', champNoPath:'Nothing told yet', champNext:'Next step', champMe:'Use it for myself', champOpen:'Open',
+  champDays:(n)=>`${n} days ago`, champToday0:'today', champConsent:'Only with her permission, with her beside you.', champRemove:'Remove',
   tellH:"Tell me what's happening", tellSub:'In your own words. HerEvo understands and lays out your path.', tellPh:'For example: my husband died and his brother won’t give me the land…', tellGo:'Show me my path',
   tellEx:['My husband died. We have two sons and one daughter and 80 decimals of land. His brother wants my thumbprint on a paper.','The land office clerk wants five thousand taka for my mutation.','My husband has not given me money for four months, and never paid my dower.','My mother-in-law demands dowry and beats me when I refuse.'],
   orPick:'Or choose a tool yourself', resume:'Your path', resumeOf:(a,b)=>`${a} of ${b} steps`,
@@ -611,10 +649,14 @@ const HELP = {
 };
 
 /* ============================================================== state */
+// In champion mode each woman she helps has her own path, family, diary and code on this phone.
+const SCOPED = new Set(['path', 'family', 'witness', 'pin', 'pinSkipped']);
+let PROFILE = null;
+const skey = (k) => 'herevo.' + (SCOPED.has(k) && PROFILE ? 'p:' + PROFILE + '.' : '') + k;
 const store = {
-  get(k, d){ try{ const v = localStorage.getItem('herevo.'+k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
-  set(k, v){ try{ localStorage.setItem('herevo.'+k, JSON.stringify(v)); }catch(e){} },
-  del(k){ try{ localStorage.removeItem('herevo.'+k); }catch(e){} },
+  get(k, d){ try{ const v = localStorage.getItem(skey(k)); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(skey(k), JSON.stringify(v)); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(skey(k)); }catch(e){} },
 };
 const S = {
   lang: store.get('lang', /^bn/i.test(navigator.language || '') ? 'bn' : (new URLSearchParams(location.search).get('lang') === 'bn' ? 'bn' : 'en')),
@@ -731,7 +773,7 @@ function hear(btn, onText, onEnd){
 }
 
 /* ============================================================== shell */
-const TITLES = {path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
+const TITLES = {champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
 function bar(name){
   const b = $('#bar'); fill(b);
   if (name === 'home'){
@@ -739,7 +781,9 @@ function bar(name){
   } else {
     b.append(h('a', {class:'back', href:'#home'}, icon('back'), t(TITLES[name] || 'back')));
   }
+  const who = currentProfile();
   b.append(h('span', {class:'sp'}),
+    who ? h('a', {class:'chip forwho', href:'#champion', style:`border-color:${who.color}`}, h('i', {style:`background:${who.color}`}, initial(who.name)), who.name) : null,
     h('button', {class:'chip', type:'button', 'aria-label':'Language', onclick: () => { S.lang = S.lang === 'bn' ? 'en' : 'bn'; store.set('lang', S.lang); route(); }}, t('langBtn')),
     h('button', {class:'sos', type:'button', onclick: openSOS}, icon('shield'), t('sos')));
 }
@@ -759,7 +803,7 @@ function openSOS(){
 }
 function quickExit(){ stopSpeech(); document.body.innerHTML = ''; try{ sessionStorage.clear(); }catch(e){} location.replace('https://www.google.com/search?q=weather'); }
 
-const VIEWS = {home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
+const VIEWS = {champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
 function route(){
   stopSpeech(); if (rec){ try{ rec.abort(); }catch(e){} rec = null; }
   fill($('#layer'));
@@ -799,7 +843,44 @@ function Home(){
     h('div', {class:'foot'},
       h('select', {class:'chip', 'aria-label': t('country'), onchange: (e) => { S.country = e.target.value; store.set('country', S.country); }},
         ['BD', 'KE', 'MX'].map((c) => { const o = h('option', {value:c}, t('country') + ': ' + t('cc')[c]); if (c === S.country) o.selected = true; return o; })),
+      h('a', {class:'chip', href:'#champion'}, icon('person'), t('champMode')),
       h('p', {class:'test'}, h('i'), t('testNote'))));
+}
+
+/* ============================================================== champion */
+const PCOLORS = ['#B0457A', '#2E7D57', '#3B5BD9', '#C2600E', '#7A4FB5', '#1E6E7E', '#9C5B16', '#A8323A'];
+function profiles(){ try{ return JSON.parse(localStorage.getItem('herevo.profiles') || '[]'); }catch(e){ return []; } }
+function saveProfiles(list){ try{ localStorage.setItem('herevo.profiles', JSON.stringify(list)); }catch(e){} }
+function currentProfile(){ return PROFILE ? profiles().find((p) => p.id === PROFILE) || null : null; }
+function useProfile(id){ PROFILE = id; unlocked = false; try{ if (id) localStorage.setItem('herevo.active', id); else localStorage.removeItem('herevo.active'); sessionStorage.removeItem('herevo.ctx'); sessionStorage.removeItem('herevo.paper'); }catch(e){} }
+function pathOf(id){ try{ return JSON.parse(localStorage.getItem('herevo.p:' + id + '.path') || 'null'); }catch(e){ return null; } }
+function Champion(){
+  const list = profiles().map((p) => ({p, path: pathOf(p.id)}));
+  const left = (x) => x.path ? x.path.done.filter((d) => !d).length : 0;
+  const days = (x) => Math.floor((Date.now() - ((x.path && x.path.at) || x.p.created)) / 864e5);
+  const hot = list.filter((x) => x.path && x.path.plan.danger);
+  const today = list.filter((x) => (x.path && x.path.plan.danger) || (x.path && left(x) && days(x) >= 3) || !x.path);
+  const card = (x, i) => {
+    const total = x.path ? x.path.plan.steps.length : 0, done = total - left(x);
+    const nxt = x.path ? x.path.plan.steps.find((_, j) => !x.path.done[j]) : null;
+    return h('button', {class:'woman' + (x.path && x.path.plan.danger ? ' hot' : ''), type:'button', style:`--i:${i}`, onclick: () => { useProfile(x.p.id); location.hash = x.path ? '#path' : '#home'; }},
+      h('span', {class:'av', style:`background:${x.p.color}`}, initial(x.p.name)),
+      h('span', null, h('b', null, x.p.name, h('small', null, days(x) ? t('champDays')(num(days(x))) : t('champToday0'))),
+        h('p', null, x.path ? x.path.plan.understood : t('champNoPath')),
+        total ? h('span', {class:'prog'}, h('i', {style:`width:${done / total * 100}%`})) : null,
+        nxt ? h('span', {class:'nx'}, icon('arrow'), t('champNext') + ': ' + nxt.title) : null));
+  };
+  const name = h('input', {type:'text', maxlength:'24', placeholder: t('champNamePh')});
+  const add = () => { const n = name.value.trim(); if (!n) { name.focus(); return; } const all = profiles(); const p = {id: 'w' + Date.now().toString(36), name: n, color: PCOLORS[all.length % PCOLORS.length], created: Date.now()}; all.push(p); saveProfiles(all); useProfile(p.id); location.hash = '#home'; };
+  return h('div', null,
+    h('h1', {class:'title'}, t('champH')), h('p', {class:'sub'}, t('champSub')),
+    h('div', {class:'cstats'}, h('div', null, h('b', null, num(list.length)), h('span', null, t('champWomen'))),
+      h('div', null, h('b', null, num(list.reduce((a, x) => a + left(x), 0))), h('span', null, t('champSteps'))),
+      h('div', {class: hot.length ? 'hot' : ''}, h('b', null, num(hot.length)), h('span', null, t('champDanger')))),
+    today.length ? [h('h2', {class:'section'}, t('champToday')), h('div', {class:'women'}, today.sort((a, b) => (b.path && b.path.plan.danger ? 1 : 0) - (a.path && a.path.plan.danger ? 1 : 0)).map(card))] : null,
+    list.length > today.length ? [h('h2', {class:'section'}, t('champAll')), h('div', {class:'women'}, list.filter((x) => !today.includes(x)).map((x, i) => card(x, i + today.length)))] : null,
+    h('div', {class:'addw'}, h('b', null, t('champAdd')), h('div', {class:'inrow'}, name, h('button', {class:'btn', type:'button', onclick: add}, t('champStart'))), h('small', null, t('champConsent'))),
+    PROFILE ? h('button', {class:'btn ghost block', type:'button', style:'margin-top:14px', onclick: () => { useProfile(null); location.hash = '#home'; }}, t('champMe')) : null);
 }
 
 /* ============================================================== just tell me + path */
@@ -1266,6 +1347,7 @@ async function makeStatement(entries){
 }
 
 /* ============================================================== start */
+try{ const a = localStorage.getItem('herevo.active'); if (a && profiles().some((p) => p.id === a)) PROFILE = a; }catch(e){}
 try{ speechSynthesis.getVoices(); }catch(e){}
 route();
 </script>

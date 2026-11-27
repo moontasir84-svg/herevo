@@ -881,7 +881,25 @@ def _saved_plan(text: str, lang: str, country: str, danger: bool) -> dict:
             seen.add(key)
             uniq.append(st)
     first = uniq[0]["title"]
-    return {"understood": L("আপনার কথা শুনেছি। চলুন, ধাপে ধাপে এগোই।", "I heard you. Let's go step by step."),
+    topics = []
+    if danger or has("মারে", "মারধর", "ধাক্কা", "নির্যাতন", "beat", "hit", "push", "abuse", "violence", "threat", "হুমকি"):
+        topics.append(L("আপনার সঙ্গে সহিংসতা হচ্ছে", "you are facing violence"))
+    if has("যৌতুক", "dowry"):
+        topics.append(L("যৌতুক চাওয়া হচ্ছে", "dowry is being demanded"))
+    if fam or has("জমি", "land", "inherit", "শামবা", "shamba", "ejido", "parcela", "tierra"):
+        topics.append(L("জমির ন্যায্য ভাগ নিয়ে বাধা আসছে", "you are being blocked from your share of the land"))
+    if has("সই", "টিপ", "sign", "thumb"):
+        topics.append(L("না বুঝে কাগজে সই করানোর চাপ আছে", "you are being pushed to sign a paper"))
+    if has("ঘুষ", "bribe", "হাজার টাকা", "thousand taka"):
+        topics.append(L("অফিসে বাড়তি টাকা চাওয়া হচ্ছে", "an office is asking you for extra money"))
+    if has("দেনমোহর", "মোহর", "খোরপোষ", "কাবিন", "dower", "maintenance", "kabin"):
+        topics.append(L("দেনমোহর আর খোরপোষ পাচ্ছেন না", "you are not getting your dower and maintenance"))
+    if topics:
+        joined = ", ".join(topics[:-1]) + (L(" এবং ", " and ") if len(topics) > 1 else "") + topics[-1]
+        understood = L(f"বুঝেছি: {joined}।", f"I understand: {joined}.")
+    else:
+        understood = L("আপনার কথা শুনেছি। চলুন, ধাপে ধাপে এগোই।", "I heard you. Let's go step by step.")
+    return {"understood": understood,
             "say": L(f"আপনার কথা শুনেছি। আপনি একা নন। প্রথমে: {first}।", f"I heard you. You are not alone. First: {first}."),
             "danger": danger, "share": share, "steps": uniq[:5],
             "ask": "" if share or not fam else L("কতজন ছেলে ও মেয়ে আছে, আর মোট জমি কত শতাংশ?", "How many sons and daughters, and how much land in total?")}
