@@ -17,6 +17,7 @@ jobs:
           curl -s --max-time 60 $B/ -o page.html
           echo "new send flow (bubble thinking): $(grep -c 'bubble thinking' page.html)"
           echo "deferred map: $(grep -c 'defer src' page.html)"
+          echo "home design: voice-first circle=$(grep -c 'horb' page.html), tell-me box=$(grep -c 'function tellBox' page.html), deploy=$(curl -s --max-time 30 $B/health | head -c 80)"
           echo "== /sw.js"; curl -s --max-time 60 $B/sw.js | grep -m1 "const CACHE"
           echo "== /health/ai (one test question to the AI with the current answer format)"
           curl -s --max-time 90 $B/health/ai; echo
