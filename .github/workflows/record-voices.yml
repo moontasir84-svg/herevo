@@ -1,0 +1,25 @@
+name: record-voices
+
+# Records HerEvo's fixed sentences (web/voice/phrases.json) once with HerEvo's own voice and commits the MP3s,
+# so the app plays them instantly. Run by hand after changing those sentences.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: which ffmpeg || (sudo apt-get update -q && sudo apt-get install -y -q ffmpeg)
+      - run: python3 .github/scripts/record_voices.py
+      - run: |
+          git config user.name "herevo-voice-bot"
+          git config user.email "herevo-voice-bot@users.noreply.github.com"
+          git add web/voice
+          git diff --cached --quiet && echo "nothing new" && exit 0
+          git commit -m "Recorded HerEvo's fixed sentences"
+          git push

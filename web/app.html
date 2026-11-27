@@ -956,6 +956,18 @@ async function serverVoice(text){
   if (ttsCache.size > 60) ttsCache.clear();
   ttsCache.set(key, url); return url;
 }
+// Sentences HerEvo always says the same way are recorded once and stored with the app (web/voice): they play
+// at once. Anything new is spoken sentence by sentence, so she hears the first sentence while the rest load.
+const voiceKey = (lang, text) => { let x = 0x811c9dc5; for (const b of new TextEncoder().encode(lang + '|' + text.replace(/\s+/g, ' ').trim())){ x ^= b; x = Math.imul(x, 0x01000193) >>> 0; } return x.toString(16).padStart(8, '0'); };
+let VOICES = {};
+fetch('/voice/manifest.json').then((r) => r.ok ? r.json() : {}).then((m) => { VOICES = m || {}; }).catch(() => {});
+const recorded = (text) => VOICES[voiceKey(S.lang, text)] ? '/voice/' + VOICES[voiceKey(S.lang, text)] : null;
+function sentences(text){
+  const parts = text.replace(/\s+/g, ' ').trim().split(/(?<=[।!?\.])\s+/);
+  const out = [];
+  for (const p of parts){ if (out.length && (out[out.length - 1].length < 28 || p.length < 12)) out[out.length - 1] += ' ' + p; else out.push(p); }
+  return out.filter(Boolean);
+}
 async function speak(text, btn, onEnd){
   stopSpeech();
   const token = speakToken;
@@ -963,28 +975,35 @@ async function speak(text, btn, onEnd){
   if (btn){ speakingBtn = btn; btn.classList.add('playing'); }
   let ended = false;
   const done = () => { if (ended) return; ended = true; if (btn && speakingBtn === btn){ btn.classList.remove('playing'); speakingBtn = null; } if (token === speakToken || !onEnd) onEnd && onEnd(); };
-  const browserVoice = () => {
+  const browserVoice = (words) => {
     try{
       if (!('speechSynthesis' in window)) throw 0;
       if (S.lang !== 'en' && !hasVoice(S.lang) && !warnedNoVoice){ warnedNoVoice = true; toast(t('noVoice')); }
-      const u = new SpeechSynthesisUtterance(text); u.lang = VOICE[S.lang]; u.rate = .95;
+      const u = new SpeechSynthesisUtterance(words); u.lang = VOICE[S.lang]; u.rate = .95;
       const v = speechSynthesis.getVoices().find((x) => (x.lang || '').toLowerCase().replace('_', '-').startsWith(S.lang)); if (v) u.voice = v;
       u.onend = done; u.onerror = done; speechSynthesis.speak(u);
-      setTimeout(() => { if (!speechSynthesis.speaking && !ended) done(); }, 2500 + text.length * 120);
+      setTimeout(() => { if (!speechSynthesis.speaking && !ended) done(); }, 2500 + words.length * 120);
     }catch(e){ done(); }
   };
-  // Bangla (and Swahili): HerEvo's own voice first, because most phones and computers have no good voice for them.
-  if (S.lang !== 'en' && !hasVoice(S.lang)){
-    try{
-      const url = await serverVoice(text);
-      if (token !== speakToken) return;  // she pressed stop or moved on while it loaded
-      player.onended = done; player.onerror = () => { if (!ended) browserVoice(); };
-      player.src = url;
-      await player.play();
-      return;
-    }catch(e){ if (token !== speakToken) return; }
-  }
-  browserVoice();
+  const play = (url) => new Promise((ok, no) => { player.onended = ok; player.onerror = no; player.src = url; const p = player.play(); if (p) p.catch(no); });
+  // 1. a recorded sentence: instant
+  const rec0 = recorded(text);
+  if (rec0){ try{ await play(rec0); if (token === speakToken) done(); return; }catch(e){ if (token !== speakToken) return; } }
+  // 2. the phone has its own voice for this language: instant
+  if (S.lang === 'en' || hasVoice(S.lang)) return browserVoice(text);
+  // 3. HerEvo's voice, sentence by sentence: all requested at once, played in order as they arrive
+  const parts = sentences(text);
+  const urls = parts.map((p) => recorded(p) ? Promise.resolve(recorded(p)) : serverVoice(p));
+  urls.forEach((u) => u.catch(() => {}));
+  try{
+    for (let i = 0; i < parts.length; i++){
+      const url = await urls[i];
+      if (token !== speakToken) return;  // she pressed stop or moved on
+      await play(url);
+      if (token !== speakToken) return;
+    }
+    done();
+  }catch(e){ if (token === speakToken) browserVoice(text); }
 }
 function listenBtn(text, cls){ const b = h('button', {class: cls || 'listen dark', type:'button', 'aria-label': t('listen'), onclick: (e) => { e.preventDefault(); e.stopPropagation(); if (b.classList.contains('playing')){ stopSpeech(); return; } speak(typeof text === 'function' ? text() : text, b); }}, icon('speaker')); return b; }
 
