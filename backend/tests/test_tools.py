@@ -368,3 +368,11 @@ def test_sale_written_down_without_ai():
     led = client.get(f"/v1/ledger/{SID}").json()
     assert led["total"] == 1340.0 and [x["currency"] for x in led["sales"]] == ["BDT", "MXN"]
     assert client.post("/v1/sale", json={"session_id": SID, "text": "আমার জমি নিয়ে সমস্যা"}).json() == {"ok": False}
+
+
+def test_partner_impact_counts_only(fake_llm):
+    client.post("/v1/ask", json={"session_id": "impact-session-1", "text": "আমার জমির ভাগ কত?"})
+    client.post("/v1/sale", json={"session_id": "impact-session-1", "text": "আজ ৩০টা ডিম ৩৯০ টাকায় বেচলাম"})
+    r = client.get("/v1/impact").json()
+    assert r["women"] >= 1 and r["answers"] >= 1 and r["sales"] == 1 and r["days"] == 30
+    assert "message" not in str(r) and "ডিম" not in str(r)  # counts only, never what she said

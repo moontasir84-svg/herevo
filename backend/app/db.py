@@ -344,3 +344,29 @@ def radar_summary(country: str, days: int = 90, min_count: int = 3) -> dict:
             a["kinds"][kind] = a["kinds"].get(kind, 0) + n
     named = sorted((a for a in areas.values() if a["count"] >= min_count), key=lambda a: -a["count"])
     return {"total": total, "by_kind": by_kind, "by_place": by_place, "areas": named[:20], "days": days}
+
+
+# --- Partner dashboard: counts only, never names, messages or numbers -----------------------------------------
+
+def impact(days: int = 30) -> dict:
+    with pool().connection() as conn:
+        def one(sql, *args):
+            r = conn.execute(sql, args).fetchone()
+            return list(r.values())[0] if isinstance(r, dict) else r[0]
+        out = {
+            "women": int(one("SELECT count(*) FROM users WHERE created_at > now() - make_interval(days => %s)", days) or 0),
+            "answers": int(one("SELECT count(*) FROM turns WHERE created_at > now() - make_interval(days => %s)", days) or 0),
+            "helped_by_ai": int(one("SELECT count(*) FROM turns WHERE answered_by NOT IN ('fallback', 'safety_rule') AND created_at > now() - make_interval(days => %s)", days) or 0),
+            "helpers": int(one("SELECT count(*) FROM escalations WHERE created_at > now() - make_interval(days => %s)", days) or 0),
+            "median_ms": int(one("SELECT coalesce(percentile_cont(0.5) WITHIN GROUP (ORDER BY latency_ms), 0) FROM turns WHERE latency_ms IS NOT NULL AND created_at > now() - make_interval(days => %s)", days) or 0),
+            "sales": int(one("SELECT count(*) FROM sales WHERE created_at > now() - make_interval(days => %s)", days) or 0),
+            "radar": int(one("SELECT count(*) FROM radar WHERE created_at > now() - make_interval(days => %s)", days) or 0),
+            "days": days,
+        }
+        rows = conn.execute("SELECT language, count(*) AS n FROM turns WHERE created_at > now() - make_interval(days => %s) GROUP BY language ORDER BY n DESC", (days,)).fetchall()
+        out["languages"] = {(r["language"] if isinstance(r, dict) else r[0]): int(r["n"] if isinstance(r, dict) else r[1]) for r in rows}
+        rows = conn.execute("SELECT intent, count(*) AS n FROM turns WHERE created_at > now() - make_interval(days => %s) GROUP BY intent ORDER BY n DESC LIMIT 8", (days,)).fetchall()
+        out["topics"] = {(r["intent"] if isinstance(r, dict) else r[0]): int(r["n"] if isinstance(r, dict) else r[1]) for r in rows}
+        rows = conn.execute("SELECT country, count(*) AS n FROM users WHERE created_at > now() - make_interval(days => %s) GROUP BY country", (days,)).fetchall()
+        out["countries"] = {(r["country"] if isinstance(r, dict) else r[0]): int(r["n"] if isinstance(r, dict) else r[1]) for r in rows}
+    return out

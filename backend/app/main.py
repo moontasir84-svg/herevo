@@ -317,6 +317,12 @@ def record_sale(body: SaleIn):
     return {"ok": True, "sale": sale}
 
 
+@app.get("/v1/impact")
+def partner_impact(days: int = 30):
+    """Partner dashboard: anonymous counts for NGOs and programs (no names, messages or numbers)."""
+    return db.impact(max(1, min(days, 365)))
+
+
 @app.get("/v1/ledger/{session_id}")
 def ledger(session_id: str):
     rows = db.ledger(db.user_id_for("web", session_id))

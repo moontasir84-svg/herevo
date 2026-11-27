@@ -504,6 +504,7 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 .panel .listen svg{width:19px;height:19px}
 .pathpanel{display:flex;align-items:center;gap:14px;margin-top:18px;padding:8px;border-radius:24px;background:var(--ink);color:#fff;text-decoration:none}
 .pathpanel .in{flex:1;display:flex;align-items:center;gap:14px;border:2px dashed rgba(255,255,255,.35);border-radius:18px;padding:12px 14px}
+.pathpanel .in>svg{width:22px;height:22px;flex:none}
 .pathpanel .pie{--v:0;flex:none;width:54px;height:54px;border-radius:50%;background:conic-gradient(var(--her) calc(var(--v)*1%),rgba(255,255,255,.15) 0);display:flex;align-items:center;justify-content:center}
 .pathpanel .pie b{width:42px;height:42px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;font-size:14px}
 .pathpanel strong{display:block;font-family:var(--f-sign);font-weight:400;font-size:24px;color:var(--her)}
@@ -579,6 +580,19 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 .bzphases b{font-family:var(--f-display);font-size:17px}
 .bzphases span{color:var(--muted);font-size:15px}
 .bzlist{margin:0;padding-left:20px;display:grid;gap:6px}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:900px){.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.kpis div{background:#fff;border:1px solid var(--line);border-top:6px solid var(--c);border-radius:18px;padding:14px 16px;display:grid;gap:2px;animation:rise .45s both;animation-delay:calc(var(--i)*50ms)}
+.kpis b{font-family:var(--f-display);font-weight:800;font-size:32px;line-height:1.05;color:var(--c)}
+.kpis span{font-size:14px;color:var(--muted);font-weight:600}
+.kcols{display:grid;gap:12px;margin-top:14px}
+@media (min-width:900px){.kcols{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.kbox{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px}
+.kbox h2{font-family:var(--f-display);font-size:17px;margin:0 0 10px}
+.bars2{display:grid;gap:8px}
+.bars2 div{display:grid;grid-template-columns:minmax(0,1fr) 1.2fr auto;gap:10px;align-items:center;font-size:14.5px}
+.bars2 i{height:10px;border-radius:5px;background:var(--line);overflow:hidden}.bars2 em{display:block;height:100%;background:var(--shapla);border-radius:5px}
+.bars2 b{font-variant-numeric:tabular-nums}
 .homefoot{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:26px}
 
 /* ---- voice check ---- */
@@ -779,6 +793,7 @@ bn:{
   sosH:'এখনই সাহায্য', helper:'একজন সহায়তাকর্মীর সঙ্গে কথা বলুন', helperSub:'প্রশিক্ষিত মানুষ, গোপনে', exit:'দ্রুত বের হোন', exitSub:'এই পাতা বন্ধ হয়ে আবহাওয়ার পাতা খুলবে',
   cc:{BD:'বাংলাদেশ',KE:'কেনিয়া',MX:'মেক্সিকো'},
   shareOnlyBD:'এই হিসাব বাংলাদেশে প্রযোজ্য মুসলিম উত্তরাধিকার আইন অনুযায়ী। কেনিয়া বা মেক্সিকোর আইন আলাদা: মহড়া অংশে সেই দেশের অনুশীলন আছে।',
+  partner:'অংশীদার ড্যাশবোর্ড', partnerSub:'এনজিও ও সরকারি কর্মসূচির জন্য: নাম ছাড়া গণনা, শেষ ৩০ দিন। কোনো নাম, কথা বা ফোন নম্বর দেখানো হয় না।', kWomen:'নারী পৌঁছেছেন', kAnswers:'উত্তর দেওয়া হয়েছে', kAI:'AI দিয়ে', kHelpers:'সহায়তাকর্মীর কাছে', kSales:'বিক্রি লেখা হয়েছে', kRadar:'রাডার সতর্কবার্তা', kSpeed:'গড় উত্তরের সময়', kTopics:'কী নিয়ে প্রশ্ন', kLangs:'ভাষা', kCountries:'দেশ', kWhy:'অংশীদাররা কেন টাকা দেন', kWhyText:'চ্যাম্পিয়ন আসন, কেস ড্যাশবোর্ড আর প্রমাণের রিপোর্ট: যাতে তাঁদের কর্মসূচি সত্যিই নারীর কাছে পৌঁছায়।', kNone:'এখনো তথ্য নেই',
   pickLang:'ভাষা', pickCountry:'দেশ', needsH:'তার সব দরকার, এক জায়গায়', nLand:'জমি ও ফসল', nMoney:'টাকা ও কাজ', nRights:'অধিকার', nHealth:'স্বাস্থ্য', nSafety:'নিরাপত্তা', nLearn:'শেখা', soon:'শিগগির',
   askH:{farm:'জমি ও ফসল', health:'স্বাস্থ্য', rights:'অধিকার', learn:'শেখা'}, askSub:'বলুন বা নিচের প্রশ্নে চাপ দিন। HerEvo যাচাই করা তথ্য থেকে উত্তর দেবে।', askTap:'চাপ দিয়ে প্রশ্ন বলুন',
   money:'আয়ের খাতা', moneySub:'বিক্রি বা আয় মুখে বলুন, HerEvo লিখে রাখবে। নিয়মিত আয়ের খাতা দেখালে ঋণ পাওয়া সহজ হয়।', moneyTap:'চাপ দিয়ে বলুন কী বেচলেন',
@@ -870,6 +885,7 @@ en:{
   sosH:'Help now', helper:'Talk to a trained helper', helperSub:'A real person, in confidence', exit:'Quick exit', exitSub:'This page closes and a weather page opens',
   cc:{BD:'Bangladesh',KE:'Kenya',MX:'Mexico'},
   shareOnlyBD:'This calculation follows Muslim inheritance law as applied in Bangladesh. Kenya and Mexico have different laws: practise those cases in Rehearsal.',
+  partner:'Partner dashboard', partnerSub:'For NGOs and public programs: anonymous counts for the last 30 days. No names, messages or phone numbers are ever shown.', kWomen:'women reached', kAnswers:'answers given', kAI:'by AI', kHelpers:'sent to a helper', kSales:'sales written down', kRadar:'Radar warnings', kSpeed:'median answer time', kTopics:'What women ask about', kLangs:'Languages', kCountries:'Countries', kWhy:'Why partners pay', kWhyText:'Champion seats, case dashboards and evidence reports, so their programs truly reach women.', kNone:'No data yet',
   pickLang:'Language', pickCountry:'Country', needsH:'Everything she needs, one system', nLand:'Land & harvest', nMoney:'Money & work', nRights:'Rights', nHealth:'Health', nSafety:'Safety', nLearn:'Learning', soon:'Soon',
   askH:{farm:'Land & harvest', health:'Health', rights:'Rights', learn:'Learning'}, askSub:'Speak, or tap a question below. HerEvo answers from checked information.', askTap:'Tap and ask',
   money:'Income record', moneySub:'Say what you sold or earned; HerEvo writes it down. A regular income record makes a loan easier to get.', moneyTap:'Tap and say what you sold',
@@ -1244,7 +1260,7 @@ function hearBrowser(btn, onText, onEnd){
 }
 
 /* ============================================================== shell */
-const TITLES = {ask:'back', money:'money', world:'world', business:'business', more:'more', home:'home', voice:'vcT', talk:'talkT', file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
+const TITLES = {partner:'partner', ask:'back', money:'money', world:'world', business:'business', more:'more', home:'home', voice:'vcT', talk:'talkT', file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
 function bar(name){
   const b = $('#bar'); fill(b);
   if (name === 'home'){
@@ -1287,7 +1303,7 @@ function svgHTML(html){ const w = document.createElement('span'); w.innerHTML = 
 const NAV = [['home','home','var(--ink)','home'], ['talk','mic','var(--shapla)','talkT'], ['path','arrow','var(--her)','yourPath'], null,
   ['lens','camera','var(--lens)','pLens'], ['share','land','var(--share)','pShare'], ['rehearse','chat','var(--rehearse)','pRehearse'], ['counter','ear','var(--counter)','pCounter'], ['witness','lock','var(--witness)','pWitness'], null,
   ['money','coin','#B57400','money'], ['file','book','#5B5784','fileT'], ['champion','person','#B0457A','champ'], null,
-  ['world','globe','#1F5FD0','world'], ['business','chart','#21894A','business'], ['more','grid','#5B5784','more']];
+  ['world','globe','#1F5FD0','world'], ['partner','chart','#0E7C86','partner'], ['business','coin','#21894A','business'], ['more','grid','#5B5784','more']];
 function navs(key){
   const rail = $('#rail');
   fill(rail, h('a', {class:'logo', href:'#home'}, logo(), wordmark()),
@@ -1320,7 +1336,7 @@ function openSOS(){
 }
 function quickExit(){ stopSpeech(); document.body.innerHTML = ''; try{ sessionStorage.clear(); }catch(e){} location.replace('https://www.google.com/search?q=weather'); }
 
-const VIEWS = {ask: Ask, money: Money, world: World, business: Business, more: More, voice: VoiceCheck, talk: Talk, file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
+const VIEWS = {partner: Partner, ask: Ask, money: Money, world: World, business: Business, more: More, voice: VoiceCheck, talk: Talk, file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
 function route(){
   stopSpeech(); if (rec){ try{ rec.abort(); }catch(e){} rec = null; } stopLive();
   fill($('#layer'));
@@ -1344,8 +1360,8 @@ function More(){
   return h('div', null,
     h('h1', {class:'title'}, t('moreH')),
     h('p', {class:'sub'}, t('tagline')),
-    h('div', {class:'needs', style:'margin-bottom:16px'}, [['business','chart','var(--good)'], ['world','globe','var(--lens)'], ['money','coin','#B57400'], ['champion','person','#B0457A'], ['voice','mic','var(--shapla)'], ['file','book','#5B5784']].map(([k, ic, c], i) =>
-      h('a', {class:'need', href:'#' + k, style:`--c:${c};--i:${i}`}, h('span', {class:'ni'}, icon(ic)), h('b', null, t({business:'business', world:'world', money:'money', champion:'champ', voice:'vcT', file:'fileT'}[k]))))),
+    h('div', {class:'needs', style:'margin-bottom:16px'}, [['business','coin','var(--good)'], ['partner','chart','var(--witness)'], ['world','globe','var(--lens)'], ['money','coin','#B57400'], ['champion','person','#B0457A'], ['voice','mic','var(--shapla)'], ['file','book','#5B5784']].map(([k, ic, c], i) =>
+      h('a', {class:'need', href:'#' + k, style:`--c:${c};--i:${i}`}, h('span', {class:'ni'}, icon(ic)), h('b', null, t({business:'business', partner:'partner', world:'world', money:'money', champion:'champ', voice:'vcT', file:'fileT'}[k]))))),
     h('div', {class:'bento'}, tools.map((id, i) =>
       h('a', {class:`tool tool-${id}${i === 0 ? ' wide' : ''}`, href:'#' + id, style:`--i:${i}`},
         h('div', {class:'top'}, h('span', {class:'moment'}, t(id + 'Moment')), i === 0 ? null : listenBtn(() => t(id) + '। ' + t(id + 'Desc'), 'listen')),
@@ -1679,6 +1695,27 @@ function Money(){
     h('div', {class:'hero'}, mic, state, h('div', {class:'tries'}, t('moneyEx').map((x) => h('button', {type:'button', onclick: () => record(x)}, icon('coin'), x)))),
     said, book);
   load();
+  return root;
+}
+
+/* ============================================================== partner dashboard */
+const INTENT_NAME = {RIGHTS:'Rights', EARN:'Money & income', ADVICE:'Farming, health & advice', SAFETY:'Safety'};
+function Partner(){
+  const root = h('div', null, h('h1', {class:'title'}, t('partner')), h('p', {class:'sub'}, t('partnerSub')), h('div', {class:'empty'}, h('span', {class:'spinner'})));
+  api('/v1/impact', null, 30000).then((r) => {
+    const pct = r.answers ? Math.round(r.helped_by_ai / r.answers * 100) : 0;
+    const bars = (obj, names) => { const tot = Object.values(obj).reduce((a, b) => a + b, 0) || 1; const e = Object.entries(obj); return e.length ? h('div', {class:'bars2'}, e.map(([k, n]) => h('div', null, h('span', null, (names && names[k]) || k), h('i', null, h('em', {style:`width:${Math.max(3, n / tot * 100)}%`})), h('b', null, num(n))))) : h('p', {class:'empty'}, t('kNone')); };
+    const langName = Object.fromEntries(LANGS.map(([c, n]) => [c, n]));
+    const cname = {BD:FLAG.BD + ' ' + t('cc').BD, KE:FLAG.KE + ' ' + t('cc').KE, MX:FLAG.MX + ' ' + t('cc').MX};
+    fill(root, h('h1', {class:'title'}, t('partner')), h('p', {class:'sub'}, t('partnerSub')),
+      h('div', {class:'kpis'}, [[r.women, 'kWomen', 'var(--shapla)'], [r.answers, 'kAnswers', 'var(--lens)'], [pct + '%', 'kAI', 'var(--good)'], [r.helpers, 'kHelpers', 'var(--danger)'], [r.sales, 'kSales', '#B57400'], [r.radar, 'kRadar', 'var(--counter)'], [(r.median_ms / 1000).toFixed(1) + 's', 'kSpeed', 'var(--witness)']].map(([v, k, c], i) =>
+        h('div', {style:`--c:${c};--i:${i}`}, h('b', null, num(v)), h('span', null, t(k))))),
+      h('div', {class:'kcols'},
+        h('section', {class:'kbox'}, h('h2', null, t('kTopics')), bars(r.topics, INTENT_NAME)),
+        h('section', {class:'kbox'}, h('h2', null, t('kLangs')), bars(r.languages, langName)),
+        h('section', {class:'kbox'}, h('h2', null, t('kCountries')), bars(r.countries, cname))),
+      h('a', {class:'pathpanel', href:'#business', style:'margin-top:20px'}, h('span', {class:'in'}, h('span', {class:'t'}, h('strong', null, t('kWhy')), h('small', {style:'white-space:normal'}, t('kWhyText'))), icon('arrow'))));
+  }).catch(() => {});
   return root;
 }
 
