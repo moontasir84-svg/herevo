@@ -248,6 +248,20 @@ class ClaudeLLM:
         raise ValueError("Claude did not call the respond tool")
 
 
+    def generate(self, system: str, parts: list[dict], tool: str, schema: dict, seconds: float = 25,
+                 temperature: float = 0.4) -> dict:
+        content = [{"type": "image", "source": {"type": "base64", "media_type": p["mime"], "data": p["image"]}}
+                   if "image" in p else {"type": "text", "text": p["text"]} for p in parts]
+        msg = self.client.messages.create(
+            model=self.model, max_tokens=max(self.max_tokens, 2000), temperature=temperature, timeout=seconds,
+            system=system, tools=[{"name": tool, "description": "Give your answer.", "input_schema": schema}],
+            tool_choice={"type": "tool", "name": tool}, messages=[{"role": "user", "content": content}])
+        for block in msg.content:
+            if getattr(block, "type", None) == "tool_use" and block.name == tool:
+                return dict(block.input)
+        raise ValueError("Claude did not answer with the tool")
+
+
 def to_gemini_schema(schema: dict) -> dict:
     """Convert our JSON Schema to Gemini's OpenAPI-style schema (upper-case types, nullable flag)."""
     out: dict = {}
@@ -291,25 +305,11 @@ class GeminiLLM:
                 return r2
         return r
 
-    def respond(self, language: str, passages: list[dict], message: str, history: list[dict] | None = None,
-                note: str | None = None) -> dict:
-        import httpx
-
-        system = SYSTEM_PROMPT.format(language_name=LANGUAGE_NAMES.get(language, "the caller's language"))
-        user = f"{format_history(history)}{(note + chr(10) + chr(10)) if note else ''}Knowledge passages:\n{format_passages(passages)}\n\nCaller says now:\n{message}"
-        body = {
-            "systemInstruction": {"parts": [{"text": system}]},
-            "contents": [{"role": "user", "parts": [{"text": user}]}],
-            "tools": [{"functionDeclarations": [{"name": RESPOND_TOOL["name"],
-                                                 "description": RESPOND_TOOL["description"],
-                                                 "parameters": to_gemini_schema(RESPOND_TOOL["input_schema"])}]}],
-            "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames": ["respond"]}},
-            # Newer Gemini models "think" before answering and those tokens count against this limit,
-            # so leave generous room or the function call gets cut off.
-            "generationConfig": {"maxOutputTokens": max(self.max_tokens, 8192), "temperature": 0.2},
-        }
+    def _run(self, httpx, body: dict, seconds: float = 25) -> dict:
+        """POST to the first model that answers, with retries on overload. She is waiting: give up after
+        `seconds` so the caller can use its checked fallback."""
         data, notes = None, []
-        deadline = time.monotonic() + 25  # she is waiting: give up and use the checked fallback after 25 s
+        deadline = time.monotonic() + seconds  # she is waiting: give up and use the checked fallback after 25 s
         for model in self.models:
             for attempt in range(2):  # an overloaded model often answers on the second try
                 left = deadline - time.monotonic()
@@ -341,7 +341,26 @@ class GeminiLLM:
                 break
         if data is None:
             raise ValueError("Gemini failed: " + "; ".join(notes))
-        data = r.json()
+        return data
+
+    def respond(self, language: str, passages: list[dict], message: str, history: list[dict] | None = None,
+                note: str | None = None) -> dict:
+        import httpx
+
+        system = SYSTEM_PROMPT.format(language_name=LANGUAGE_NAMES.get(language, "the caller's language"))
+        user = f"{format_history(history)}{(note + chr(10) + chr(10)) if note else ''}Knowledge passages:\n{format_passages(passages)}\n\nCaller says now:\n{message}"
+        body = {
+            "systemInstruction": {"parts": [{"text": system}]},
+            "contents": [{"role": "user", "parts": [{"text": user}]}],
+            "tools": [{"functionDeclarations": [{"name": RESPOND_TOOL["name"],
+                                                 "description": RESPOND_TOOL["description"],
+                                                 "parameters": to_gemini_schema(RESPOND_TOOL["input_schema"])}]}],
+            "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames": ["respond"]}},
+            # Newer Gemini models "think" before answering and those tokens count against this limit,
+            # so leave generous room or the function call gets cut off.
+            "generationConfig": {"maxOutputTokens": max(self.max_tokens, 8192), "temperature": 0.2},
+        }
+        data = self._run(httpx, body)
         cand = (data.get("candidates") or [{}])[0]
         for part in (cand.get("content") or {}).get("parts") or []:
             call = part.get("functionCall")
@@ -349,6 +368,30 @@ class GeminiLLM:
                 return dict(call.get("args") or {})
         raise ValueError(f"Gemini returned no function call (finishReason={cand.get('finishReason')}, "
                          f"blocked={data.get('promptFeedback', {}).get('blockReason')})")
+
+    def generate(self, system: str, parts: list[dict], tool: str, schema: dict, seconds: float = 25,
+                 temperature: float = 0.4) -> dict:
+        """One structured answer for HerEvo's tools (paper lens, rehearsal, statement). `parts` are
+        {"text": ...} or {"image": <base64>, "mime": "image/jpeg"}."""
+        import httpx
+
+        gparts = [{"inlineData": {"mimeType": p["mime"], "data": p["image"]}} if "image" in p else {"text": p["text"]}
+                  for p in parts]
+        body = {
+            "systemInstruction": {"parts": [{"text": system}]},
+            "contents": [{"role": "user", "parts": gparts}],
+            "tools": [{"functionDeclarations": [{"name": tool, "description": "Give your answer.",
+                                                 "parameters": to_gemini_schema(schema)}]}],
+            "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames": [tool]}},
+            "generationConfig": {"maxOutputTokens": 8192, "temperature": temperature},
+        }
+        data = self._run(httpx, body, seconds)
+        cand = (data.get("candidates") or [{}])[0]
+        for part in (cand.get("content") or {}).get("parts") or []:
+            call = part.get("functionCall")
+            if call and call.get("name") == tool:
+                return dict(call.get("args") or {})
+        raise ValueError(f"Gemini returned no answer (finishReason={cand.get('finishReason')})")
 
 
 def parse(raw: dict, passage_ids: set[str]) -> Respond:

@@ -1,0 +1,527 @@
+{
+ "notice": {
+  "file": "notice.jpg",
+  "title": {
+   "bn": "শুনানির নোটিশ",
+   "en": "Hearing notice"
+  },
+  "reading": {
+   "bn": {
+    "is_document": true,
+    "doc_type": "নামজারি শুনানির নোটিশ",
+    "title": "সহকারী কমিশনার (ভূমি)-এর কার্যালয় থেকে শুনানির নোটিশ",
+    "summary": "এটা আপনার নামজারি আবেদনের শুনানির নোটিশ। ১৫ ডিসেম্বর ২০২৬, সকাল সাড়ে দশটায় ভূমি অফিসে যেতে হবে। না গেলে আবেদন বাতিল হতে পারে। এই কাগজে সই করার কিছু নেই, যত্ন করে রাখুন।",
+    "say": "এটা আপনার জমির নামজারির শুনানির নোটিশ। পনেরো ডিসেম্বর, সকাল সাড়ে দশটায় ভূমি অফিসে যাবেন। সঙ্গে নেবেন মূল দলিল, ওয়ারিশ সনদ, মৃত্যু সনদ আর জাতীয় পরিচয়পত্র। না গেলে আবেদন বাতিল হতে পারে।",
+    "verdict": "keep_safe",
+    "facts": [
+     {
+      "label": "শুনানির তারিখ",
+      "value": "১৫ ডিসেম্বর ২০২৬, সকাল ১০:৩০",
+      "box": [
+       354,
+       145,
+       429,
+       847
+      ]
+     },
+     {
+      "label": "মামলা নং",
+      "value": "৮৪৭/২০২৬",
+      "box": [
+       262,
+       141,
+       317,
+       844
+      ]
+     },
+     {
+      "label": "সঙ্গে নিন",
+      "value": "মূল দলিল, ওয়ারিশ সনদ, মৃত্যু সনদ, জাতীয় পরিচয়পত্র",
+      "box": [
+       420,
+       146,
+       506,
+       851
+      ]
+     },
+     {
+      "label": "জমি",
+      "value": "খতিয়ান ২১৫, দাগ ৬১২, ১২.৫ শতাংশ",
+      "box": [
+       540,
+       151,
+       641,
+       856
+      ]
+     }
+    ],
+    "flags": [
+     {
+      "level": "warn",
+      "text": "না গেলে আবেদন নামঞ্জুর হতে পারে। তারিখটা মনে রাখুন।",
+      "box": [
+       491,
+       149,
+       546,
+       852
+      ]
+     },
+     {
+      "level": "good",
+      "text": "এই শুনানির পরেই খতিয়ানে আপনার নাম উঠবে।",
+      "box": null
+     }
+    ],
+    "steps": [
+     "১৫ ডিসেম্বর সকাল ১০:৩০-এর আগে ভূমি অফিসে পৌঁছান।",
+     "চারটি কাগজের মূল ও ফটোকপি সঙ্গে নিন।",
+     "কেউ বাড়তি টাকা চাইলে দেবেন না, সরকারি ফি মোট ১,১৭০ টাকা।",
+     "সমস্যা হলে ভূমি সেবা হটলাইন ১৬১২২-এ ফোন করুন।"
+    ]
+   },
+   "en": {
+    "is_document": true,
+    "doc_type": "Mutation hearing notice",
+    "title": "Hearing notice from the Assistant Commissioner (Land) office",
+    "summary": "This is the hearing notice for your land mutation application. You must go to the land office on 15 December 2026 at 10:30 in the morning. If you don't go, the application may be rejected. There is nothing to sign here: keep it safe.",
+    "say": "This is the hearing notice for your land mutation. Go to the land office on the fifteenth of December at ten thirty in the morning. Bring the original deed, the heirship certificate, the death certificate and your national ID. If you don't go, the application may be rejected.",
+    "verdict": "keep_safe",
+    "facts": [
+     {
+      "label": "Hearing",
+      "value": "15 December 2026, 10:30 am",
+      "box": [
+       354,
+       145,
+       429,
+       847
+      ]
+     },
+     {
+      "label": "Case no.",
+      "value": "847/2026",
+      "box": [
+       262,
+       141,
+       317,
+       844
+      ]
+     },
+     {
+      "label": "Bring",
+      "value": "Original deed, heirship certificate, death certificate, national ID",
+      "box": [
+       420,
+       146,
+       506,
+       851
+      ]
+     },
+     {
+      "label": "Land",
+      "value": "Khatian 215, plot 612, 12.5 decimals",
+      "box": [
+       540,
+       151,
+       641,
+       856
+      ]
+     }
+    ],
+    "flags": [
+     {
+      "level": "warn",
+      "text": "If you miss the hearing, the application may be rejected.",
+      "box": [
+       491,
+       149,
+       546,
+       852
+      ]
+     },
+     {
+      "level": "good",
+      "text": "After this hearing your name goes into the land record.",
+      "box": null
+     }
+    ],
+    "steps": [
+     "Reach the land office before 10:30 am on 15 December.",
+     "Bring the four papers, originals and photocopies.",
+     "Don't pay anyone extra: the official fee is Tk 1,170 in total.",
+     "If there is a problem, call the land hotline 16122."
+    ]
+   }
+  }
+ },
+ "heba": {
+  "file": "heba.jpg",
+  "title": {
+   "bn": "হেবা দলিলের খসড়া",
+   "en": "Gift deed draft"
+  },
+  "reading": {
+   "bn": {
+    "is_document": true,
+    "doc_type": "হেবা (দান) দলিলের খসড়া",
+    "title": "আপনার জমির ভাগ দেবরকে দান করার ঘোষণাপত্র",
+    "summary": "এই কাগজে সই করলে স্বামীর জমিতে আপনার পুরো ভাগ, ১২.৫ শতাংশ, বিনা মূল্যে আর চিরদিনের জন্য আপনার দেবর করিম উদ্দিনের হয়ে যাবে। আপনি বা আপনার সন্তানেরা আর কোনো দাবি করতে পারবেন না। তারিখ আর সাক্ষীর জায়গা ফাঁকা রাখা হয়েছে।",
+    "say": "সাবধান। এই কাগজে সই করবেন না। এটা দান দলিল। সই করলে আপনার সাড়ে বারো শতাংশ জমি চিরদিনের জন্য আপনার দেবরের হয়ে যাবে, বিনা টাকায়। আগে বিনামূল্যে আইনি সহায়তা, এক ছয় চার তিন শূন্য নম্বরে কথা বলুন।",
+    "verdict": "do_not_sign",
+    "facts": [
+     {
+      "label": "কী দিচ্ছেন",
+      "value": "আপনার পুরো ভাগ, ১২.৫ শতাংশ জমি",
+      "box": [
+       240,
+       154,
+       322,
+       858
+      ]
+     },
+     {
+      "label": "কাকে",
+      "value": "দেবর মোঃ করিম উদ্দিন",
+      "box": [
+       746,
+       735,
+       807,
+       844
+      ]
+     },
+     {
+      "label": "দাম",
+      "value": "ফাঁকা (বিনা মূল্যে)",
+      "box": [
+       522,
+       147,
+       573,
+       850
+      ]
+     },
+     {
+      "label": "জমি",
+      "value": "খতিয়ান ২১৫, দাগ ৬১২",
+      "box": [
+       389,
+       149,
+       524,
+       854
+      ]
+     }
+    ],
+    "flags": [
+     {
+      "level": "danger",
+      "text": "চিরতরে দান: সই করলে জমি আর ফেরত পাবেন না।",
+      "box": [
+       240,
+       154,
+       322,
+       858
+      ]
+     },
+     {
+      "level": "danger",
+      "text": "আপনার আর আপনার সন্তানদের সব দাবি ছেড়ে দেওয়া হচ্ছে।",
+      "box": [
+       311,
+       152,
+       393,
+       856
+      ]
+     },
+     {
+      "level": "warn",
+      "text": "তারিখ, সাক্ষী আর দামের জায়গা ফাঁকা: পরে যা খুশি লেখা যাবে।",
+      "box": [
+       561,
+       146,
+       612,
+       849
+      ]
+     },
+     {
+      "level": "warn",
+      "text": "টিপসই চাওয়া হচ্ছে এখানে।",
+      "box": [
+       677,
+       141,
+       799,
+       293
+      ]
+     }
+    ],
+    "steps": [
+     "এই কাগজে সই বা টিপসই দেবেন না।",
+     "কাগজটির ছবি রেখে দিন।",
+     "বিনামূল্যে আইনি সহায়তা ১৬৪৩০-এ ফোন করুন।",
+     "নিজের নামে নামজারির আবেদন করুন: land.gov.bd, ফি ১,১৭০ টাকা।"
+    ]
+   },
+   "en": {
+    "is_document": true,
+    "doc_type": "Gift deed (heba) draft",
+    "title": "A declaration giving your land share to your brother-in-law",
+    "summary": "If you sign this, your whole share of your husband's land, 12.5 decimals, goes to your brother-in-law Karim Uddin for ever, for nothing. You and your children could never claim it again. The date and witness spaces are left blank.",
+    "say": "Careful. Do not sign this paper. It is a gift deed. If you sign, your twelve and a half decimals of land become your brother-in-law's for ever, for no money. First talk to free legal aid on one six four three zero.",
+    "verdict": "do_not_sign",
+    "facts": [
+     {
+      "label": "You give",
+      "value": "Your whole share: 12.5 decimals of land",
+      "box": [
+       240,
+       154,
+       322,
+       858
+      ]
+     },
+     {
+      "label": "To",
+      "value": "Brother-in-law Md. Karim Uddin",
+      "box": [
+       746,
+       735,
+       807,
+       844
+      ]
+     },
+     {
+      "label": "Price",
+      "value": "Blank (for nothing)",
+      "box": [
+       522,
+       147,
+       573,
+       850
+      ]
+     },
+     {
+      "label": "Land",
+      "value": "Khatian 215, plot 612",
+      "box": [
+       389,
+       149,
+       524,
+       854
+      ]
+     }
+    ],
+    "flags": [
+     {
+      "level": "danger",
+      "text": "A gift for ever: once signed, you can't get the land back.",
+      "box": [
+       240,
+       154,
+       322,
+       858
+      ]
+     },
+     {
+      "level": "danger",
+      "text": "You and your children give up every claim.",
+      "box": [
+       311,
+       152,
+       393,
+       856
+      ]
+     },
+     {
+      "level": "warn",
+      "text": "Date, witnesses and price are blank: anything can be written in later.",
+      "box": [
+       561,
+       146,
+       612,
+       849
+      ]
+     },
+     {
+      "level": "warn",
+      "text": "This is where they want your thumbprint.",
+      "box": [
+       677,
+       141,
+       799,
+       293
+      ]
+     }
+    ],
+    "steps": [
+     "Do not sign or put your thumbprint on this paper.",
+     "Keep a photo of it.",
+     "Call free legal aid on 16430.",
+     "Apply for mutation in your own name at land.gov.bd (fee Tk 1,170)."
+    ]
+   }
+  }
+ },
+ "kabin": {
+  "file": "kabin.jpg",
+  "title": {
+   "bn": "কাবিননামা",
+   "en": "Marriage contract"
+  },
+  "reading": {
+   "bn": {
+    "is_document": true,
+    "doc_type": "নিকাহনামা (কাবিননামা)",
+    "title": "সালমা খাতুন ও সাইফুল ইসলামের কাবিননামা",
+    "summary": "আপনার দেনমোহর ৫০,০০০ টাকা। এর মধ্যে ২০,০০০ টাকা (মু'আজ্জল) আপনি যেকোনো সময় চাইলেই পাওনা, বাকি ৩০,০০০ টাকা তালাক বা স্বামীর মৃত্যুর সময়। বিয়ের সময় কিছুই দেওয়া হয়নি। ১৮ নম্বর ঘরে লেখা আছে, তালাকের ক্ষমতা আপনাকেও দেওয়া হয়েছে।",
+    "say": "এটা আপনার কাবিননামা। দেনমোহর পঞ্চাশ হাজার টাকা। এর মধ্যে বিশ হাজার টাকা আপনি যেকোনো দিন চাইতে পারেন। এখনো কিছু দেওয়া হয়নি, তাই পুরো টাকাই পাওনা। আর আঠারো নম্বর ঘরে লেখা আছে, তালাকের ক্ষমতা আপনারও আছে। কাগজটা যত্ন করে রাখুন।",
+    "verdict": "keep_safe",
+    "facts": [
+     {
+      "label": "দেনমোহর",
+      "value": "৫০,০০০ টাকা",
+      "box": [
+       309,
+       146,
+       388,
+       848
+      ]
+     },
+     {
+      "label": "চাইলেই পাওনা",
+      "value": "মু'আজ্জল ২০,০০০ টাকা",
+      "box": [
+       370,
+       147,
+       450,
+       849
+      ]
+     },
+     {
+      "label": "পরিশোধ",
+      "value": "বিয়ের সময় শূন্য টাকা",
+      "box": [
+       432,
+       148,
+       512,
+       851
+      ]
+     },
+     {
+      "label": "বিয়ের তারিখ",
+      "value": "১০ মার্চ ২০২১",
+      "box": [
+       271,
+       145,
+       327,
+       847
+      ]
+     }
+    ],
+    "flags": [
+     {
+      "level": "good",
+      "text": "১৮ নম্বর ঘর: তালাকের ক্ষমতা আপনাকে দেওয়া হয়েছে।",
+      "box": [
+       532,
+       150,
+       588,
+       852
+      ]
+     },
+     {
+      "level": "good",
+      "text": "দেনমোহরের পুরো ৫০,০০০ টাকা এখনো পাওনা।",
+      "box": [
+       432,
+       148,
+       512,
+       851
+      ]
+     }
+    ],
+    "steps": [
+     "কাবিননামার কপি নিরাপদে রাখুন, ছবিও তুলে রাখুন।",
+     "মু'আজ্জল ২০,০০০ টাকা লিখিতভাবে চাইতে পারেন।",
+     "না দিলে ইউনিয়ন পরিষদের সালিশি পরিষদ বা পারিবারিক আদালতে যান (ফি ২০০ টাকা)।",
+     "বিনামূল্যে আইনি সহায়তা: ১৬৪৩০।"
+    ]
+   },
+   "en": {
+    "is_document": true,
+    "doc_type": "Marriage contract (kabinnama)",
+    "title": "Kabinnama of Salma Khatun and Saiful Islam",
+    "summary": "Your dower is 50,000 taka. Of this, 20,000 (the prompt part) is owed whenever you ask; the other 30,000 at divorce or your husband's death. Nothing was paid at the wedding. Column 18 says you also have the right of divorce.",
+    "say": "This is your marriage contract. Your dower is fifty thousand taka. You can ask for twenty thousand of it any day. Nothing has been paid yet, so all of it is still owed to you. Column eighteen says you also have the right of divorce. Keep this paper safe.",
+    "verdict": "keep_safe",
+    "facts": [
+     {
+      "label": "Dower",
+      "value": "Tk 50,000",
+      "box": [
+       309,
+       146,
+       388,
+       848
+      ]
+     },
+     {
+      "label": "Owed on demand",
+      "value": "Prompt part Tk 20,000",
+      "box": [
+       370,
+       147,
+       450,
+       849
+      ]
+     },
+     {
+      "label": "Paid",
+      "value": "Nothing at the wedding",
+      "box": [
+       432,
+       148,
+       512,
+       851
+      ]
+     },
+     {
+      "label": "Married",
+      "value": "10 March 2021",
+      "box": [
+       271,
+       145,
+       327,
+       847
+      ]
+     }
+    ],
+    "flags": [
+     {
+      "level": "good",
+      "text": "Column 18: you have been given the right of divorce.",
+      "box": [
+       532,
+       150,
+       588,
+       852
+      ]
+     },
+     {
+      "level": "good",
+      "text": "The full dower of Tk 50,000 is still owed to you.",
+      "box": [
+       432,
+       148,
+       512,
+       851
+      ]
+     }
+    ],
+    "steps": [
+     "Keep the kabinnama safe, and keep a photo of it.",
+     "You can ask in writing for the prompt Tk 20,000.",
+     "If he won't pay: the Union Parishad Arbitration Council or the Family Court (fee Tk 200).",
+     "Free legal aid: 16430."
+    ]
+   }
+  }
+ }
+}

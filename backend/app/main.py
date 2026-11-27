@@ -6,7 +6,14 @@
   GET  /v1/evidence                  anonymized counts for the evidence map
   GET  /v1/contacts/{country}        free help contacts
   POST /telegram/webhook/{secret}    Telegram bot updates
-  GET  /                             the HerEvo web app (web/index.html), talking to this API
+  GET  /v1/scenarios                 rehearsal room scenarios
+  POST /v1/lens                      Paper Lens: read a photographed paper aloud and flag what not to sign
+  POST /v1/rehearse                  one turn of a rehearsal (the other side's line + coaching)
+  POST /v1/counter                   whisper at the real desk: what is true, what to say
+  POST /v1/statement                 Witness diary notes -> dated statement
+  POST /v1/share                     exact inheritance shares (for the land picture)
+  GET  / and /app                    HerEvo app: the five tools (web/app.html)
+  GET  /chat                         the conversation with HerEvo (web/index.html), talking to this API
 """
 from __future__ import annotations
 
@@ -29,6 +36,8 @@ from .packs import available_countries
 from .pipeline import handle
 
 log = logging.getLogger("herevo.api")
+
+WEB_DIR = Path(__file__).resolve().parents[2] / "web"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
@@ -74,7 +83,7 @@ async def fresh_app_files(request, call_next):
     an old version after an update. (The offline helper still keeps its own copy for use without signal.)"""
     response = await call_next(request)
     path = request.url.path
-    if (path in ("/", "/index.html", "/sw.js") or path.startswith("/v1/") or path.startswith("/health")) \
+    if (path in ("/", "/index.html", "/sw.js", "/app", "/app.html", "/chat") or path.startswith("/v1/") or path.startswith("/health")) \
             and "cache-control" not in response.headers:
         response.headers["Cache-Control"] = "no-cache"
     return response
@@ -87,12 +96,12 @@ _WINDOW, _LIMIT = 600, 20
 _hits: dict[str, deque] = defaultdict(deque)
 
 
-def rate_limited(key: str) -> bool:
+def rate_limited(key: str, limit: int = _LIMIT) -> bool:
     now = time.monotonic()
     q = _hits[key]
     while q and now - q[0] > _WINDOW:
         q.popleft()
-    if len(q) >= _LIMIT:
+    if len(q) >= limit:
         return True
     q.append(now)
     return False
@@ -265,6 +274,146 @@ def offline_pack(country: str):
     return JSONResponse(body, headers={"Cache-Control": "public, max-age=3600"})
 
 
+# --- HerEvo tools: Paper Lens, Rehearsal, Counter, Witness, Share -------------------------------------------
+TOOL_LIMIT = 40  # AI calls per person per 10 minutes across the tools (a rehearsal is many short turns)
+LANGS = ("bn", "en", "sw", "es")
+
+
+def _tool_guard(session_id: str, lang: str) -> str:
+    if rate_limited("tool:" + session_id, TOOL_LIMIT):
+        raise HTTPException(429, "Too many requests. Please wait a few minutes.")
+    return lang if lang in LANGS else "en"
+
+
+@app.get("/v1/scenarios")
+def scenarios(lang: str = "bn"):
+    from . import tools
+    return {"scenarios": tools.scenario_list(lang if lang in LANGS else "en"),
+            "places": {k: (v.get(lang) or v["en"]) for k, v in tools.PLACES.items()}}
+
+
+class LensIn(BaseModel):
+    session_id: str = Field(min_length=8, max_length=100)
+    image: str = Field(min_length=100, max_length=7_000_000)  # base64, no data: prefix
+    mime: str = Field(default="image/jpeg", pattern=r"^image/(jpeg|png|webp)$")
+    lang: str = "bn"
+    country: str = "BD"
+    sample: str | None = Field(default=None, max_length=40)
+
+
+@app.post("/v1/lens")
+def lens(body: LensIn):
+    """The photo is read and forgotten: it is never stored or logged."""
+    from . import tools
+    lang = _tool_guard(body.session_id, body.lang)
+    image = body.image.split(",", 1)[1] if body.image.startswith("data:") else body.image
+    return tools.read_paper(image, body.mime, lang, body.country.upper(), body.sample)
+
+
+class Line(BaseModel):
+    who: str = Field(pattern=r"^(her|them)$")
+    text: str = Field(max_length=1000)
+
+
+class RehearseIn(BaseModel):
+    session_id: str = Field(min_length=8, max_length=100)
+    scenario: str = Field(max_length=40)
+    history: list[Line] = Field(default_factory=list, max_length=40)
+    said: str = Field(min_length=1, max_length=1000)
+    lang: str = "bn"
+    context: str | None = Field(default=None, max_length=400)
+    finish: bool = False
+
+
+@app.post("/v1/rehearse")
+def rehearse_turn(body: RehearseIn):
+    from . import tools
+    lang = _tool_guard(body.session_id, body.lang)
+    if body.scenario not in tools.SCENARIOS:
+        raise HTTPException(404, "Unknown scenario")
+    return tools.rehearse(body.scenario, [h.model_dump() for h in body.history], body.said, lang, body.context,
+                          body.finish)
+
+
+class CounterIn(BaseModel):
+    session_id: str = Field(min_length=8, max_length=100)
+    place: str = Field(default="land_office", max_length=40)
+    heard: str = Field(min_length=1, max_length=1000)
+    lang: str = "bn"
+    country: str = "BD"
+
+
+@app.post("/v1/counter")
+def counter_whisper(body: CounterIn):
+    from . import tools
+    lang = _tool_guard(body.session_id, body.lang)
+    return tools.counter(body.place, body.heard, lang, body.country.upper())
+
+
+class Entry(BaseModel):
+    at: str = Field(max_length=40)
+    text: str = Field(min_length=1, max_length=2000)
+
+
+class StatementIn(BaseModel):
+    session_id: str = Field(min_length=8, max_length=100)
+    entries: list[Entry] = Field(min_length=1, max_length=60)
+    lang: str = "bn"
+    country: str = "BD"
+
+
+@app.post("/v1/statement")
+def witness_statement(body: StatementIn):
+    """Her notes are used for this one answer and not kept on the server."""
+    from . import tools
+    lang = _tool_guard(body.session_id, body.lang)
+    return tools.statement([e.model_dump() for e in body.entries], lang, body.country.upper())
+
+
+class ShareIn(BaseModel):
+    deceased: str = Field(default="husband", pattern=r"^(husband|wife|father|mother)$")
+    wives: int = Field(default=0, ge=0, le=4)
+    husband: bool = False
+    sons: int = Field(default=0, ge=0, le=20)
+    daughters: int = Field(default=0, ge=0, le=20)
+    father: bool = False
+    mother: bool = False
+    siblings: int | None = Field(default=None, ge=0, le=30)
+    land: float | None = Field(default=None, gt=0, le=1_000_000)
+    lang: str = "bn"
+
+
+@app.post("/v1/share")
+def share(body: ShareIn):
+    """Exact shares (Hanafi, as applied in Bangladesh): the arithmetic is never left to the AI."""
+    from .inheritance import DISCLAIMER, Family, compute
+    f = Family(deceased=body.deceased, wives=body.wives, husband=body.husband, sons=body.sons,
+               daughters=body.daughters, father=body.father, mother=body.mother, siblings=body.siblings,
+               land=body.land)
+    result, reason = compute(f)
+    lang = "bn" if body.lang == "bn" else "en"
+    if result is None:
+        return {"ok": False, "reason": reason, "disclaimer": DISCLAIMER[lang]}
+    return {"ok": True, "disclaimer": DISCLAIMER[lang],
+            "shares": [{"heir": s.heir, "count": s.count, "num": s.each.numerator, "den": s.each.denominator,
+                        "pct": round(float(s.each) * 100, 3), "land_each": s.land_each} for s in result.shares]}
+
+
+@app.get("/", include_in_schema=False)
+@app.get("/app", include_in_schema=False)
+def app_page():
+    """HerEvo's main app: the five tools for the moments her rights are decided."""
+    from fastapi.responses import FileResponse
+    return FileResponse(WEB_DIR / "app.html", media_type="text/html")
+
+
+@app.get("/chat", include_in_schema=False)
+def chat_page():
+    """The conversation with HerEvo (typed or spoken questions, helper relay, evidence map)."""
+    from fastapi.responses import FileResponse
+    return FileResponse(WEB_DIR / "index.html", media_type="text/html")
+
+
 @app.post("/telegram/webhook/{secret}")
 def telegram_webhook(secret: str, update: dict):
     # Sync handler: FastAPI runs it in a worker thread, so DB and Claude calls don't block the server.
@@ -278,6 +427,5 @@ def telegram_webhook(secret: str, update: dict):
 
 
 # The web app is served last, so API routes always take priority.
-WEB_DIR = Path(__file__).resolve().parents[2] / "web"
 if WEB_DIR.is_dir():
     app.mount("/", StaticFiles(directory=WEB_DIR, html=True), name="web")
