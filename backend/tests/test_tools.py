@@ -171,3 +171,73 @@ def test_tools_rate_limited(ai):
 def test_app_page_served():
     r = client.get("/app")
     assert r.status_code == 200 and "HerEvo" in r.text and r.headers["cache-control"] == "no-cache"
+
+
+# --- Just tell me (plan), dates from papers, radar -------------------------------------------------------------
+
+def test_plan_saved_understands_family_and_paper(ai):
+    ai(error=ValueError("down"))
+    r = client.post("/v1/plan", json={"session_id": SID, "lang": "bn",
+                                      "text": "আমার স্বামী মারা গেছেন। দুই ছেলে এক মেয়ে আছে। ৮০ শতাংশ জমি। দেবর একটা কাগজে টিপসই দিতে বলছে।"}).json()
+    assert r["source"] == "saved" and not r["danger"]
+    assert [s["tool"] for s in r["steps"]][:3] == ["share", "lens", "rehearse"]
+    assert r["share"]["her_land"] == 10.0 and (r["share"]["num"], r["share"]["den"]) == (1, 8)
+    assert r["steps"][2]["scenario"] == "inlaw_land"
+
+
+def test_plan_saved_danger_first(ai):
+    ai(error=ValueError("down"))
+    r = client.post("/v1/plan", json={"session_id": SID, "lang": "en",
+                                      "text": "My husband is beating me and threatens to kill me"}).json()
+    assert r["danger"] and r["steps"][0] == {"tool": "call", "number": "999", "title": "Call 999 now",
+                                             "why": "If you are in danger, get safe first."}
+    assert "witness" in [s["tool"] for s in r["steps"]]
+
+
+def test_plan_with_ai_cleans_steps_and_computes_share(ai):
+    f = ai({"understood": "Husband died; brother-in-law refuses land.", "say": "You are not alone.", "danger": False,
+            "family": {"deceased": "husband", "sons": 1, "daughters": 2, "land": 60},
+            "steps": [{"tool": "share", "title": "See your share", "why": "Know it."},
+                      {"tool": "rehearse", "title": "Practise", "why": "Be ready.", "scenario": "made_up"},
+                      {"tool": "call", "title": "Call", "why": "Help.", "number": "12345"},
+                      {"tool": "teleport", "title": "x", "why": "y"}], "ask": ""})
+    r = client.post("/v1/plan", json={"session_id": SID, "lang": "en", "text": "my husband died..."}).json()
+    assert r["source"] == "ai" and [s["tool"] for s in r["steps"]] == ["share", "rehearse", "call"]
+    assert r["steps"][1]["scenario"] is None          # unknown scenario dropped
+    assert r["steps"][2]["number"] == "999"           # a number not in the checked facts is replaced
+    assert r["share"]["her_land"] == 7.5              # 1/8 of 60, computed by HerEvo, not the AI
+    assert "inlaw_land" in f.calls[0]["system"]
+
+
+def test_lens_dates_cleaned(ai):
+    ai({"is_document": True, "doc_type": "Notice", "title": "t", "summary": "s", "say": "s", "verdict": "keep_safe",
+        "facts": [{"label": "a", "value": "b"}], "flags": [], "steps": [],
+        "dates": [{"what": "Hearing", "date": "2026-12-15", "time": "10:30"}, {"what": "bad", "date": "15/12/2026"},
+                  {"what": "no time", "date": "2027-01-02", "time": "morning"}]})
+    r = client.post("/v1/lens", json={"session_id": SID, "image": IMG, "lang": "en"}).json()
+    assert r["dates"] == [{"what": "Hearing", "date": "2026-12-15", "time": "10:30"},
+                          {"what": "no time", "date": "2027-01-02", "time": None}]
+
+
+def test_saved_notice_has_hearing_date():
+    assert tools.SAMPLE_READINGS["notice"]["en"]["dates"][0]["date"] == "2026-12-15"
+
+
+def test_radar_counts_and_hides_small_areas():
+    for i in range(3):
+        r = client.post("/v1/radar", json={"session_id": f"radar-sess-{i:03d}", "country": "BD", "area": "  Namunapur ",
+                                           "place": "land_office", "kind": "bribe"})
+        assert r.status_code == 200
+    client.post("/v1/radar", json={"session_id": "radar-sess-x01", "country": "BD", "area": "Charpara",
+                                   "place": "union_parishad", "kind": "pressure"})
+    s = client.get("/v1/radar/BD").json()
+    assert s["total"] == 4 and s["by_kind"] == {"bribe": 3, "pressure": 1} and s["by_place"]["land_office"] == 3
+    assert s["areas"] == [{"area": "namunapur", "place": "land_office", "count": 3, "kinds": {"bribe": 3}}]  # charpara hidden
+
+
+def test_radar_rejects_unknown_and_floods():
+    bad = client.post("/v1/radar", json={"session_id": "radar-sess-bad", "place": "moon", "kind": "bribe"})
+    assert bad.status_code == 422
+    codes = [client.post("/v1/radar", json={"session_id": "radar-flood-01", "place": "police", "kind": "other"}).status_code
+             for _ in range(6)]
+    assert codes[:5] == [200] * 5 and codes[5] == 429

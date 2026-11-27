@@ -354,6 +354,89 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 .sos-list .exit{background:var(--ink);color:#fff}
 .sos-list .num{margin-left:auto;font-family:var(--f-display);font-size:24px}
 
+/* ---- just tell me ---- */
+.tell{position:relative;border-radius:30px;background:var(--ink);color:#F4EEE3;padding:18px 16px 16px;margin-bottom:14px;overflow:hidden;isolation:isolate;animation:rise .5s both}
+.tell::before{content:"";position:absolute;z-index:-1;width:300px;height:300px;right:-120px;top:-150px;border-radius:50%;background:radial-gradient(circle,rgba(242,158,46,.45),transparent 65%)}
+.tell h2{font-family:var(--f-display);font-weight:700;font-size:26px;line-height:1.15;margin:0 0 4px}
+.tell p{margin:0 0 14px;color:#CFC5B6;font-size:15px}
+.tell .inrow{display:flex;gap:10px;align-items:flex-end}
+.tell textarea{flex:1;min-height:56px;max-height:150px;resize:none;padding:15px 16px;border-radius:22px;border:0;background:rgba(244,238,227,.1);color:#fff;font-size:17px;line-height:1.4}
+.tell textarea::placeholder{color:rgba(244,238,227,.55)}
+.tell .bigmic{flex:none;width:64px;height:64px;border-radius:50%;border:0;background:var(--her);color:var(--ink);display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 0 8px rgba(242,158,46,.18)}
+.tell .bigmic svg{width:30px;height:30px}
+.tell .bigmic.on{background:#fff}
+.tell .bigmic.on::before{content:"";position:absolute;inset:-8px;border-radius:50%;border:3px solid var(--her);animation:ripple 1.2s infinite}
+.tell .go{margin-top:10px;width:100%;min-height:50px;border-radius:99px;border:0;background:var(--her);color:var(--ink);font-weight:700;font-size:16.5px;display:flex;align-items:center;justify-content:center;gap:8px}
+.tell .go svg{width:20px;height:20px}
+.tell .ex{display:flex;gap:8px;overflow-x:auto;margin:12px -16px 0;padding:0 16px;scrollbar-width:none}
+.tell .ex::-webkit-scrollbar{display:none}
+.tell .ex button{flex:none;max-width:250px;text-align:left;border:1px solid rgba(244,238,227,.22);background:transparent;color:#E6DDCF;border-radius:16px;padding:8px 12px;font-size:14px;line-height:1.35;white-space:normal}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14px;font-weight:600;margin:20px 0 12px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.resume{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:22px;background:var(--surface);border:1.5px solid var(--her);text-decoration:none;margin-bottom:14px;animation:rise .5s both}
+.resume .pie{--v:0;flex:none;width:46px;height:46px;border-radius:50%;background:conic-gradient(var(--her) calc(var(--v)*1%),var(--line) 0);display:flex;align-items:center;justify-content:center}
+.resume .pie b{width:36px;height:36px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:13px}
+.resume span{flex:1;min-width:0}
+.resume small{display:block;color:var(--muted);font-size:13px;font-weight:600}
+.resume strong{display:block;font-weight:600;line-height:1.35;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.resume svg{width:20px;height:20px;flex:none}
+.radarstrip{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:18px;background:var(--danger-2);color:#8E1F16;font-weight:600;font-size:14.5px;margin-top:12px;text-decoration:none}
+.radarstrip svg{width:22px;height:22px;flex:none}
+
+/* ---- path ---- */
+.heard-you{font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;margin:8px 0 4px}
+.heard-you svg{width:18px;height:18px;color:var(--good)}
+.minishare>svg{width:22px;height:22px;flex:none}
+.understood{font-family:var(--f-display);font-weight:600;font-size:24px;line-height:1.3;margin:0 0 14px;text-wrap:pretty}
+.quote{font-size:14.5px;color:var(--muted);border-left:3px solid var(--line);padding-left:12px;margin:0 0 16px;font-style:italic}
+.minishare{display:flex;align-items:center;gap:14px;padding:14px;border-radius:20px;background:var(--share);color:#fff;margin-bottom:16px;text-decoration:none;animation:rise .5s both}
+.minishare .bar{flex:1;height:14px;border-radius:7px;background:rgba(255,255,255,.25);overflow:hidden;margin-top:8px}
+.minishare .bar i{display:block;height:100%;background:var(--her);border-radius:7px}
+.minishare b{font-family:var(--f-display);font-size:30px;line-height:1}
+.minishare small{display:block;font-size:13px;opacity:.85}
+.stones{list-style:none;margin:0;padding:0;display:grid;gap:14px;position:relative}
+.stones::before{content:"";position:absolute;left:23px;top:24px;bottom:24px;width:3px;background:repeating-linear-gradient(180deg,var(--line) 0 8px,transparent 8px 14px)}
+.stone{position:relative;display:grid;grid-template-columns:48px minmax(0,1fr);gap:14px;align-items:start;animation:rise .5s both;animation-delay:calc(var(--i)*90ms)}
+.stone .dot{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--f-display);font-weight:700;font-size:20px;box-shadow:0 0 0 5px var(--paper);position:relative;z-index:1}
+.stone .dot svg{width:22px;height:22px}
+.stone.done .dot{background:var(--ink)!important}
+.stone a.card{display:grid;gap:4px;text-decoration:none;padding:14px 16px;border-radius:20px;background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--c)}
+.stone a.card b{font-family:var(--f-display);font-weight:600;font-size:18.5px;line-height:1.25}
+.stone a.card span{color:var(--muted);font-size:15px}
+.stone a.card em{font-style:normal;justify-self:start;margin-top:6px;display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:99px;background:var(--c);color:#fff;font-weight:700;font-size:14.5px}
+.stone a.card em svg{width:16px;height:16px}
+.stone.done a.card{opacity:.75}
+.askq{margin-top:18px;border-radius:22px;border:1.5px dashed var(--her);background:#FFF6E8;padding:14px;display:grid;gap:10px}
+.askq b{font-weight:700}
+.askq .inrow{display:flex;gap:8px}
+.askq textarea{flex:1;min-height:50px;resize:none;padding:12px 14px;border-radius:16px;border:1.5px solid var(--line);background:var(--surface);font-size:16.5px}
+.lenshint{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:16px;background:var(--lens-2);color:#1C2F94;font-weight:600;margin-bottom:12px}
+.lenshint svg{width:20px;height:20px;flex:none}
+.remind{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px 16px;border-radius:18px;border:0;background:var(--ink);color:#fff;font-weight:600;margin-top:8px}
+.remind svg{width:24px;height:24px;flex:none;color:var(--her)}
+.remind span{flex:1}
+.remind small{display:block;font-weight:500;opacity:.8;font-size:13.5px}
+
+/* ---- radar ---- */
+.warn-others{margin-top:4px;display:grid;gap:10px;padding:12px;border-radius:16px;background:var(--danger-2)}
+.warn-others b{color:#8E1F16;font-size:15px}
+.warn-others .kinds{display:flex;gap:6px;flex-wrap:wrap}
+.warn-others .kinds button{min-height:40px;padding:0 12px;border-radius:99px;border:1.5px solid rgba(208,54,42,.35);background:#fff;font-weight:600;font-size:14px;color:#8E1F16}
+.warn-others .kinds button[aria-pressed="true"]{background:var(--danger);color:#fff;border-color:var(--danger)}
+.warn-others input{min-height:46px;border-radius:12px;border:1.5px solid rgba(208,54,42,.25);padding:0 12px;font-size:15.5px;background:#fff}
+.warn-others .btn{background:var(--danger);min-height:46px;font-size:15px}
+.warnbtn{justify-self:start;border:1.5px solid var(--danger);background:transparent;color:var(--danger);border-radius:99px;min-height:42px;padding:0 14px;font-weight:700;font-size:14.5px;display:inline-flex;align-items:center;gap:6px}
+.warnbtn svg{width:18px;height:18px}
+.radar{margin-top:24px;border-radius:24px;background:var(--ink);color:#F4EEE3;padding:16px;position:relative;overflow:hidden}
+.radar h2{font-family:var(--f-display);font-size:21px;margin:0 0 2px;display:flex;align-items:center;gap:10px}
+.radar .sweep{width:34px;height:34px;border-radius:50%;border:2px solid rgba(242,158,46,.6);position:relative;flex:none;background:conic-gradient(from 0deg,rgba(242,158,46,.7),transparent 30%);animation:spin 3s linear infinite}
+.radar p{margin:0 0 12px;color:#CFC5B6;font-size:14px}
+.radar .big{font-family:var(--f-display);font-weight:800;font-size:44px;line-height:1;color:var(--her)}
+.radar .rows{display:grid;gap:6px;margin-top:12px}
+.radar .rows div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;font-size:15px;padding:8px 0;border-top:1px solid rgba(244,238,227,.12)}
+.radar .rows span{color:#CFC5B6}
+.radar .rows b{font-variant-numeric:tabular-nums}
+
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -364,11 +447,13 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
     <h1>Most apps answer her questions. HerEvo gets her <em>ready for the room</em> where her rights are decided.</h1>
     <p class="lead">Rural women rarely lose land, dower or safety for lack of information. They lose them in five moments: a paper they can't read, the day land is divided, the hard conversation, the office desk, and the night nobody wrote down. HerEvo is built for those moments. Voice first, in Bangla.</p>
     <ol>
+      <li><i style="background:var(--her)"></i><b>Just tell me</b><span>She says what is happening, in her own words. The AI understands, computes what it can, and lays out her path, opening each tool already filled in.</span></li>
       <li><i style="background:var(--lens)"></i><b>Paper Lens</b><span>Photograph any paper. It reads it aloud, highlights dates and amounts, and says "do not sign" when a paper gives her land away.</span></li>
       <li><i style="background:var(--share)"></i><b>My Share</b><span>Exact Islamic-law shares, computed (not guessed), drawn as her field. Shows what is being kept from her.</span></li>
       <li><i style="background:var(--rehearse)"></i><b>Rehearsal</b><span>The AI plays the brother-in-law, the bribe-asking clerk or the salish chairman. A coach scores every line.</span></li>
       <li><i style="background:var(--counter)"></i><b>Whisper</b><span>At the real desk: what the official said, the truth, and the one sentence to say back.</span></li>
       <li><i style="background:var(--witness)"></i><b>Witness</b><span>A PIN-locked diary sealed with a hash chain on her phone, turned into a dated statement for a protection order.</span></li>
+      <li><i style="background:var(--danger)"></i><b>Radar</b><span>One tap warns the next woman: anonymous counts of bribes and pressure by office and area, evidence officials can't ignore.</span></li>
     </ol>
     <p class="meta">Test version: made-up data only · Bangladesh, Kenya, Mexico · Works with Gemini (test) and Claude</p>
   </aside>
@@ -441,6 +526,16 @@ bn:{
   // sos
   sosH:'এখনই সাহায্য', helper:'একজন সহায়তাকর্মীর সঙ্গে কথা বলুন', helperSub:'প্রশিক্ষিত মানুষ, গোপনে', exit:'দ্রুত বের হোন', exitSub:'এই পাতা বন্ধ হয়ে আবহাওয়ার পাতা খুলবে',
   cc:{BD:'বাংলাদেশ',KE:'কেনিয়া',MX:'মেক্সিকো'},
+  tellH:'কী হয়েছে, বলুন', tellSub:'নিজের ভাষায়, যেভাবে খুশি। HerEvo বুঝে আপনার পথ সাজিয়ে দেবে।', tellPh:'যেমন: স্বামী মারা গেছেন, দেবর জমি দিতে চাইছে না…', tellGo:'আমার পথ দেখাও',
+  tellEx:['আমার স্বামী মারা গেছেন। দুই ছেলে এক মেয়ে, ৮০ শতাংশ জমি। দেবর একটা কাগজে টিপসই দিতে বলছে।','ভূমি অফিসের লোক নামজারির জন্য পাঁচ হাজার টাকা চাইছে।','স্বামী চার মাস টাকা দেয় না, দেনমোহরও দেয়নি।','শাশুড়ি যৌতুক চায়, না দিলে মারধর করে।'],
+  orPick:'অথবা নিজেই বেছে নিন', resume:'আপনার পথ', resumeOf:(a,b)=>`${a}/${b} ধাপ`,
+  heardYou:'আপনার কথা বুঝেছি', youSaid:'আপনি বলেছেন', open:'শুরু করুন', call:'ফোন করুন', pathAsk:'আরেকটু জানালে আরও ঠিকভাবে সাহায্য করতে পারব', answer:'উত্তর দিন',
+  newPath:'নতুন করে বলুন', thinkingPath:'আপনার কথা বুঝছি, পথ সাজাচ্ছি…', shareMini:'আইনে আপনার ভাগ', lensHint:'যে কাগজের ছবি তুলবেন',
+  remindMe:'মনে করিয়ে দিন', remindSub:'আপনার ফোনের ক্যালেন্ডারে যোগ হবে, আগের দিন মনে করাবে',
+  warnOthers:'অন্য নারীদের সাবধান করুন', warnH:'নাম ছাড়া জানান, পরের নারী যেন সাবধান থাকে', warnArea:'এলাকা বা অফিসের নাম (ঐচ্ছিক)', warnSend:'জানিয়ে দিন', warnThanks:'ধন্যবাদ। আপনার জানানো পরের নারীকে রক্ষা করবে।',
+  kinds:{bribe:'ঘুষ চাওয়া',pressure:'সই করতে চাপ',false_rule:'ভুল নিয়ম বলা',dowry:'যৌতুক',land_grab:'জমি দখল',other:'অন্য'},
+  radarH:'রাডার', radarSub:(d)=>`গত ${d} দিনে নারীরা নাম ছাড়া যা জানিয়েছেন`, radarNone:'এখনো কেউ কিছু জানায়নি। আপনার একটি জানানো অন্যকে রক্ষা করতে পারে।', radarWomen:'টি সতর্কবার্তা',
+  radarStrip:(n)=>`সাবধান: ${n} জন নারী এই দেশে ঘুষ বা চাপের কথা জানিয়েছেন`,
 },
 en:{
   hello:'Welcome', tagline:'In the room where your rights are decided, you are not alone.',
@@ -493,6 +588,16 @@ en:{
   samples:[['SAMPLE: At night my husband got angry and pushed me. I hit the wall and my arm is bruised.',-21],['SAMPLE: He took my phone and locked the door. He does not let me visit my parents.',-14],['SAMPLE: He threatens divorce if I do not bring dowry money. The neighbour aunty heard it.',-3]],
   sosH:'Help now', helper:'Talk to a trained helper', helperSub:'A real person, in confidence', exit:'Quick exit', exitSub:'This page closes and a weather page opens',
   cc:{BD:'Bangladesh',KE:'Kenya',MX:'Mexico'},
+  tellH:"Tell me what's happening", tellSub:'In your own words. HerEvo understands and lays out your path.', tellPh:'For example: my husband died and his brother won’t give me the land…', tellGo:'Show me my path',
+  tellEx:['My husband died. We have two sons and one daughter and 80 decimals of land. His brother wants my thumbprint on a paper.','The land office clerk wants five thousand taka for my mutation.','My husband has not given me money for four months, and never paid my dower.','My mother-in-law demands dowry and beats me when I refuse.'],
+  orPick:'Or choose a tool yourself', resume:'Your path', resumeOf:(a,b)=>`${a} of ${b} steps`,
+  heardYou:'I understood', youSaid:'You said', open:'Start', call:'Call', pathAsk:'Tell me a little more so I can help better', answer:'Answer',
+  newPath:'Tell me something new', thinkingPath:'Understanding you, laying out your path…', shareMini:'Your lawful share', lensHint:'The paper to photograph',
+  remindMe:'Remind me', remindSub:'Adds it to your phone calendar, with a reminder the day before',
+  warnOthers:'Warn other women', warnH:'No name. Warn the next woman so she is ready', warnArea:'Area or office name (optional)', warnSend:'Send warning', warnThanks:'Thank you. Your warning will protect the next woman.',
+  kinds:{bribe:'Bribe',pressure:'Pressure to sign',false_rule:'False rule',dowry:'Dowry',land_grab:'Land grab',other:'Other'},
+  radarH:'Radar', radarSub:(d)=>`What women reported, with no names, in the last ${d} days`, radarNone:'No warnings yet. One warning from you can protect someone else.', radarWomen:' warnings',
+  radarStrip:(n)=>`Careful: ${n} women in this country reported bribes or pressure`,
 }};
 const SAMPLES = [
   {id:'heba', title:{bn:'হেবা দলিলের খসড়া',en:'Gift deed draft'}, next:'#rehearse/inlaw_land'},
@@ -579,15 +684,15 @@ let toastTimer;
 function toast(msg){ const old = $('.toast'); if (old) old.remove(); const el = h('div', {class:'toast', role:'status'}, msg); ($('.device') || document.body).append(el); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.remove(), 3800); }
 
 /* ============================================================== network */
-async function api(path, body, timeout = 60000){
+async function api(path, body, timeout = 60000, quiet = false){
   const c = new AbortController(); const timer = setTimeout(() => c.abort(), timeout);
-  const slow = setTimeout(() => toast(t('waking')), 9000);
+  const slow = setTimeout(() => { if (!quiet) toast(t('waking')); }, 9000);
   try{
     const r = await fetch(path, {method: body ? 'POST' : 'GET', headers: body ? {'content-type':'application/json'} : {}, body: body ? JSON.stringify(body) : undefined, signal: c.signal});
     if (!r.ok) throw new Error(r.status === 429 ? 'busy' : 'http ' + r.status);
     return await r.json();
   }catch(e){
-    toast(navigator.onLine === false ? t('offline') : t('busy'));
+    if (!quiet) toast(navigator.onLine === false ? t('offline') : t('busy'));
     throw e;
   }finally{ clearTimeout(timer); clearTimeout(slow); }
 }
@@ -626,7 +731,7 @@ function hear(btn, onText, onEnd){
 }
 
 /* ============================================================== shell */
-const TITLES = {lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
+const TITLES = {path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
 function bar(name){
   const b = $('#bar'); fill(b);
   if (name === 'home'){
@@ -654,7 +759,7 @@ function openSOS(){
 }
 function quickExit(){ stopSpeech(); document.body.innerHTML = ''; try{ sessionStorage.clear(); }catch(e){} location.replace('https://www.google.com/search?q=weather'); }
 
-const VIEWS = {home: Home, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
+const VIEWS = {home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
 function route(){
   stopSpeech(); if (rec){ try{ rec.abort(); }catch(e){} rec = null; }
   fill($('#layer'));
@@ -671,9 +776,17 @@ window.addEventListener('hashchange', route);
 /* ============================================================== home */
 function Home(){
   const tools = ['lens', 'share', 'rehearse', 'counter', 'witness'];
+  const saved = store.get('path', null);
+  const done = saved ? saved.done.filter(Boolean).length : 0;
+  const radarSlot = h('div');
+  api('/v1/radar/' + S.country, null, 20000, true).then((r) => { if (r.total) fill(radarSlot, h('a', {class:'radarstrip', href:'#counter'}, icon('alert'), h('span', null, t('radarStrip')(num(r.total))))); }).catch(() => {});
   return h('div', null,
     h('p', {class:'eyebrow'}, t('hello')),
     h('h1', {class:'display'}, t('tagline')),
+    tellBox(),
+    saved ? h('a', {class:'resume', href:'#path'}, h('span', {class:'pie', style:`--v:${Math.round(done / saved.plan.steps.length * 100)}`}, h('b', null, num(done) + '/' + num(saved.plan.steps.length))),
+      h('span', null, h('small', null, t('resume') + ' · ' + t('resumeOf')(num(done), num(saved.plan.steps.length))), h('strong', null, saved.plan.understood)), icon('arrow')) : null,
+    h('div', {class:'or'}, t('orPick')),
     h('div', {class:'bento'}, tools.map((id, i) =>
       h('a', {class:`tool tool-${id}${i === 0 ? ' wide' : ''}`, href:'#' + id, style:`--i:${i}`},
         h('div', {class:'top'}, h('span', {class:'moment'}, t(id + 'Moment')), i === 0 ? null : listenBtn(() => t(id) + '। ' + t(id + 'Desc'), 'listen')),
@@ -682,20 +795,107 @@ function Home(){
         i === 0 ? h('div', {style:'margin-top:8px'}, listenBtn(() => t(id) + '। ' + t(id + 'Desc'), 'listen')) : null,
         art(id)))),
     h('a', {class:'ask', href:'/chat'}, icon('chat'), h('span', null, t('ask')), icon('arrow')),
+    radarSlot,
     h('div', {class:'foot'},
       h('select', {class:'chip', 'aria-label': t('country'), onchange: (e) => { S.country = e.target.value; store.set('country', S.country); }},
         ['BD', 'KE', 'MX'].map((c) => { const o = h('option', {value:c}, t('country') + ': ' + t('cc')[c]); if (c === S.country) o.selected = true; return o; })),
       h('p', {class:'test'}, h('i'), t('testNote'))));
 }
 
+/* ============================================================== just tell me + path */
+function tellBox(){
+  const input = h('textarea', {rows:'2', placeholder: t('tellPh'), 'aria-label': t('tellH'), oninput: grow});
+  function grow(){ input.style.height = 'auto'; input.style.height = Math.min(150, input.scrollHeight) + 'px'; }
+  const go = () => { const v = input.value.trim(); if (v.length < 2){ input.focus(); return; } makePath(v); };
+  const mic = h('button', {class:'bigmic', type:'button', 'aria-label':'Mic', onclick: () => hear(mic, (x) => { input.value = x; grow(); }, (x) => { if (x && x.trim().length > 5) go(); })}, icon('mic'));
+  return h('section', {class:'tell'},
+    h('h2', null, t('tellH')), h('p', null, t('tellSub')),
+    h('div', {class:'inrow'}, input, mic),
+    h('button', {class:'go', type:'button', onclick: go}, t('tellGo'), icon('arrow')),
+    h('div', {class:'ex'}, t('tellEx').map((x) => h('button', {type:'button', onclick: () => { input.value = x; grow(); go(); }}, x))));
+}
+let pathPending = false;
+async function makePath(text){
+  pathPending = true;
+  if (location.hash === '#path') route(); else location.hash = '#path';
+  try{
+    const plan = await api('/v1/plan', {session_id:S.sid, text, lang:S.lang, country:S.country}, 60000);
+    store.set('path', {text, plan, lang:S.lang, done: plan.steps.map(() => false), at: Date.now()});
+    pathPending = false; route();
+    if (S.voice) setTimeout(() => { const b = $('.view-path .listen'); speak(plan.say || plan.understood, b); }, 300);
+  }catch(e){ pathPending = false; location.hash = '#home'; }
+}
+const TOOL_STYLE = {share:['var(--share)','scale'], lens:['var(--lens)','camera'], rehearse:['var(--rehearse)','chat'], counter:['var(--counter)','speaker'], witness:['var(--witness)','book'], call:['var(--danger)','phone'], chat:['var(--ink)','chat']};
+function stepHref(st){
+  return {share:'#share', lens:'#lens', rehearse:'#rehearse' + (st.scenario ? '/' + st.scenario : ''), counter:'#counter/' + (st.place || 'land_office'), witness:'#witness', call:'tel:' + (st.number || '999'), chat:'/chat'}[st.tool] || '#home';
+}
+function Path(){
+  if (pathPending) return h('div', {class:'empty', style:'padding-top:60px'}, h('span', {class:'spinner', style:'width:34px;height:34px;color:var(--her)'}), h('p', {style:'font-weight:600;margin-top:16px'}, t('thinkingPath')));
+  const saved = store.get('path', null);
+  if (!saved) return h('div', null, h('p', {class:'eyebrow'}, t('hello')), tellBox());
+  const {plan} = saved;
+  const sayB = listenBtn(plan.say || plan.understood);
+  function launch(i, st){
+    saved.done[i] = true; store.set('path', saved);
+    try{
+      const ctx = [plan.understood, plan.share ? `Her lawful share is ${plan.share.her_land ?? ''} decimals (${plan.share.num}/${plan.share.den}).` : ''].join(' ').trim();
+      sessionStorage.setItem('herevo.ctx', ctx);
+      if (st.tool === 'lens' && st.paper) sessionStorage.setItem('herevo.paper', st.paper); else sessionStorage.removeItem('herevo.paper');
+    }catch(e){}
+    if (st.tool === 'share' && plan.share){
+      const f = plan.share;
+      store.set('family', {deceased:f.deceased, wives:f.wives, husband:false, sons:f.sons, daughters:f.daughters, father:!!f.father, mother:!!f.mother, siblings:0, land: f.land || 100, offered: f.offered != null ? String(f.offered) : ''});
+    }
+  }
+  const ans = h('textarea', {rows:'1'});
+  const steps = plan.steps.map((st, i) => {
+    const [c, ic] = TOOL_STYLE[st.tool] || TOOL_STYLE.chat;
+    return h('li', {class:'stone' + (saved.done[i] ? ' done' : ''), style:`--i:${i};--c:${c}`},
+      h('span', {class:'dot', style:`background:${c}`}, saved.done[i] ? icon('check') : num(i + 1)),
+      h('a', {class:'card', href: stepHref(st), onclick: () => launch(i, st)},
+        h('b', null, st.title), st.why ? h('span', null, st.why) : null,
+        st.tool === 'lens' && st.paper ? h('span', null, '📄 ' + st.paper) : null,
+        h('em', null, icon(ic), st.tool === 'call' ? t('call') + ' ' + num(st.number || '') : t('open'))));
+  });
+  return h('div', null,
+    h('div', {class:'heard-you'}, icon('check'), t('heardYou')),
+    h('div', {style:'display:flex;gap:12px;align-items:flex-start'}, h('p', {class:'understood', style:'flex:1'}, plan.understood), sayB),
+    h('p', {class:'quote'}, t('youSaid') + ': “' + saved.text + '”'),
+    plan.danger ? h('div', {class:'alert', style:'margin-bottom:16px'}, h('b', null, t('dangerH')), h('button', {class:'btn', type:'button', onclick: openSOS}, icon('shield'), t('dangerBtn'))) : null,
+    plan.share && plan.share.her_land != null ? h('a', {class:'minishare', href:'#share', onclick: () => launch(plan.steps.findIndex((x) => x.tool === 'share'), {tool:'share'})},
+      h('div', {style:'flex:1'}, h('small', null, t('shareMini')), h('b', null, fmt(plan.share.her_land) + ' ', h('small', {style:'display:inline;font-size:16px'}, t('unit') + ' · ' + num(plan.share.num) + '/' + num(plan.share.den))),
+        h('div', {class:'bar'}, h('i', {style:`width:${Math.max(4, plan.share.pct)}%`}))), icon('arrow')) : null,
+    h('ol', {class:'stones'}, steps),
+    plan.ask ? h('div', {class:'askq'}, h('b', null, t('pathAsk')), h('span', null, plan.ask),
+      h('div', {class:'inrow'}, ans, h('button', {class:'send', type:'button', style:'background:var(--her);color:var(--ink)', 'aria-label': t('answer'), onclick: () => { const a = ans.value.trim(); if (a) makePath(saved.text + ' ' + a); }}, icon('send')))) : null,
+    h('button', {class:'btn ghost block', type:'button', style:'margin-top:22px', onclick: () => { store.del('path'); location.hash = '#home'; }}, t('newPath')),
+    plan.source === 'saved' ? h('p', {class:'src'}, t('saved')) : null);
+}
+function ics(d){
+  const pad = (n) => String(n).padStart(2, '0');
+  const [y, m, dd] = d.date.split('-').map(Number);
+  const [hh, mm] = (d.time || '09:00').split(':').map(Number);
+  const start = `${y}${pad(m)}${pad(dd)}T${pad(hh)}${pad(mm)}00`;
+  const end = `${y}${pad(m)}${pad(dd)}T${pad(Math.min(23, hh + 1))}${pad(mm)}00`;
+  const esc = (x) => String(x).replace(/[\\,;]/g, (c) => '\\' + c).replace(/\n/g, ' ');
+  const body = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//HerEvo//EN', 'BEGIN:VEVENT', 'UID:' + Date.now() + '@herevo', 'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z',
+    'DTSTART:' + start, 'DTEND:' + end, 'SUMMARY:' + esc(d.what), 'DESCRIPTION:' + esc('HerEvo'),
+    'BEGIN:VALARM', 'TRIGGER:-P1D', 'ACTION:DISPLAY', 'DESCRIPTION:' + esc(d.what), 'END:VALARM',
+    'BEGIN:VALARM', 'TRIGGER:-PT2H', 'ACTION:DISPLAY', 'DESCRIPTION:' + esc(d.what), 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+  const a = h('a', {href: URL.createObjectURL(new Blob([body], {type:'text/calendar'})), download:'herevo-' + d.date + '.ics'});
+  document.body.append(a); a.click(); a.remove();
+}
+
 /* ============================================================== paper lens */
 function Lens(){
   const root = h('div');
+  let paperHint = null; try{ paperHint = sessionStorage.getItem('herevo.paper'); }catch(e){}
   const cam = h('input', {type:'file', accept:'image/*', capture:'environment', hidden:true, onchange: (e) => fromFile(e.target.files[0])});
   const gal = h('input', {type:'file', accept:'image/*', hidden:true, onchange: (e) => fromFile(e.target.files[0])});
   function intro(){
     fill(root, 
       h('h1', {class:'title'}, t('lensH')), h('p', {class:'sub'}, t('lensSub')),
+      paperHint ? h('div', {class:'lenshint'}, icon('info'), h('span', null, t('lensHint') + ': ' + paperHint)) : null,
       h('button', {class:'viewfinder', type:'button', onclick: () => cam.click()}, h('i', {class:'c c1'}), h('i', {class:'c c2'}), h('i', {class:'c c3'}), h('i', {class:'c c4'}), icon('camera', 'cam'), t('camera')),
       h('button', {class:'btn ghost block', type:'button', style:'margin-top:10px', onclick: () => gal.click()}, t('gallery')), cam, gal,
       h('h2', {class:'section'}, t('trySample')),
@@ -736,6 +936,7 @@ function Lens(){
       h('p', {class:'summary'}, res.summary),
       flags.length ? [h('h2', {class:'section'}, t('flags')), h('div', {class:'flags'}, flags)] : null,
       facts.length ? [h('h2', {class:'section'}, t('facts')), h('div', {class:'facts'}, facts), marks.length ? h('p', {class:'fine'}, icon('info'), t('tapFact')) : null] : null,
+      (res.dates || []).map((d) => h('button', {class:'remind', type:'button', onclick: () => ics(d)}, icon('info'), h('span', null, t('remindMe') + ': ' + d.what + ' · ' + fmtDay(d.date) + (d.time ? ', ' + num(d.time) : ''), h('small', null, t('remindSub'))))),
       (res.steps || []).length ? [h('h2', {class:'section'}, t('steps')), h('ol', {class:'steps'}, res.steps.map((s) => h('li', null, s)))] : null,
       nextLinks.length ? h('div', {class:'next'}, nextLinks) : null,
       h('button', {class:'btn ghost block', type:'button', style:'margin-top:14px', onclick: intro}, icon('camera'), t('again')),
@@ -746,6 +947,7 @@ function Lens(){
   intro();
   return root;
 }
+function fmtDay(d){ try{ return new Date(d + 'T12:00:00').toLocaleDateString(S.lang === 'bn' ? 'bn-BD' : 'en-GB', {day:'numeric', month:'long', year:'numeric'}); }catch(e){ return d; } }
 function toB64(blob){ return new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = no; r.readAsDataURL(blob); }); }
 async function shrink(file){
   const url = URL.createObjectURL(file);
@@ -914,8 +1116,10 @@ function session(s){
 }
 
 /* ============================================================== counter (whisper) */
-function Counter(){
-  let place = 'land_office';
+function Counter(arg){
+  let place = arg || 'land_office';
+  const radarBox = h('div');
+  const loadRadar = () => api('/v1/radar/' + S.country, null, 20000, true).then((r) => drawRadar(radarBox, r)).catch(() => {});
   const root = h('div');
   const placesRow = h('div', {class:'places'});
   const results = h('div', {class:'whispers', 'aria-live':'polite'});
@@ -936,7 +1140,8 @@ function Counter(){
         r.red_flag ? h('div', {class:'rf'}, icon('alert'), t('redflag')) : null,
         h('div', {class:'say'}, h('div', null, h('small', null, t('say')), h('p', null, r.whisper)), sayB),
         r.truth ? h('div', {class:'truth'}, icon('check'), h('span', null, r.truth)) : null,
-        r.ask_for ? h('span', {class:'askfor'}, t('askFor') + ': ' + r.ask_for) : null);
+        r.ask_for ? h('span', {class:'askfor'}, t('askFor') + ': ' + r.ask_for) : null,
+        r.red_flag ? warnOthers(place, heard, (sum) => drawRadar(radarBox, sum)) : null);
       if (S.voice) speak(r.whisper, sayB);
     }catch(e){ card.remove(); input.value = heard; sendB.disabled = false; }
   }
@@ -944,8 +1149,32 @@ function Counter(){
     h('h2', {class:'section', style:'margin-top:0'}, t('where')), placesRow, big,
     h('div', {class:'heardrow'}, input, sendB),
     h('div', {class:'examples'}, t('examples').map((x) => h('button', {type:'button', onclick: () => { input.value = x; ask(); }}, '“' + x + '”'))),
-    results);
+    results, radarBox);
+  loadRadar();
   return root;
+}
+function guessKind(text){ const x = text.toLowerCase(); if (/সই|টিপ|sign|thumb/.test(x)) return 'pressure'; if (/টাকা|taka|money|pay|fee|হাজার|thousand/.test(x)) return 'bribe'; if (/যৌতুক|dowry/.test(x)) return 'dowry'; if (/জমি|land/.test(x)) return 'land_grab'; return 'false_rule'; }
+function warnOthers(place, heard, onDone){
+  const box = h('div');
+  let kind = guessKind(heard);
+  const open = () => {
+    const area = h('input', {type:'text', maxlength:'40', placeholder: t('warnArea')});
+    const kinds = h('div', {class:'kinds'}, ['bribe', 'pressure', 'false_rule', 'land_grab', 'dowry', 'other'].map((k) => h('button', {type:'button', 'aria-pressed': String(k === kind), onclick: (e) => { kind = k; [...kinds.children].forEach((b) => b.setAttribute('aria-pressed', String(b === e.currentTarget))); }}, t('kinds')[k])));
+    fill(box, h('div', {class:'warn-others'}, h('b', null, t('warnH')), kinds, area,
+      h('button', {class:'btn', type:'button', onclick: async () => {
+        try{ const r = await api('/v1/radar', {session_id:S.sid, country:S.country, area: area.value.trim() || null, place, kind}, 20000); fill(box, h('p', {class:'fine', style:'color:var(--good);font-weight:600'}, icon('check'), t('warnThanks'))); onDone && onDone(r); }catch(e){}
+      }}, icon('alert'), t('warnSend'))));
+  };
+  fill(box, h('button', {class:'warnbtn', type:'button', onclick: open}, icon('alert'), t('warnOthers')));
+  return box;
+}
+function drawRadar(box, r){
+  const places = (SCEN[S.lang] && SCEN[S.lang].places) || {};
+  const rows = [];
+  for (const [k, n] of Object.entries(r.by_kind || {}).sort((a, b) => b[1] - a[1])) rows.push(h('div', null, h('span', null, t('kinds')[k] || k), h('b', null, num(n))));
+  for (const a of r.areas || []) rows.push(h('div', null, h('span', null, '📍 ' + a.area + ' · ' + (places[a.place] || a.place)), h('b', null, num(a.count))));
+  fill(box, h('section', {class:'radar'}, h('h2', null, h('span', {class:'sweep'}), t('radarH')), h('p', null, t('radarSub')(num(r.days || 90))),
+    r.total ? [h('div', null, h('span', {class:'big'}, num(r.total)), h('span', {style:'font-weight:600'}, t('radarWomen'))), h('div', {class:'rows'}, rows)] : h('p', {style:'margin:0;color:#F4EEE3'}, t('radarNone'))));
 }
 
 /* ============================================================== witness */

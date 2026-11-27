@@ -115,3 +115,15 @@ CREATE TABLE IF NOT EXISTS inbox (
 CREATE INDEX IF NOT EXISTS inbox_user_idx ON inbox (user_id, delivered);
 ALTER TABLE inbox ADD COLUMN IF NOT EXISTS quote TEXT;
 ALTER TABLE inbox ADD COLUMN IF NOT EXISTS tg_message_id BIGINT;  -- the helper's message in the helpers' group  -- her message the helper answered  -- HerEvo's answer, so the conversation can continue (deleted after 30 days)  -- set when she asks for a language
+
+-- Radar: anonymous warnings a woman chooses to share after a red flag (a bribe, pressure to sign, dowry).
+-- No name, no phone, no text: only the country, an area she types (optional), the kind of place and what happened.
+CREATE TABLE IF NOT EXISTS radar (
+    id          BIGSERIAL PRIMARY KEY,
+    country     TEXT NOT NULL,
+    area        TEXT,
+    place       TEXT NOT NULL,
+    kind        TEXT NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS radar_country_time ON radar (country, created_at);

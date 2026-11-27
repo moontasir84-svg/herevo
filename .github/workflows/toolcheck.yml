@@ -25,9 +25,14 @@ jobs:
           json.dump({"session_id":"toolcheck-0001","scenario":"inlaw_land","lang":"bn","said":"আইনে স্ত্রী আট ভাগের এক ভাগ পান। আমার ভাগ সাড়ে বারো শতাংশ।","history":[]}, open("reh.json","w"))
           json.dump({"session_id":"toolcheck-0001","place":"land_office","lang":"en","heard":"Pay me five thousand taka or your mutation file will sit for six months."}, open("cnt.json","w"))
           json.dump({"session_id":"toolcheck-0001","lang":"en","entries":[{"at":"2026-11-02","text":"SAMPLE: He pushed me against the wall at night. My arm is bruised."},{"at":"2026-11-09","text":"SAMPLE: He took my phone and locked the door."}]}, open("st.json","w"))
+          json.dump({"session_id":"toolcheck-0001","lang":"bn","country":"BD","text":"আমার স্বামী গত বছর মারা গেছেন। আমার দুই ছেলে আর এক মেয়ে। ৮০ শতাংশ জমি আছে। দেবর বলছে মেয়েমানুষ জমি পায় না, একটা কাগজে টিপসই দিতে বলছে।"}, open("plan.json","w"))
+          json.dump({"session_id":"toolcheck-0001","lang":"en","country":"KE","text":"My husband died in March. His brothers say the shamba belongs to the clan and they want to sell it. I have three children."}, open("plan2.json","w"))
           PY
           echo "== lens (gift deed, Bangla)"; post /v1/lens lens.json
           echo "== lens (hearing notice, English)"; post /v1/lens lens2.json
           echo "== rehearse"; post /v1/rehearse reh.json
           echo "== counter"; post /v1/counter cnt.json
           echo "== statement"; post /v1/statement st.json
+          echo "== plan (Bangla, land)"; post /v1/plan plan.json
+          echo "== plan (Kenya, English)"; post /v1/plan plan2.json
+          echo "== radar"; curl -s --max-time 60 $B/v1/radar/BD; echo

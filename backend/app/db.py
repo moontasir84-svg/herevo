@@ -312,3 +312,35 @@ def purge_old_messages(days: int = 30) -> int:
                            "AND created_at < now() - make_interval(days => %s)", (days,))
         conn.execute("DELETE FROM inbox WHERE created_at < now() - make_interval(days => %s)", (days,))
         return cur.rowcount
+
+
+# --- Radar: anonymous warnings ------------------------------------------------------------------------------
+
+def add_radar(country: str, area: str | None, place: str, kind: str) -> None:
+    with pool().connection() as conn:
+        conn.execute("INSERT INTO radar (country, area, place, kind) VALUES (%s, %s, %s, %s)",
+                     (country, area, place, kind))
+
+
+def radar_summary(country: str, days: int = 90, min_count: int = 3) -> dict:
+    """Counts only. An area is named only once at least `min_count` warnings came from it (k-anonymity)."""
+    with pool().connection() as conn:
+        rows = conn.execute(
+            "SELECT area, place, kind, count(*) AS n FROM radar WHERE country = %s "
+            "AND created_at > now() - make_interval(days => %s) GROUP BY area, place, kind",
+            (country, days)).fetchall()
+    def val(r, k, i):
+        return r[k] if isinstance(r, dict) else r[i]
+    total, by_kind, by_place, areas = 0, {}, {}, {}
+    for r in rows:
+        area, place, kind, n = val(r, "area", 0), val(r, "place", 1), val(r, "kind", 2), int(val(r, "n", 3))
+        total += n
+        by_kind[kind] = by_kind.get(kind, 0) + n
+        by_place[place] = by_place.get(place, 0) + n
+        if area:
+            key = (area, place)
+            a = areas.setdefault(key, {"area": area, "place": place, "count": 0, "kinds": {}})
+            a["count"] += n
+            a["kinds"][kind] = a["kinds"].get(kind, 0) + n
+    named = sorted((a for a in areas.values() if a["count"] >= min_count), key=lambda a: -a["count"])
+    return {"total": total, "by_kind": by_kind, "by_place": by_place, "areas": named[:20], "days": days}

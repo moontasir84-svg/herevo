@@ -77,6 +77,13 @@
      "চারটি কাগজের মূল ও ফটোকপি সঙ্গে নিন।",
      "কেউ বাড়তি টাকা চাইলে দেবেন না, সরকারি ফি মোট ১,১৭০ টাকা।",
      "সমস্যা হলে ভূমি সেবা হটলাইন ১৬১২২-এ ফোন করুন।"
+    ],
+    "dates": [
+     {
+      "what": "নামজারির শুনানি, সহকারী কমিশনার (ভূমি) অফিস",
+      "date": "2026-12-15",
+      "time": "10:30"
+     }
     ]
    },
    "en": {
@@ -150,6 +157,13 @@
      "Bring the four papers, originals and photocopies.",
      "Don't pay anyone extra: the official fee is Tk 1,170 in total.",
      "If there is a problem, call the land hotline 16122."
+    ],
+    "dates": [
+     {
+      "what": "Mutation hearing, Assistant Commissioner (Land) office",
+      "date": "2026-12-15",
+      "time": "10:30"
+     }
     ]
    }
   }
@@ -257,7 +271,8 @@
      "কাগজটির ছবি রেখে দিন।",
      "বিনামূল্যে আইনি সহায়তা ১৬৪৩০-এ ফোন করুন।",
      "নিজের নামে নামজারির আবেদন করুন: land.gov.bd, ফি ১,১৭০ টাকা।"
-    ]
+    ],
+    "dates": []
    },
    "en": {
     "is_document": true,
@@ -355,7 +370,8 @@
      "Keep a photo of it.",
      "Call free legal aid on 16430.",
      "Apply for mutation in your own name at land.gov.bd (fee Tk 1,170)."
-    ]
+    ],
+    "dates": []
    }
   }
  },
@@ -442,7 +458,8 @@
      "মু'আজ্জল ২০,০০০ টাকা লিখিতভাবে চাইতে পারেন।",
      "না দিলে ইউনিয়ন পরিষদের সালিশি পরিষদ বা পারিবারিক আদালতে যান (ফি ২০০ টাকা)।",
      "বিনামূল্যে আইনি সহায়তা: ১৬৪৩০।"
-    ]
+    ],
+    "dates": []
    },
    "en": {
     "is_document": true,
@@ -520,7 +537,8 @@
      "You can ask in writing for the prompt Tk 20,000.",
      "If he won't pay: the Union Parishad Arbitration Council or the Family Court (fee Tk 200).",
      "Free legal aid: 16430."
-    ]
+    ],
+    "dates": []
    }
   }
  }

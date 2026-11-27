@@ -101,6 +101,12 @@ LENS_SCHEMA = {
                       "required": ["level", "text"]}},
         "steps": {"type": "array", "items": {"type": "string"},
                   "description": "up to 4 short next steps in her language, using only the checked facts"},
+        "dates": {"type": "array", "description": "dates she must act on (attend, pay, reply), not the issue date",
+                  "items": {"type": "object", "properties": {
+                      "what": {"type": "string", "description": "her language, e.g. 'Mutation hearing at the land office'"},
+                      "date": {"type": "string", "description": "YYYY-MM-DD"},
+                      "time": {"type": "string", "description": "HH:MM 24-hour, if written"}},
+                      "required": ["what", "date"]}},
     },
     "required": ["is_document", "doc_type", "title", "summary", "say", "verdict", "facts", "flags", "steps"],
 }
@@ -155,6 +161,12 @@ def clean_lens(raw: dict) -> dict:
             lvl = f.get("level") if f.get("level") in ("danger", "warn", "good") else "warn"
             out["flags"].append({"level": lvl, "text": _clip(f["text"], 220), "box": _box(f.get("box"))})
     out["steps"] = [_clip(s, 200) for s in (raw.get("steps") or [])[:4] if str(s).strip()]
+    out["dates"] = []
+    for d in (raw.get("dates") or [])[:3]:
+        if isinstance(d, dict) and re.fullmatch(r"20\d\d-[01]\d-[0-3]\d", str(d.get("date", ""))):
+            tm = str(d.get("time") or "")
+            out["dates"].append({"what": _clip(d.get("what"), 100), "date": d["date"],
+                                 "time": tm if re.fullmatch(r"[0-2]\d:[0-5]\d", tm) else None})
     return out
 
 
@@ -642,6 +654,237 @@ def _saved_statement(entries: list[dict], lang: str, country: str) -> dict:
                         if bn else ["Did anyone see it happen? Note their name.",
                                     "If you were hurt, did you see a doctor? Keep the paper."]),
             "where": where}
+
+
+# ---------------------------------------------------------------------------------------------------------
+# Just tell me: she describes what is happening in her own words; HerEvo builds her path through the tools.
+
+TOOLS_FOR_PLAN = ("share", "lens", "rehearse", "counter", "witness", "call", "chat")
+
+PLAN_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "understood": {"type": "string", "description": "one short sentence in her language: what is happening to her, as you understood it"},
+        "say": {"type": "string", "description": "what to read aloud to her: warm, 2-3 short sentences in her language, ending with what to do first"},
+        "danger": {"type": "boolean", "description": "true only if she may be in danger now (violence, threats, being locked in, forced)"},
+        "family": {"type": "object", "description": "ONLY if a death and inheritance of land or property is involved; only facts she said",
+                   "properties": {
+                       "deceased": {"type": "string", "enum": ["husband", "father", "mother"]},
+                       "wives": {"type": "integer"}, "sons": {"type": "integer"}, "daughters": {"type": "integer"},
+                       "father_alive": {"type": "boolean"}, "mother_alive": {"type": "boolean"},
+                       "land": {"type": "number", "description": "total land in decimals (shotangsho) if she said it"},
+                       "offered": {"type": "number", "description": "decimals the family is offering her, if she said it"}}},
+        "steps": {"type": "array", "description": "2 to 5 steps in the order she should do them",
+                  "items": {"type": "object", "properties": {
+                      "tool": {"type": "string", "enum": list(TOOLS_FOR_PLAN)},
+                      "title": {"type": "string", "description": "an action in her language, at most 8 words"},
+                      "why": {"type": "string", "description": "one short sentence in her language"},
+                      "scenario": {"type": "string", "description": "for tool=rehearse: one scenario id from the list"},
+                      "place": {"type": "string", "description": "for tool=counter: one place id from the list"},
+                      "paper": {"type": "string", "description": "for tool=lens: which paper to photograph, her language"},
+                      "number": {"type": "string", "description": "for tool=call: the number, from the checked facts only"}},
+                      "required": ["tool", "title", "why"]}},
+        "ask": {"type": "string", "description": "one short question in her language if a key fact is missing, else empty"},
+    },
+    "required": ["understood", "say", "danger", "steps"],
+}
+
+PLAN_SYSTEM = """You are HerEvo, an AI ally for rural women. She has just told you, in her own words (often spoken, \
+maybe messy), what is happening to her. Understand her situation and build her a short, practical path through \
+HerEvo's tools. Write in {lang}, warm and plain, for a woman who may not read well.
+
+HerEvo's tools:
+- share: works out her exact lawful share of land or property after a death (needs who died and who survived).
+- lens: she photographs a paper (deed, notice, kabinnama, loan paper) and HerEvo reads it aloud and warns her before \
+signing. Say which paper in `paper`.
+- rehearse: she practises a hard conversation with the AI playing the other person. Scenario ids: {scenarios}.
+- counter: HerEvo whispers the truth to her at a real office desk. Place ids: {places}.
+- witness: a private, locked diary of violence or abuse that becomes a dated statement for a protection order.
+- call: a helpline, only numbers from the checked facts.
+- chat: anything else (farming, health, money, other questions).
+
+Rules: 2 to 5 steps, in the order she should do them, each a concrete action. Use the tools that truly fit. If she \
+may be in danger now, set danger=true and make the first step call with the emergency number. Fill `family` only \
+with facts she actually said; never guess numbers. If one key fact is missing, ask for it in `ask`. Laws, fees and \
+numbers only from these checked facts:
+{facts}"""
+
+
+def _norm_digits(text: str) -> str:
+    return text.translate(str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789"))
+
+
+def _guess_family(text: str) -> dict | None:
+    """Without the AI: pull the obvious facts out of her words ('2 ছেলে', '1 daughter', '80 শতাংশ')."""
+    t = _norm_digits(text.lower())
+    deceased = None
+    if re.search(r"স্বামী|husband|mume|esposo|marido", t) and re.search(r"মারা|died|dead|passed|mrehemu|alifariki|murió|falleció", t):
+        deceased = "husband"
+    elif re.search(r"বাবা|father|baba|padre|papá", t) and re.search(r"মারা|died|dead|passed|murió|falleció", t):
+        deceased = "father"
+    elif re.search(r"\bমা\b|mother|madre|mamá", t) and re.search(r"মারা|died|dead|passed|murió|falleció", t):
+        deceased = "mother"
+    if not deceased:
+        return None
+    words = {"এক": 1, "দুই": 2, "তিন": 3, "চার": 4, "পাঁচ": 5, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5}
+
+    def count(pattern: str) -> int | None:
+        m = re.search(r"(\d+|" + "|".join(words) + r")\s*(?:জন\s*|টি\s*)?(?:" + pattern + ")", t)
+        if not m:
+            return None
+        return int(m.group(1)) if m.group(1).isdigit() else words[m.group(1)]
+
+    fam: dict = {"deceased": deceased}
+    sons, daughters = count("ছেলে|পুত্র|sons?"), count("মেয়ে|কন্যা|daughters?")
+    if sons is not None:
+        fam["sons"] = sons
+    if daughters is not None:
+        fam["daughters"] = daughters
+    m = re.search(r"(\d+(?:\.\d+)?)\s*(?:শতাংশ|শতক|decimals?)", t)
+    if m:
+        fam["land"] = float(m.group(1))
+    return fam
+
+
+def _fill_share(fam: dict | None) -> dict | None:
+    """Compute her share when the facts are enough (the AI never does this arithmetic)."""
+    from .inheritance import Family, compute
+    if not fam or fam.get("deceased") not in ("husband", "father", "mother"):
+        return None
+    if fam.get("sons") is None and fam.get("daughters") is None:
+        return None
+    d = fam["deceased"]
+    sons, daughters = max(0, int(fam.get("sons") or 0)), max(0, int(fam.get("daughters") or 0))
+    if d != "husband":
+        daughters = max(1, daughters)  # she is one of the daughters
+    f = Family(deceased=d, wives=max(1, int(fam.get("wives") or 1)) if d in ("husband", "father") else 0,
+               husband=False, sons=sons, daughters=daughters, father=bool(fam.get("father_alive")),
+               mother=bool(fam.get("mother_alive")), land=float(fam["land"]) if fam.get("land") else None)
+    if d == "father" and not fam.get("wives"):
+        f.wives = 0
+    result, _ = compute(f)
+    if not result:
+        return None
+    her = "wife" if d == "husband" else "daughter"
+    mine = next((x for x in result.shares if x.heir == her), None)
+    if not mine:
+        return None
+    return {"deceased": d, "wives": f.wives, "sons": sons, "daughters": daughters, "father": f.father,
+            "mother": f.mother, "land": f.land, "offered": fam.get("offered"), "heir": her,
+            "num": mine.each.numerator, "den": mine.each.denominator, "her_land": mine.land_each,
+            "pct": round(float(mine.each) * 100, 2)}
+
+
+def _clean_steps(steps, country: str) -> list[dict]:
+    out = []
+    for st in (steps or [])[:5]:
+        if not isinstance(st, dict) or st.get("tool") not in TOOLS_FOR_PLAN or not st.get("title"):
+            continue
+        item = {"tool": st["tool"], "title": _clip(st["title"], 80), "why": _clip(st.get("why"), 200)}
+        if st["tool"] == "rehearse":
+            sc = st.get("scenario")
+            item["scenario"] = sc if sc in SCENARIOS else None
+        if st["tool"] == "counter":
+            item["place"] = st.get("place") if st.get("place") in PLACES else "land_office"
+        if st["tool"] == "lens":
+            item["paper"] = _clip(st.get("paper"), 80)
+        if st["tool"] == "call":
+            num = re.sub(r"[^0-9]", "", _norm_digits(str(st.get("number") or "")))
+            allowed = re.findall(r"\b\d{3,5}\b", facts_for(country))
+            item["number"] = num if num in allowed else SAFETY_NUMBERS.get(country, "999").split(" / ")[0]
+        out.append(item)
+    return out
+
+
+def plan(text: str, lang: str, country: str) -> dict:
+    country = (country or "BD").upper()
+    danger = screen(text)
+    llm = get_llm()
+    reason = "no AI configured"
+    if llm is not None and hasattr(llm, "generate"):
+        scen = ", ".join(f"{k} ({v['title']['en']})" for k, v in SCENARIOS.items() if v["country"] == country) or \
+            ", ".join(SCENARIOS)
+        try:
+            raw = llm.generate(PLAN_SYSTEM.format(lang=lang_name(lang), scenarios=scen, places=", ".join(PLACES),
+                                                  facts=facts_for(country)),
+                               [{"text": "What she said:\n" + text}], "make_path", PLAN_SCHEMA, seconds=25,
+                               temperature=0.3)
+            steps = _clean_steps(raw.get("steps"), country)
+            if steps:
+                fam = raw.get("family") if isinstance(raw.get("family"), dict) else None
+                is_danger = bool(raw.get("danger")) or (danger.escalate and danger.kind == "danger")
+                if is_danger and steps[0]["tool"] != "call":
+                    steps.insert(0, _call_step(lang, country))
+                return {"understood": _clip(raw.get("understood"), 240), "say": _clip(raw.get("say"), 500),
+                        "danger": is_danger, "share": _fill_share(fam), "steps": steps[:5],
+                        "ask": _clip(raw.get("ask"), 200), "source": "ai"}
+            reason = "no steps"
+        except Exception as exc:
+            reason = type(exc).__name__
+            log.warning("plan AI failed: %s", exc)
+    return {**_saved_plan(text, lang, country, danger.escalate and danger.kind == "danger"), "source": "saved",
+            "note": reason}
+
+
+def _call_step(lang: str, country: str) -> dict:
+    num = SAFETY_NUMBERS.get(country, "999").split(" / ")[0]
+    bn = lang == "bn"
+    bn_num = num.translate(str.maketrans("0123456789", "০১২৩৪৫৬৭৮৯"))
+    return {"tool": "call", "number": num, "title": f"এখনই {bn_num}-এ ফোন করুন" if bn else f"Call {num} now",
+            "why": "আপনি বিপদে থাকলে আগে নিজেকে নিরাপদ রাখুন।" if bn else "If you are in danger, get safe first."}
+
+
+def _saved_plan(text: str, lang: str, country: str, danger: bool) -> dict:
+    bn = lang == "bn"
+    t = text.lower()
+    L = lambda b, e: b if bn else e  # noqa: E731
+    steps: list[dict] = []
+    has = lambda *ks: any(k in t for k in ks)  # noqa: E731
+    fam = _guess_family(text)
+    share = _fill_share(fam)
+    if danger:
+        steps.append(_call_step(lang, country))
+    if has("মারে", "মারধর", "ধাক্কা", "নির্যাতন", "beat", "hit", "push", "abuse", "violence", "threat", "হুমকি"):
+        steps.append({"tool": "witness", "title": L("যা ঘটেছে, গোপনে লিখে রাখুন", "Write down what happened, privately"),
+                      "why": L("তারিখসহ লেখা পরে সুরক্ষা আদেশে কাজে লাগবে।", "Dated notes help you get a protection order.")})
+    if has("যৌতুক", "dowry"):
+        steps.append({"tool": "rehearse", "scenario": "dowry", "title": L("শান্তভাবে না বলার মহড়া দিন", "Practise saying no calmly"),
+                      "why": L("যৌতুক চাওয়া অপরাধ। আগে থেকে কথা গুছিয়ে রাখুন।", "Demanding dowry is a crime. Prepare your words.")})
+    if fam or has("জমি", "land", "inherit", "ভাগ", "শামবা", "shamba", "ejido", "parcela", "tierra"):
+        steps.append({"tool": "share", "title": L("জমিতে আমার ভাগ দেখুন", "See my share of the land"),
+                      "why": L("আইনে আপনার কতটা, আগে নিশ্চিত হোন।", "Know exactly what the law gives you first.")})
+        if has("সই", "টিপ", "দলিল", "কাগজ", "sign", "paper", "deed", "thumb"):
+            steps.append({"tool": "lens", "paper": L("যে কাগজে সই চাইছে", "The paper they want you to sign"),
+                          "title": L("সই করার আগে কাগজটা পড়িয়ে নিন", "Have the paper read before you sign"),
+                          "why": L("হেবা বা না-দাবি কাগজে জমি চিরতরে চলে যায়।", "A gift or no-claim paper gives the land away for ever.")})
+        sc = {"KE": "ke_home", "MX": "mx_ejido"}.get(country, "inlaw_land")
+        steps.append({"tool": "rehearse", "scenario": sc, "title": L("ভাগ চাওয়ার মহড়া দিন", "Practise claiming your share"),
+                      "why": L("আইন আর সংখ্যা মুখস্থ থাকলে কেউ ভয় দেখাতে পারবে না।", "With the law and the number ready, no one can scare you.")})
+        if country == "BD":
+            steps.append({"tool": "counter", "place": "land_office", "title": L("নামজারির দিন অফিসে পাশে থাকব", "I'll be with you at the land office"),
+                          "why": L("সরকারি ফি মোট ১,১৭০ টাকা। বাড়তি চাইলে ধরিয়ে দেব।", "The official fee is Tk 1,170. I'll catch any extra demand.")})
+    if has("ঘুষ", "bribe", "অফিস", "office", "টাকা চাই", "fee"):
+        steps.append({"tool": "counter", "place": "land_office", "title": L("অফিসের ডেস্কে পাশে থাকব", "I'll be with you at the desk"),
+                      "why": L("ওরা কী বলছে শোনান, সত্যিটা কানে বলব।", "Let me hear them; I'll whisper the truth.")})
+    if has("দেনমোহর", "মোহর", "খোরপোষ", "কাবিন", "dower", "maintenance", "kabin"):
+        steps.append({"tool": "lens", "paper": L("কাবিননামা", "Your kabinnama"), "title": L("কাবিননামার ছবি তুলুন", "Photograph your kabinnama"),
+                      "why": L("দেনমোহর কত লেখা আছে, শুনে নিন।", "Hear exactly what dower it promises.")})
+        steps.append({"tool": "rehearse", "scenario": "salish", "title": L("সালিশে কথা বলার মহড়া দিন", "Practise for the salish"),
+                      "why": L("চাইলেই পাওনা দেনমোহর আপনার অধিকার।", "The prompt dower is yours on demand.")})
+    if not steps or (danger and len(steps) == 1):
+        steps.append({"tool": "chat", "title": L("HerEvo-কে খুলে বলুন", "Tell HerEvo more"),
+                      "why": L("কৃষি, টাকা, স্বাস্থ্য বা অন্য যেকোনো কথা।", "Farming, money, health or anything else.")})
+    seen, uniq = set(), []
+    for st in steps:
+        key = (st["tool"], st.get("scenario"), st.get("place"))
+        if key not in seen:
+            seen.add(key)
+            uniq.append(st)
+    first = uniq[0]["title"]
+    return {"understood": L("আপনার কথা শুনেছি। চলুন, ধাপে ধাপে এগোই।", "I heard you. Let's go step by step."),
+            "say": L(f"আপনার কথা শুনেছি। আপনি একা নন। প্রথমে: {first}।", f"I heard you. You are not alone. First: {first}."),
+            "danger": danger, "share": share, "steps": uniq[:5],
+            "ask": "" if share or not fam else L("কতজন ছেলে ও মেয়ে আছে, আর মোট জমি কত শতাংশ?", "How many sons and daughters, and how much land in total?")}
 
 
 # ---------------------------------------------------------------------------------------------------------

@@ -84,7 +84,7 @@ def database():
 @pytest.fixture(autouse=True)
 def clean(database):
     with db.pool().connection() as conn:
-        conn.execute("TRUNCATE users, sales, cases, escalations, turns RESTART IDENTITY CASCADE")
+        conn.execute("TRUNCATE users, sales, cases, escalations, turns, radar RESTART IDENTITY CASCADE")
     from app import main
     main._hits.clear()
     yield

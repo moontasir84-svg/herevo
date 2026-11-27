@@ -12,6 +12,8 @@
   POST /v1/counter                   whisper at the real desk: what is true, what to say
   POST /v1/statement                 Witness diary notes -> dated statement
   POST /v1/share                     exact inheritance shares (for the land picture)
+  POST /v1/plan                      "just tell me": her words -> a path through the tools
+  POST /v1/radar, GET /v1/radar/{cc} anonymous warnings (bribes, pressure to sign) and their counts
   GET  / and /app                    HerEvo app: the five tools (web/app.html)
   GET  /chat                         the conversation with HerEvo (web/index.html), talking to this API
 """
@@ -397,6 +399,53 @@ def share(body: ShareIn):
     return {"ok": True, "disclaimer": DISCLAIMER[lang],
             "shares": [{"heir": s.heir, "count": s.count, "num": s.each.numerator, "den": s.each.denominator,
                         "pct": round(float(s.each) * 100, 3), "land_each": s.land_each} for s in result.shares]}
+
+
+class PlanIn(BaseModel):
+    session_id: str = Field(min_length=8, max_length=100)
+    text: str = Field(min_length=2, max_length=2000)
+    lang: str = "bn"
+    country: str = "BD"
+
+
+@app.post("/v1/plan")
+def make_plan(body: PlanIn):
+    """She says what is happening in her own words; HerEvo builds her path through the tools."""
+    from . import tools
+    lang = _tool_guard(body.session_id, body.lang)
+    return tools.plan(body.text, lang, body.country.upper())
+
+
+RADAR_KINDS = ("bribe", "pressure", "false_rule", "dowry", "land_grab", "other")
+
+
+class RadarIn(BaseModel):
+    session_id: str = Field(min_length=8, max_length=100)
+    country: str = Field(default="BD", max_length=2)
+    area: str | None = Field(default=None, max_length=40)
+    place: str = Field(max_length=40)
+    kind: str = Field(max_length=20)
+
+
+@app.post("/v1/radar")
+def radar_report(body: RadarIn):
+    """An anonymous warning: no name, phone or text is taken, only the place type, an optional area and the kind."""
+    from . import tools
+    if rate_limited("radar:" + body.session_id, 5):
+        raise HTTPException(429, "Thank you. You have already sent several warnings.")
+    if body.place not in tools.PLACES or body.kind not in RADAR_KINDS:
+        raise HTTPException(422, "Unknown place or kind")
+    area = " ".join((body.area or "").split()).strip().lower()[:40] or None
+    cc = body.country.upper()
+    if cc not in available_countries():
+        raise HTTPException(404, "Unknown country")
+    db.add_radar(cc, area, body.place, body.kind)
+    return {"ok": True, **db.radar_summary(cc)}
+
+
+@app.get("/v1/radar/{country}")
+def radar(country: str, days: int = 90):
+    return db.radar_summary(country.upper(), max(1, min(days, 365)))
 
 
 @app.get("/", include_in_schema=False)
