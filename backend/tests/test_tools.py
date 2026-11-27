@@ -301,3 +301,45 @@ def test_gemini_transcribe_tries_next_model(monkeypatch):
     monkeypatch.setattr(speech.httpx, "post", post)
     g = speech.GeminiSpeech("k", "busy-model", ("good-model",))
     assert g.transcribe(b"RIFF", "bn", "audio/wav") == "আমার জমি" and len(calls) == 2
+
+
+def test_plan_from_voice_in_one_step(ai):
+    f = ai({"understood": "Husband died; land blocked.", "say": "You are not alone.", "danger": False,
+            "heard": "আমার স্বামী মারা গেছেন, দেবর জমি দিচ্ছে না",
+            "steps": [{"tool": "rehearse", "title": "Practise", "why": "x", "scenario": "inlaw_land"}]})
+    f.hears_audio = True
+    r = client.post("/v1/plan", json={"session_id": SID, "audio": "UklGRg" + "A" * 298, "mime": "audio/wav", "lang": "bn"}).json()
+    assert r["heard"].startswith("আমার স্বামী") and r["steps"][0]["scenario"] == "inlaw_land"
+    assert f.calls[0]["parts"][0]["mime"] == "audio/wav"  # her voice went straight to the AI, no separate step
+
+
+def test_plan_from_voice_when_ai_cannot_hear(ai, fake_speech):
+    ai(error=ValueError("down"))
+    r = client.post("/v1/plan", json={"session_id": SID, "audio": "UklGRg" + "A" * 298, "lang": "bn"}).json()
+    assert r["source"] == "saved" and r["heard"].startswith("স্বামী মারা") and r["steps"]
+
+
+def test_plan_needs_words_or_voice():
+    assert client.post("/v1/plan", json={"session_id": SID, "text": " "}).status_code == 422
+
+
+def test_gemini_switches_thinking_off_for_speed(monkeypatch):
+    from app import llm as L
+    sent = []
+
+    class R:
+        def __init__(self, code, body):
+            self.status_code, self._b = code, body
+        def json(self):
+            return self._b
+    g = L.GeminiLLM.__new__(L.GeminiLLM)
+    g.models, g._no_fast = ["gemini-flash-latest"], set()
+    def post(httpx, model, body, timeout):
+        sent.append(body.get("generationConfig", {}).get("thinkingConfig"))
+        if len(sent) == 1:
+            return R(400, {"error": {"status": "INVALID_ARGUMENT", "message": "Thinking budget is not supported"}})
+        return R(200, {"ok": 1})
+    monkeypatch.setattr(g, "_post", post)
+    import httpx
+    assert g._run(httpx, {"generationConfig": {"temperature": 0}}) == {"ok": 1}
+    assert sent == [{"thinkingBudget": 0}, None]  # tried fast first, then the normal way

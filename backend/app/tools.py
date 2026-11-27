@@ -685,6 +685,7 @@ PLAN_SCHEMA = {
                       "number": {"type": "string", "description": "for tool=call: the number, from the checked facts only"}},
                       "required": ["tool", "title", "why"]}},
         "ask": {"type": "string", "description": "one short question in her language if a key fact is missing, else empty"},
+        "heard": {"type": "string", "description": "if she sent a voice message: exactly what she said, in her language and script"},
     },
     "required": ["understood", "say", "danger", "steps"],
 }
@@ -817,19 +818,32 @@ def _clean_steps(steps, country: str, text: str = "") -> list[dict]:
     return out
 
 
-def plan(text: str, lang: str, country: str) -> dict:
+def plan(text: str, lang: str, country: str, audio: str | None = None, mime: str = "audio/wav") -> dict:
+    """Her words (typed, or her voice recording itself, so hearing and understanding are one fast step)."""
     country = (country or "BD").upper()
-    danger = screen(text)
     llm = get_llm()
     reason = "no AI configured"
+    if audio and not (llm is not None and hasattr(llm, "generate") and getattr(llm, "hears_audio", False)):
+        text = _transcribe(audio, mime, lang)  # an AI that can't hear audio: write her words down first
+        audio = None
+        if not text:
+            return _not_heard(lang)
+    danger = screen(text or "")
     if llm is not None and hasattr(llm, "generate"):
         scen = ", ".join(f"{k} ({v['title']['en']})" for k, v in SCENARIOS.items() if v["country"] == country) or \
             ", ".join(SCENARIOS)
         try:
+            parts = ([{"image": audio, "mime": mime},
+                      {"text": "Her voice message is attached. Write exactly what she said in `heard`, then answer."}]
+                     if audio else [{"text": "What she said:\n" + text}])
             raw = llm.generate(PLAN_SYSTEM.format(lang=lang_name(lang), scenarios=scen, places=", ".join(PLACES),
                                                   facts=facts_for(country)),
-                               [{"text": "What she said:\n" + text}], "make_path", PLAN_SCHEMA, seconds=25,
-                               temperature=0.3)
+                               parts, "make_path", PLAN_SCHEMA, seconds=25, temperature=0.3)
+            if audio:
+                text = _clip(raw.get("heard"), 2000)
+                if not text and not raw.get("steps"):
+                    return _not_heard(lang)
+                danger = screen(text)
             steps = _clean_steps(raw.get("steps"), country, text)
             if steps:
                 fam = raw.get("family") if isinstance(raw.get("family"), dict) else None
@@ -838,13 +852,40 @@ def plan(text: str, lang: str, country: str) -> dict:
                     steps.insert(0, _call_step(lang, country))
                 return {"understood": _clip(raw.get("understood"), 240), "say": _clip(raw.get("say"), 500),
                         "danger": is_danger, "share": _fill_share(fam) if country == "BD" else None, "steps": steps[:5],
-                        "ask": _clip(raw.get("ask"), 200), "source": "ai"}
+                        "ask": _clip(raw.get("ask"), 200), "heard": text, "source": "ai"}
             reason = "no steps"
         except Exception as exc:
             reason = type(exc).__name__
             log.warning("plan AI failed: %s", exc)
-    return {**_saved_plan(text, lang, country, danger.escalate and danger.kind == "danger"), "source": "saved",
-            "note": reason}
+    if audio:  # the AI could not hear her: write her words down another way, then use the saved path
+        text = _transcribe(audio, mime, lang)
+        if not text:
+            return _not_heard(lang)
+        danger = screen(text)
+    return {**_saved_plan(text, lang, country, danger.escalate and danger.kind == "danger"), "heard": text,
+            "source": "saved", "note": reason}
+
+
+def _transcribe(audio_b64: str, mime: str, lang: str) -> str:
+    import base64
+
+    from .speech import get_speech
+    sp = get_speech()
+    if sp is None:
+        return ""
+    try:
+        return (sp.transcribe(base64.b64decode(audio_b64), lang, mime) or "").strip()
+    except TypeError:
+        return (sp.transcribe(base64.b64decode(audio_b64), lang) or "").strip()
+    except Exception as exc:  # noqa: BLE001
+        log.warning("transcription failed: %s", type(exc).__name__)
+        return ""
+
+
+def _not_heard(lang: str) -> dict:
+    m = "কথাটা ঠিক শুনতে পাইনি। আরেকবার বলুন।" if lang == "bn" else "I couldn't hear that clearly. Please say it again."
+    return {"understood": "", "say": m, "danger": False, "share": None, "steps": [], "ask": "", "heard": "",
+            "source": "not_heard"}
 
 
 def _call_step(lang: str, country: str) -> dict:

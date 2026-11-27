@@ -434,17 +434,22 @@ def share(body: ShareIn):
 
 class PlanIn(BaseModel):
     session_id: str = Field(min_length=8, max_length=100)
-    text: str = Field(min_length=2, max_length=2000)
+    text: str | None = Field(default=None, max_length=2000)
+    audio: str | None = Field(default=None, max_length=8_000_000)  # her voice (base64), heard and understood at once
+    mime: str = Field(default="audio/wav", pattern=r"^audio/(wav|ogg|webm|mp4|aac|mpeg)$")
     lang: str = "bn"
     country: str = "BD"
 
 
 @app.post("/v1/plan")
 def make_plan(body: PlanIn):
-    """She says what is happening in her own words; HerEvo builds her path through the tools."""
+    """She says what is happening in her own words (typed, or her voice itself); HerEvo builds her path."""
     from . import tools
     lang = _tool_guard(body.session_id, body.lang)
-    return tools.plan(body.text, lang, body.country.upper())
+    if not (body.text and len(body.text.strip()) >= 2) and not body.audio:
+        raise HTTPException(422, "Say or type what is happening")
+    return tools.plan((body.text or "").strip(), lang, body.country.upper(),
+                      audio=body.audio.split(",", 1)[-1] if body.audio else None, mime=body.mime)
 
 
 class MinutesIn(BaseModel):

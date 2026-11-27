@@ -305,18 +305,30 @@ class GeminiLLM:
                 return r2
         return r
 
+    _no_fast: set = set()
+
+    def _fast(self, body: dict, model: str) -> dict:
+        """She is waiting: ask flash models to answer without a long hidden 'thinking' step (seconds faster)."""
+        if "flash" not in model or model in self._no_fast or "thinkingConfig" in body.get("generationConfig", {}):
+            return body
+        gc = dict(body.get("generationConfig", {}), thinkingConfig={"thinkingBudget": 0})
+        return dict(body, generationConfig=gc)
+
     def _run(self, httpx, body: dict, seconds: float = 25) -> dict:
         """POST to the first model that answers, with retries on overload. She is waiting: give up after
         `seconds` so the caller can use its checked fallback."""
         data, notes = None, []
         deadline = time.monotonic() + seconds  # she is waiting: give up and use the checked fallback after 25 s
         for model in self.models:
-            for attempt in range(2):  # an overloaded model often answers on the second try
+            fast = self._fast(body, model)
+            attempt = 0
+            while attempt < 2:  # an overloaded model often answers on the second try
+                attempt += 1
                 left = deadline - time.monotonic()
                 if left < 3:
                     break
                 try:
-                    r = self._post(httpx, model, body, timeout=min(20.0, left))
+                    r = self._post(httpx, model, fast, timeout=min(20.0, left))
                 except httpx.HTTPError as exc:  # network trouble: class name only, never the URL (it may hold the key)
                     notes.append(f"{model} network {type(exc).__name__}")
                     continue
@@ -331,6 +343,11 @@ class GeminiLLM:
                     status, detail = "", r.text[:200]
                 notes.append(f"{model} HTTP {r.status_code} {status}".strip())
                 log.warning("Gemini HTTP %s (%s): %s: %s", r.status_code, model, status, detail)
+                if r.status_code == 400 and fast is not body and "thinking" in detail.lower():
+                    self._no_fast.add(model)  # this model can't switch thinking off: ask it the normal way
+                    fast = body
+                    attempt -= 1
+                    continue
                 if r.status_code in (401, 403) or (r.status_code == 400 and "API key" in detail):
                     # Bad key: every model will say the same, so stop here.
                     raise ValueError(f"Gemini HTTP {r.status_code} ({model}): {status}: {detail}")
@@ -368,6 +385,8 @@ class GeminiLLM:
                 return dict(call.get("args") or {})
         raise ValueError(f"Gemini returned no function call (finishReason={cand.get('finishReason')}, "
                          f"blocked={data.get('promptFeedback', {}).get('blockReason')})")
+
+    hears_audio = True  # Gemini understands a voice recording directly
 
     def generate(self, system: str, parts: list[dict], tool: str, schema: dict, seconds: float = 25,
                  temperature: float = 0.4) -> dict:

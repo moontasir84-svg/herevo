@@ -41,3 +41,6 @@ jobs:
             -d '{"text":"আমার স্বামী মারা গেছেন। দেবর জমির ভাগ দিচ্ছে না।","lang":"bn","session_id":"toolcheck-0002"}' $B/v1/tts
           python3 -c "import base64,json; json.dump({'session_id':'toolcheck-0002','audio':base64.b64encode(open('say.wav','rb').read()).decode(),'mime':'audio/wav','lang':'bn'}, open('stt.json','w'))"
           echo "== stt"; post /v1/stt stt.json
+          python3 -c "import base64,json; json.dump({'session_id':'toolcheck-0003','audio':base64.b64encode(open('say.wav','rb').read()).decode(),'mime':'audio/wav','lang':'bn','country':'BD'}, open('planv.json','w'))"
+          echo "== plan straight from her voice (one step)"; post /v1/plan planv.json
+          echo "== plan again (warm)"; post /v1/plan planv.json

@@ -435,7 +435,25 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 .view-talk .lilybtn{margin-top:28px}
 @media (max-width:899px){.view-talk{padding-bottom:96px!important}}
 @media (min-width:900px){.view-talk{margin:-10px -40px -80px!important;min-height:calc(100vh - 64px)!important}}
-/* ---- home: the water lily and the rickshaw panels ---- */
+/* ---- the big mic: the one thing she needs to find ---- */
+.micwrap{position:relative;width:min(54vw,200px);height:min(54vw,200px);margin:30px 0 18px;--lvl:0}
+.micwrap::before,.micwrap::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:5px solid var(--her);opacity:0;animation:callme 2.4s ease-out infinite;pointer-events:none}
+.micwrap::after{animation-delay:1.2s}
+@keyframes callme{0%{transform:scale(.92);opacity:.85}100%{transform:scale(1.42);opacity:0}}
+.micwrap .halo{position:absolute;inset:-14px;border-radius:50%;background:radial-gradient(circle,rgba(229,48,122,.35),transparent 70%);transform:scale(calc(1 + var(--lvl) * .45));transition:transform .08s}
+.micbtn{position:absolute;inset:0;border-radius:50%;border:6px solid #fff;cursor:pointer;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  background:radial-gradient(circle at 35% 28%,#FF7DB2 0%,#E5307A 52%,#A8124F 100%);box-shadow:0 18px 44px rgba(229,48,122,.5),0 0 0 3px var(--her),inset 0 -12px 26px rgba(0,0,0,.2);transition:transform .15s}
+.micbtn:active{transform:scale(.95)}
+.micbtn svg{width:44%;height:44%;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25))}
+[data-state=listening] .micwrap::before,[data-state=listening] .micwrap::after{animation-duration:1.1s;border-color:#fff}
+[data-state=listening] .micbtn{background:radial-gradient(circle at 35% 28%,#FF8A66,#E03A1E 60%,#A81F0B);box-shadow:0 18px 44px rgba(224,58,30,.55),0 0 0 3px #fff}
+[data-state=thinking] .micwrap::before{animation:none;opacity:1;border:5px dashed var(--her);animation:turn 1.4s linear infinite}
+[data-state=thinking] .micwrap::after{animation:none}
+[data-state=thinking] .micbtn{background:radial-gradient(circle at 35% 28%,#FFD36B,#FFB400 60%,#D98E00);color:var(--ink)}
+[data-state=speaking] .micbtn{animation:talkpulse2 .5s ease-in-out infinite alternate}
+.tabs a.talk .tmic{width:62px;height:62px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#FF7DB2,#E5307A 55%,#A8124F);color:#fff;display:flex;align-items:center;justify-content:center;border:4px solid #fff;box-shadow:0 6px 18px rgba(229,48,122,.45),0 0 0 2px var(--her)}
+.tabs a.talk .tmic svg{width:28px;height:28px;color:#fff}
+/* ---- home: the rickshaw panels ---- */
 .hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:4px 0 8px}
 .hero .greet{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--muted);font-size:17px}
 .hero .greet .listen{width:40px;height:40px}
@@ -686,13 +704,13 @@ bn:{
   sosH:'এখনই সাহায্য', helper:'একজন সহায়তাকর্মীর সঙ্গে কথা বলুন', helperSub:'প্রশিক্ষিত মানুষ, গোপনে', exit:'দ্রুত বের হোন', exitSub:'এই পাতা বন্ধ হয়ে আবহাওয়ার পাতা খুলবে',
   cc:{BD:'বাংলাদেশ',KE:'কেনিয়া',MX:'মেক্সিকো'},
   shareOnlyBD:'এই হিসাব বাংলাদেশে প্রযোজ্য মুসলিম উত্তরাধিকার আইন অনুযায়ী। কেনিয়া বা মেক্সিকোর আইন আলাদা: মহড়া অংশে সেই দেশের অনুশীলন আছে।',
-  moreH:'সব সাহায্য এক জায়গায়', more:'আরও', home:'হোম', homeH:'কী হয়েছে, <em>বলুন</em>', tapSpeak:'ফুলে চাপ দিন, কথা বলুন', listenShort:'শুনছি… বলা শেষ হলে থামুন', writeShort:'বুঝে নিচ্ছি…', typeInstead:'লিখে বলুন', go:'দেখাও',
-  homeHello:'আসসালামু আলাইকুম। আমি HerEvo। শাপলা ফুলে চাপ দিয়ে বলুন কী হয়েছে। অথবা নিচের ছবিগুলোতে চাপ দিন।', tryA:'স্বামী মারা গেছেন, দেবর জমি দিচ্ছে না', tryB:'অফিসে ঘুষ চাইছে', tryC:'শাশুড়ি যৌতুক চায়',
+  moreH:'সব সাহায্য এক জায়গায়', more:'আরও', home:'হোম', homeH:'কী হয়েছে, <em>বলুন</em>', tapSpeak:'চাপ দিন, কথা বলুন', listenShort:'শুনছি… বলা শেষ হলে থামুন', writeShort:'বুঝে নিচ্ছি…', typeInstead:'লিখে বলুন', go:'দেখাও',
+  homeHello:'আসসালামু আলাইকুম। আমি HerEvo। গোলাপি বোতামে চাপ দিয়ে বলুন কী হয়েছে। অথবা নিচের ছবিগুলোতে চাপ দিন।', tryA:'স্বামী মারা গেছেন, দেবর জমি দিচ্ছে না', tryB:'অফিসে ঘুষ চাইছে', tryC:'শাশুড়ি যৌতুক চায়',
   pLens:'কাগজ', pShare:'আমার ভাগ', pRehearse:'মহড়া', pCounter:'কানে কানে', pWitness:'সাক্ষী', yourPath:'আপনার পথ', firstStep:'প্রথম কাজ',
   vcT:'ভয়েস পরীক্ষা', vcLink:'ভয়েস কাজ করছে কি না পরীক্ষা করুন', vcH:'ভয়েস পরীক্ষা', vcSub:'এক চাপে দেখে নিন এই ফোনে HerEvo শুনতে ও বলতে পারছে কি না।', vcStart:'পরীক্ষা শুরু করুন', vcAgain:'আবার পরীক্ষা করুন',
   vcSpeak:'HerEvo-র কণ্ঠ', vcSpeakOk:'শুনতে পেয়েছেন? (বাজানো হয়েছে)', vcMic:'মাইক্রোফোন', vcMicNow:'এখন বাংলায় কিছু বলুন, তারপর থামুন…', vcWrite:'কথা লিখে নেওয়া', vcPhoneVoice:'ফোনের নিজের বাংলা কণ্ঠ', vcBrowser:'ব্রাউজার',
   vcYes:'আছে', vcNo:'নেই (সমস্যা নেই, HerEvo-র কণ্ঠ ব্যবহার হবে)', vcInApp:'অ্যাপের ভেতরের ব্রাউজার: মাইক চলবে না। Chrome-এ খুলুন।', vcFail:'কাজ করছে না', vcSample:'আমি HerEvo। আপনার কথা শুনতে পাচ্ছি।',
-  talkT:'কথা বলুন', talkEntry:'শুধু কথা বলতে চাই, পড়তে হবে না', talk_idle:'ফুলে চাপ দিন, তারপর কথা বলুন', talk_listening:'শুনছি… বলা শেষ হলে একটু থামুন', talk_thinking:'ভাবছি…', talk_speaking:'বলছি… থামাতে ফুলে চাপ দিন',
+  talkT:'কথা বলুন', talkEntry:'শুধু কথা বলতে চাই, পড়তে হবে না', talk_idle:'চাপ দিন, তারপর কথা বলুন', talk_listening:'শুনছি… বলা শেষ হলে একটু থামুন', talk_thinking:'ভাবছি…', talk_speaking:'বলছি… থামাতে বোতামে চাপ দিন',
   talkEnd:'কথা শেষ', talkType:'বা লিখুন', talkHelp:'একজন সহায়তাকর্মীকে জানানো হয়েছে।',
   listenAll:'পুরো সভা শুনুন', listenAllSub:'সালিশ বা অফিসে কথা চলার সময় ফোনটা পাশে রাখুন। সমস্যা হলেই কানে বলব, শেষে লিখে রাখব কে কী কথা দিল।', listeningLive:(n)=>`শুনছি… ${n}টি কথা`, stopListen:'থামান',
   makeMinutes:'সভার রেকর্ড তৈরি করুন', minutesH:'সভার রেকর্ড', promisesH:'কে কী কথা দিল', warningsH:'সাবধান', nextH:'এরপর', heardLines:'যা শোনা গেছে', savedToFile:'আপনার ফাইলে রাখা হলো',
@@ -768,13 +786,13 @@ en:{
   sosH:'Help now', helper:'Talk to a trained helper', helperSub:'A real person, in confidence', exit:'Quick exit', exitSub:'This page closes and a weather page opens',
   cc:{BD:'Bangladesh',KE:'Kenya',MX:'Mexico'},
   shareOnlyBD:'This calculation follows Muslim inheritance law as applied in Bangladesh. Kenya and Mexico have different laws: practise those cases in Rehearsal.',
-  moreH:'Every tool in one place', more:'More', home:'Home', homeH:'Tell me <em>what happened</em>', tapSpeak:'Tap the flower and speak', listenShort:'Listening… pause when you finish', writeShort:'Understanding…', typeInstead:'Type instead', go:'Go',
-  homeHello:'Hello, I am HerEvo. Tap the water lily and tell me what happened. Or tap one of the pictures below.', tryA:'My husband died, his brother won’t give me the land', tryB:'The office wants a bribe', tryC:'My mother-in-law demands dowry',
+  moreH:'Every tool in one place', more:'More', home:'Home', homeH:'Tell me <em>what happened</em>', tapSpeak:'Tap and speak', listenShort:'Listening… pause when you finish', writeShort:'Understanding…', typeInstead:'Type instead', go:'Go',
+  homeHello:'Hello, I am HerEvo. Tap the pink button and tell me what happened. Or tap one of the pictures below.', tryA:'My husband died, his brother won’t give me the land', tryB:'The office wants a bribe', tryC:'My mother-in-law demands dowry',
   pLens:'Paper', pShare:'My share', pRehearse:'Rehearse', pCounter:'Whisper', pWitness:'Witness', yourPath:'Your path', firstStep:'First',
   vcT:'Voice check', vcLink:'Check that voice works', vcH:'Voice check', vcSub:'One tap shows whether HerEvo can hear and speak on this phone.', vcStart:'Start the check', vcAgain:'Check again',
   vcSpeak:"HerEvo's voice", vcSpeakOk:'Did you hear it? (it played)', vcMic:'Microphone', vcMicNow:'Now say something, then pause…', vcWrite:'Writing down what you said', vcPhoneVoice:"The phone's own voice for this language", vcBrowser:'Browser',
   vcYes:'yes', vcNo:"no (that's fine, HerEvo's voice is used)", vcInApp:'In-app browser: the microphone will not work. Open in Chrome.', vcFail:'not working', vcSample:'I am HerEvo. I can hear you.',
-  talkT:'Talk', talkEntry:"I just want to talk, I can't read", talk_idle:'Tap the flower, then speak', talk_listening:'Listening… pause when you finish', talk_thinking:'Thinking…', talk_speaking:'Speaking… tap the flower to stop',
+  talkT:'Talk', talkEntry:"I just want to talk, I can't read", talk_idle:'Tap, then speak', talk_listening:'Listening… pause when you finish', talk_thinking:'Thinking…', talk_speaking:'Speaking… tap the button to stop',
   talkEnd:'End', talkType:'or type', talkHelp:'A trained helper has been told.',
   listenAll:'Listen to the whole meeting', listenAllSub:'Keep the phone beside you at the salish or office. I whisper only when something is wrong, and write down who promised what.', listeningLive:(n)=>`Listening… ${n} things heard`, stopListen:'Stop',
   makeMinutes:'Make the meeting record', minutesH:'Meeting record', promisesH:'Who promised what', warningsH:'Careful', nextH:'Next', heardLines:'What was heard', savedToFile:'Saved in your file',
@@ -956,7 +974,7 @@ async function speak(text, btn, onEnd){
     }catch(e){ done(); }
   };
   // Bangla (and Swahili): HerEvo's own voice first, because most phones and computers have no good voice for them.
-  if (S.lang !== 'en' && !(S.lang === 'es' && hasVoice('es'))){
+  if (S.lang !== 'en' && !hasVoice(S.lang)){
     try{
       const url = await serverVoice(text);
       if (token !== speakToken) return;  // she pressed stop or moved on while it loaded
@@ -1005,7 +1023,7 @@ function recorder({continuous = false, onSegment, onLevel, onStart, onError, max
         return;
       }
       const pause = now - lastLoud, long = now - segStart > 28000;
-      if (pause > 1300 || long){
+      if (pause > 900 || long){
         const wav = encodeWav(chunks.splice(0), ctx.sampleRate);
         speaking = false; segStart = now;
         onSegment && onSegment(wav);
@@ -1105,6 +1123,13 @@ function lily(small){
     <g transform="translate(-14 -16) scale(1.2)" fill="#1D1A3A"><rect x="8.5" y="2" width="7" height="13" rx="3.5"/><path d="M4.5 11a7.5 7.5 0 0 0 15 0" fill="none" stroke="#1D1A3A" stroke-width="2.4" stroke-linecap="round"/><path d="M12 18.5V22" stroke="#1D1A3A" stroke-width="2.4" stroke-linecap="round"/></g></g></svg>`;
   return w.firstChild;
 }
+function micButton(onclick, label){
+  const btn = h('button', {class:'micbtn', type:'button', 'aria-label': label, onclick}, icon('mic'));
+  const wrap = h('div', {class:'micwrap'}, h('span', {class:'halo'}), btn);
+  wrap.level = (v) => wrap.style.setProperty('--lvl', v.toFixed(2));
+  wrap.btn = btn;
+  return wrap;
+}
 const PETALS = '<svg class="petals" viewBox="-50 -50 100 100" aria-hidden="true">' + [...Array(10)].map((_, i) => `<path transform="rotate(${i * 36})" d="M0 -49 C8 -41 8 -33 0 -28 C-8 -33 -8 -41 0 -49Z" fill="rgba(255,255,255,.42)"/>`).join('') + '</svg>';
 const FLOWER = '<svg viewBox="0 0 30 30" aria-hidden="true" fill="currentColor"><circle cx="9" cy="9" r="3"/>' + [...Array(5)].map((_, i) => `<ellipse transform="rotate(${i * 72} 9 9)" cx="9" cy="3.6" rx="2.6" ry="3.6"/>`).join('') + '<path d="M13 14c5 0 9 3 11 9-6 0-10-3-11-9z"/></svg>';
 function svgHTML(html){ const w = document.createElement('span'); w.innerHTML = html; return w.firstChild; }
@@ -1117,7 +1142,7 @@ function navs(key){
     NAV.map((n) => n ? h('a', {class:'it' + (n[0] === key ? ' on' : ''), href:'#' + n[0], style:`--c:${n[2]}`}, h('i', null, icon(n[1])), t(n[3])) : h('div', {style:'height:10px'})),
     h('span', {class:'sp'}), h('p', {class:'about'}, t('testNote')));
   const tab = (k, ic, label, cls) => h('a', {class:(cls || '') + (k === key ? ' on' : ''), href:'#' + k}, ic, label);
-  fill($('#tabs'), tab('home', icon('home'), t('home')), tab('lens', icon('camera'), t('pLens')), tab('talk', lily(true), t('talkT'), 'talk'), tab('share', icon('land'), t('pShare')), tab('more', icon('grid'), t('more')));
+  fill($('#tabs'), tab('home', icon('home'), t('home')), tab('lens', icon('camera'), t('pLens')), tab('talk', h('span', {class:'tmic'}, icon('mic')), t('talkT'), 'talk'), tab('share', icon('land'), t('pShare')), tab('more', icon('grid'), t('more')));
 }
 function sheet(...content){
   const layer = $('#layer'); fill(layer);
@@ -1182,11 +1207,12 @@ function Talk(){
   const status = h('p', {class:'tstatus', 'aria-live':'polite'});
   const capHer = h('p', {class:'cap her'}), capAi = h('p', {class:'cap ai'}), extra = h('div', {class:'tsteps'});
   const set = (st) => { state = st; root.dataset.state = st; status.textContent = t('talk_' + st); };
-  const orb = h('button', {class:'lilybtn', type:'button', 'aria-label': t('talkT'), onclick: () => {
+  const micW = micButton(() => {
     if (state === 'idle') listen();
     else if (state === 'listening'){ if (rec) rec.stop(); }
     else if (state === 'speaking'){ stopSpeech(); set('idle'); }
-  }}, lily());
+  }, t('talkT'));
+  const orb = micW.btn;
   function listen(){
     if (!canHear()){ micError('none'); return; }
     set('listening');
@@ -1207,7 +1233,7 @@ function Talk(){
   const typed = h('input', {type:'text', placeholder: t('talkType'), onkeydown: (e) => { if (e.key === 'Enter' && typed.value.trim()){ const v = typed.value.trim(); typed.value = ''; send(v); } }});
   window.addEventListener('hashchange', () => { active = false; }, {once:true});
   set('idle');
-  fill(root, orb, status, capHer, capAi, extra,
+  fill(root, micW, status, capHer, capAi, extra,
     h('div', {class:'ttype'}, typed, h('button', {class:'tend', type:'button', onclick: () => { active = false; stopSpeech(); location.hash = '#home'; }}, icon('phone'), t('talkEnd'))));
   return root;
 }
@@ -1342,16 +1368,27 @@ function Home(){
   const state = h('p', {class:'hstate', 'aria-live':'polite'}, t('tapSpeak'));
   const heard = h('p', {class:'hheard'});
   const set = (st, text) => { root.dataset.state = st; state.textContent = text; };
-  const btn = h('button', {class:'lilybtn', type:'button', 'aria-label': t('tapSpeak'), onclick: () => {
-    if (rec){ rec.stop(); return; }
+  let recNow = null;
+  const mic = micButton(() => {
+    if (recNow){ recNow.stop(); return; }
     if (root.dataset.state === 'thinking') return;
-    stopSpeech(); beep(); heard.textContent = '';
-    set('listening', t('listenShort'));
-    hear(btn, (x) => { heard.textContent = '“' + x + '”'; }, (x) => {
-      if (x && x.trim().length > 2){ set('thinking', t('writeShort')); beep(660, 120); makePath(x.trim()); }
-      else set('idle', t('tapSpeak'));
-    });
-  }}, lily());
+    stopSpeech(); heard.textContent = '';
+    if (!canRecord()){  // no recording here: the browser's own listening, then the words
+      set('listening', t('listenShort'));
+      return hear(mic.btn, (x) => { heard.textContent = '“' + x + '”'; }, (x) => { if (x && x.trim().length > 2){ set('thinking', t('writeShort')); makePath(x.trim()); } else set('idle', t('tapSpeak')); });
+    }
+    beep(); set('listening', t('listenShort'));
+    recNow = recorder({
+      onLevel: (v) => mic.level(v),
+      onError: (kind) => { recNow = null; mic.level(0); micError(kind); set('idle', t('tapSpeak')); },
+      onSegment: async (wav) => {
+        recNow = null; mic.level(0);
+        if (!wav){ set('idle', t('tapSpeak')); toast(t('heardNothing')); return; }
+        set('thinking', t('writeShort')); beep(660, 110);
+        makePath(null, await toB64(wav));
+      }});
+  }, t('tapSpeak'));
+  const btn = mic;
   const ex = t('tellEx');
   const tries = h('div', {class:'tries'}, [[t('tryA'), ex[0]], [t('tryB'), ex[1]], [t('tryC'), ex[3]]].map(([label, full]) =>
     h('button', {type:'button', onclick: () => { heard.textContent = '“' + full + '”'; set('thinking', t('writeShort')); makePath(full); }}, icon('speaker'), label)));
@@ -1368,7 +1405,7 @@ function Home(){
     h('section', {class:'hero'},
       h('div', {class:'greet'}, t('hello'), listenBtn(() => t('homeHello'))),
       (() => { const e = h('h1'); e.innerHTML = t('homeH'); return e; })(),
-      btn, state, heard, tries,
+      mic, state, heard, tries,
       h('button', {class:'typebtn', type:'button', onclick: (e) => { typein.hidden = false; e.currentTarget.hidden = true; ta.focus(); }}, icon('keyboard'), t('typeInstead')), typein),
     saved ? h('a', {class:'pathpanel', href:'#path'}, h('span', {class:'in'}, h('span', {class:'pie', style:`--v:${Math.round(done / saved.plan.steps.length * 100)}`}, h('b', null, num(done) + '/' + num(saved.plan.steps.length))),
       h('span', {class:'t'}, h('strong', null, t('yourPath')), h('small', null, saved.plan.understood)), icon('arrow'))) : null,
@@ -1396,7 +1433,17 @@ function tellBox(){
     h('div', {class:'ex'}, t('tellEx').map((x) => h('button', {type:'button', onclick: () => { input.value = x; grow(); go(); }}, x))));
 }
 let pathPending = false;
-async function makePath(text){
+async function makePath(text, audio){
+  if (audio){  // stay on the mic while HerEvo listens to the recording; move only when the path is ready
+    try{
+      const plan = await api('/v1/plan', {session_id:S.sid, audio, mime:'audio/wav', lang:S.lang, country:S.country}, 60000);
+      if (!plan.steps.length){ toast(plan.say); speak(plan.say); route(); return; }
+      store.set('path', {text: plan.heard || '', plan, lang:S.lang, done: plan.steps.map(() => false), at: Date.now()});
+      if (location.hash === '#path') route(); else location.hash = '#path';
+      if (S.voice) setTimeout(() => { const b = $('.view-path .listen'); const first = plan.steps[0] ? '। ' + t('firstStep') + ': ' + plan.steps[0].title : ''; speak((plan.say || plan.understood) + first, b); }, 250);
+    }catch(e){ route(); }
+    return;
+  }
   pathPending = true;
   if (location.hash === '#path') route(); else location.hash = '#path';
   try{
@@ -1441,7 +1488,7 @@ function Path(){
   return h('div', null,
     h('div', {class:'heard-you'}, icon('check'), t('heardYou')),
     h('div', {style:'display:flex;gap:12px;align-items:flex-start'}, h('p', {class:'understood', style:'flex:1'}, plan.understood), sayB),
-    h('p', {class:'quote'}, t('youSaid') + ': “' + saved.text + '”'),
+    saved.text ? h('p', {class:'quote'}, t('youSaid') + ': “' + saved.text + '”') : null,
     plan.danger ? h('div', {class:'alert', style:'margin-bottom:16px'}, h('b', null, t('dangerH')), h('button', {class:'btn', type:'button', onclick: openSOS}, icon('shield'), t('dangerBtn'))) : null,
     plan.share && plan.share.her_land != null ? h('a', {class:'minishare', href:'#share', onclick: () => launch(plan.steps.findIndex((x) => x.tool === 'share'), {tool:'share'})},
       h('div', {style:'flex:1'}, h('small', null, t('shareMini')), h('b', null, fmt(plan.share.her_land) + ' ', h('small', {style:'display:inline;font-size:16px'}, t('unit') + ' · ' + num(plan.share.num) + '/' + num(plan.share.den))),
