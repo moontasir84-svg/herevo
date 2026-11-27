@@ -757,7 +757,7 @@ const store = {
   del(k){ try{ localStorage.removeItem(skey(k)); }catch(e){} },
 };
 const S = {
-  lang: store.get('lang', /^bn/i.test(navigator.language || '') ? 'bn' : (new URLSearchParams(location.search).get('lang') === 'bn' ? 'bn' : 'en')),
+  lang: store.get('lang', 'bn'),
   country: store.get('country', 'BD'),
   sid: store.get('sid', null) || (() => { const id = 'app-' + Math.random().toString(36).slice(2) + Date.now().toString(36); store.set('sid', id); return id; })(),
   voice: store.get('voice', true),
