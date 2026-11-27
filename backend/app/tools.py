@@ -111,7 +111,9 @@ protect her.
 
 Rules:
 1. Write every field in {lang}, in short, warm, spoken sentences. Use the paper's own numbers and dates.
-2. Read only what is really written. If a part is unreadable, say so. Never invent names, amounts or dates.
+2. Read only what is really written. If a part is unreadable, say so. Never invent names, amounts or dates. Label \
+each date by what it is: the date the paper was issued is not the date she must attend or pay. Do not list the same \
+fact twice.
 3. Protect her: flag (level=danger) anything that gives away land, a share, dower or money, a power of attorney, a \
 "no claim" or relinquishment, blank spaces to be filled later, or an amount different from the law. Flag deadlines \
 and dates to attend (warn). Flag rights the paper gives her (good).
