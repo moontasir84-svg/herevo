@@ -1124,12 +1124,12 @@ function Talk(){
 /* ============================================================== voice check */
 function VoiceCheck(){
   const root = h('div');
-  const row = (label) => { const st = h('span', {class:'vst'}, '–'), info = h('small'); const el = h('div', {class:'vrow'}, h('span', {class:'vl'}, h('b', null, label), info), st); return {el, set: (ok, msg) => { st.textContent = ok === null ? '…' : ok ? '✓' : '✗'; st.className = 'vst ' + (ok === null ? 'wait' : ok ? 'ok' : 'bad'); if (msg != null) info.textContent = msg; }}; };
+  const row = (label) => { const st = h('span', {class:'vst'}, '–'), info = h('small'); const el = h('div', {class:'vrow'}, h('span', {class:'vl'}, h('b', null, label), info), st); return {el, set: (ok, msg) => { st.textContent = ok === undefined ? '–' : ok === null ? '…' : ok ? '✓' : '✗'; st.className = 'vst ' + (ok === undefined ? '' : ok === null ? 'wait' : ok ? 'ok' : 'bad'); if (msg != null) info.textContent = msg; }}; };
   const ua = navigator.userAgent;
   const browser = /SamsungBrowser/.test(ua) ? 'Samsung Internet' : /Edg\//.test(ua) ? 'Edge' : /Firefox|FxiOS/.test(ua) ? 'Firefox' : /CriOS|Chrome/.test(ua) ? 'Chrome' : /Safari/.test(ua) ? 'Safari' : 'Other';
   const rB = row(t('vcBrowser')), rS = row(t('vcSpeak')), rM = row(t('vcMic')), rW = row(t('vcWrite')), rP = row(t('vcPhoneVoice'));
   rB.set(!inAppBrowser() && isSecureContext, browser + (inAppBrowser() ? ' · ' + t('vcInApp') : '') + (isSecureContext ? '' : ' · not https'));
-  rP.set(hasVoice(S.lang), hasVoice(S.lang) ? t('vcYes') : t('vcNo'));
+  rP.set(hasVoice(S.lang) ? true : undefined, hasVoice(S.lang) ? t('vcYes') : t('vcNo'));
   const meter = h('div', {class:'vmeter'}, h('i'));
   const go = h('button', {class:'btn block', type:'button', onclick: run}, icon('mic'), t('vcStart'));
   async function run(){
