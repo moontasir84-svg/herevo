@@ -417,44 +417,6 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 .remind span{flex:1}
 .remind small{display:block;font-weight:500;opacity:.8;font-size:13.5px}
 
-/* ---- voice-first home ---- */
-.morebtn{text-decoration:none;margin-left:6px;padding:0 12px}
-.morebtn svg{width:16px;height:16px}
-.vhome{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:18px 0 10px}
-.vhome .hi{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:600;font-size:19px;color:var(--muted)}
-.horb{position:relative;width:min(64vw,250px);height:min(64vw,250px);border-radius:50%;border:0;margin:10px 0 4px;color:#fff;
-  background:radial-gradient(circle at 35% 30%,#FFD38A 0%,var(--her) 38%,#C0507E 78%,#6B2E7E 100%);box-shadow:0 18px 50px rgba(194,96,14,.35),inset 0 -18px 36px rgba(0,0,0,.2);
-  display:flex;align-items:center;justify-content:center;animation:breathe 4s ease-in-out infinite}
-.horb svg{width:38%;height:38%;filter:drop-shadow(0 3px 6px rgba(0,0,0,.25))}
-.horb::before,.horb::after{content:"";position:absolute;inset:-14px;border-radius:50%;border:3px solid rgba(242,158,46,.45);opacity:0}
-[data-state=listening] .horb{animation:none;transform:scale(1.04);background:radial-gradient(circle at 35% 30%,#fff 0%,#FFE1B0 40%,var(--her) 100%);color:var(--danger)}
-[data-state=listening] .horb::before,[data-state=listening] .horb::after{animation:ring 1.6s ease-out infinite;opacity:1}
-[data-state=listening] .horb::after{animation-delay:.8s}
-[data-state=thinking] .horb{animation:think 1.2s linear infinite;background:conic-gradient(from 0deg,var(--her),#C0507E,#6B2E7E,var(--her))}
-.hstate{font-family:var(--f-display);font-weight:700;font-size:28px;margin:0;line-height:1.2}
-.hheard{margin:0;color:var(--muted);font-size:17px;font-style:italic;min-height:1.5em;max-width:24em}
-.htiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%;margin-top:14px}
-.htile{aspect-ratio:1/1;border-radius:26px;border:0;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-family:var(--f-display);font-weight:700;font-size:20px;animation:rise .5s both;animation-delay:calc(var(--i)*80ms)}
-.htile svg{width:44%;height:44%}
-.htile.paper{background:var(--lens)}.htile.land{background:var(--share)}.htile.danger{background:var(--danger)}
-.hresume{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border-radius:22px;background:var(--surface);border:2px solid var(--her);text-decoration:none;text-align:left;margin-top:4px}
-.hresume .pie{--v:0;flex:none;width:52px;height:52px;border-radius:50%;background:conic-gradient(var(--her) calc(var(--v)*1%),var(--line) 0);display:flex;align-items:center;justify-content:center}
-.hresume .pie b{width:40px;height:40px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center}
-.hresume .pie svg{width:22px;height:22px;color:var(--her)}
-.hresume span{flex:1;font-family:var(--f-display);font-weight:700;font-size:20px}
-.htype{display:inline-flex;align-items:center;gap:8px;border:0;background:none;color:var(--muted);font-weight:600;min-height:44px;font-size:15.5px}
-.htype svg{width:22px;height:22px}
-/* simple path */
-.pstep{display:flex;align-items:center;gap:14px;padding:12px;border-radius:24px;background:var(--surface);border:1px solid var(--line);text-decoration:none;animation:rise .45s both;animation-delay:calc(var(--i)*90ms);position:relative}
-.pstep .pic{flex:none;width:64px;height:64px;border-radius:20px;display:flex;align-items:center;justify-content:center;color:#fff;position:relative}
-.pstep .pic svg{width:32px;height:32px}
-.pstep .pic i{position:absolute;top:-6px;left:-6px;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;font-style:normal;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px var(--paper)}
-.pstep b{flex:1;font-family:var(--f-display);font-weight:600;font-size:20px;line-height:1.25}
-.pstep.done{opacity:.6}.pstep.done .pic i{background:var(--good)}
-.psteps{display:grid;gap:12px;margin-top:6px}
-.pagain{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:60px;margin-top:20px;border-radius:99px;border:0;background:var(--her);color:var(--ink);font-family:var(--f-display);font-weight:700;font-size:19px;text-decoration:none}
-.pagain svg{width:24px;height:24px}
-
 /* ---- voice check ---- */
 .vlist{display:grid;gap:8px}
 .vrow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
@@ -668,8 +630,6 @@ bn:{
   sosH:'এখনই সাহায্য', helper:'একজন সহায়তাকর্মীর সঙ্গে কথা বলুন', helperSub:'প্রশিক্ষিত মানুষ, গোপনে', exit:'দ্রুত বের হোন', exitSub:'এই পাতা বন্ধ হয়ে আবহাওয়ার পাতা খুলবে',
   cc:{BD:'বাংলাদেশ',KE:'কেনিয়া',MX:'মেক্সিকো'},
   shareOnlyBD:'এই হিসাব বাংলাদেশে প্রযোজ্য মুসলিম উত্তরাধিকার আইন অনুযায়ী। কেনিয়া বা মেক্সিকোর আইন আলাদা: মহড়া অংশে সেই দেশের অনুশীলন আছে।',
-  more:'আরও', tapSpeak:'চাপ দিন, কথা বলুন', listenShort:'শুনছি…', writeShort:'বুঝে নিচ্ছি…', tPaper:'কাগজ', tLand:'জমি', tDanger:'বিপদ', tYourPath:'আপনার পথ', typeInstead:'লিখে বলুন', speakAgain:'আবার বলুন',
-  homeHello:'আসসালামু আলাইকুম। নিচের বলটায় চাপ দিয়ে বলুন কী হয়েছে।', paperSay:'কাগজের ছবি তুলুন। আমি পড়ে শোনাব।', landSay:'জমিতে আপনার ভাগ দেখুন।', firstStep:'প্রথম কাজ',
   vcT:'ভয়েস পরীক্ষা', vcLink:'ভয়েস কাজ করছে কি না পরীক্ষা করুন', vcH:'ভয়েস পরীক্ষা', vcSub:'এক চাপে দেখে নিন এই ফোনে HerEvo শুনতে ও বলতে পারছে কি না।', vcStart:'পরীক্ষা শুরু করুন', vcAgain:'আবার পরীক্ষা করুন',
   vcSpeak:'HerEvo-র কণ্ঠ', vcSpeakOk:'শুনতে পেয়েছেন? (বাজানো হয়েছে)', vcMic:'মাইক্রোফোন', vcMicNow:'এখন বাংলায় কিছু বলুন, তারপর থামুন…', vcWrite:'কথা লিখে নেওয়া', vcPhoneVoice:'ফোনের নিজের বাংলা কণ্ঠ', vcBrowser:'ব্রাউজার',
   vcYes:'আছে', vcNo:'নেই (সমস্যা নেই, HerEvo-র কণ্ঠ ব্যবহার হবে)', vcInApp:'অ্যাপের ভেতরের ব্রাউজার: মাইক চলবে না। Chrome-এ খুলুন।', vcFail:'কাজ করছে না', vcSample:'আমি HerEvo। আপনার কথা শুনতে পাচ্ছি।',
@@ -688,7 +648,7 @@ bn:{
   tellH:'কী হয়েছে, বলুন', tellSub:'নিজের ভাষায়, যেভাবে খুশি। HerEvo বুঝে আপনার পথ সাজিয়ে দেবে।', tellPh:'যেমন: স্বামী মারা গেছেন, দেবর জমি দিতে চাইছে না…', tellGo:'আমার পথ দেখাও',
   tellEx:['আমার স্বামী মারা গেছেন। দুই ছেলে এক মেয়ে, ৮০ শতাংশ জমি। দেবর একটা কাগজে টিপসই দিতে বলছে।','ভূমি অফিসের লোক নামজারির জন্য পাঁচ হাজার টাকা চাইছে।','স্বামী চার মাস টাকা দেয় না, দেনমোহরও দেয়নি।','শাশুড়ি যৌতুক চায়, না দিলে মারধর করে।'],
   orPick:'অথবা নিজেই বেছে নিন', resume:'আপনার পথ', resumeOf:(a,b)=>`${a}/${b} ধাপ`,
-  heardYou:'আপনার কথা বুঝেছি', youSaid:'আপনি বলেছেন', open:'শুরু করুন', call:'ফোন করুন', pathAsk:'আরেকটু জানালে আরও ঠিকভাবে সাহায্য করতে পারব', answer:'উত্তর বলুন',
+  heardYou:'আপনার কথা বুঝেছি', youSaid:'আপনি বলেছেন', open:'শুরু করুন', call:'ফোন করুন', pathAsk:'আরেকটু জানালে আরও ঠিকভাবে সাহায্য করতে পারব', answer:'উত্তর দিন',
   newPath:'নতুন করে বলুন', thinkingPath:'আপনার কথা বুঝছি, পথ সাজাচ্ছি…', shareMini:'আইনে আপনার ভাগ', lensHint:'যে কাগজের ছবি তুলবেন',
   remindMe:'মনে করিয়ে দিন', remindSub:'আপনার ফোনের ক্যালেন্ডারে যোগ হবে, আগের দিন মনে করাবে',
   warnOthers:'অন্য নারীদের সাবধান করুন', warnH:'নাম ছাড়া জানান, পরের নারী যেন সাবধান থাকে', warnArea:'এলাকা বা অফিসের নাম (ঐচ্ছিক)', warnSend:'জানিয়ে দিন', warnThanks:'ধন্যবাদ। আপনার জানানো পরের নারীকে রক্ষা করবে।',
@@ -749,8 +709,6 @@ en:{
   sosH:'Help now', helper:'Talk to a trained helper', helperSub:'A real person, in confidence', exit:'Quick exit', exitSub:'This page closes and a weather page opens',
   cc:{BD:'Bangladesh',KE:'Kenya',MX:'Mexico'},
   shareOnlyBD:'This calculation follows Muslim inheritance law as applied in Bangladesh. Kenya and Mexico have different laws: practise those cases in Rehearsal.',
-  more:'More', tapSpeak:'Tap and speak', listenShort:'Listening…', writeShort:'Understanding…', tPaper:'Paper', tLand:'Land', tDanger:'Danger', tYourPath:'Your path', typeInstead:'Type instead', speakAgain:'Speak again',
-  homeHello:'Hello. Tap the big circle and tell me what happened.', paperSay:'Take a photo of the paper. I will read it to you.', landSay:'See your share of the land.', firstStep:'First',
   vcT:'Voice check', vcLink:'Check that voice works', vcH:'Voice check', vcSub:'One tap shows whether HerEvo can hear and speak on this phone.', vcStart:'Start the check', vcAgain:'Check again',
   vcSpeak:"HerEvo's voice", vcSpeakOk:'Did you hear it? (it played)', vcMic:'Microphone', vcMicNow:'Now say something, then pause…', vcWrite:'Writing down what you said', vcPhoneVoice:"The phone's own voice for this language", vcBrowser:'Browser',
   vcYes:'yes', vcNo:"no (that's fine, HerEvo's voice is used)", vcInApp:'In-app browser: the microphone will not work. Open in Chrome.', vcFail:'not working', vcSample:'I am HerEvo. I can hear you.',
@@ -769,7 +727,7 @@ en:{
   tellH:"Tell me what's happening", tellSub:'In your own words. HerEvo understands and lays out your path.', tellPh:'For example: my husband died and his brother won’t give me the land…', tellGo:'Show me my path',
   tellEx:['My husband died. We have two sons and one daughter and 80 decimals of land. His brother wants my thumbprint on a paper.','The land office clerk wants five thousand taka for my mutation.','My husband has not given me money for four months, and never paid my dower.','My mother-in-law demands dowry and beats me when I refuse.'],
   orPick:'Or choose a tool yourself', resume:'Your path', resumeOf:(a,b)=>`${a} of ${b} steps`,
-  heardYou:'I understood', youSaid:'You said', open:'Start', call:'Call', pathAsk:'Tell me a little more so I can help better', answer:'Say your answer',
+  heardYou:'I understood', youSaid:'You said', open:'Start', call:'Call', pathAsk:'Tell me a little more so I can help better', answer:'Answer',
   newPath:'Tell me something new', thinkingPath:'Understanding you, laying out your path…', shareMini:'Your lawful share', lensHint:'The paper to photograph',
   remindMe:'Remind me', remindSub:'Adds it to your phone calendar, with a reminder the day before',
   warnOthers:'Warn other women', warnH:'No name. Warn the next woman so she is ready', warnArea:'Area or office name (optional)', warnSend:'Send warning', warnThanks:'Thank you. Your warning will protect the next woman.',
@@ -799,7 +757,7 @@ const store = {
   del(k){ try{ localStorage.removeItem(skey(k)); }catch(e){} },
 };
 const S = {
-  lang: store.get('lang', 'bn'),
+  lang: store.get('lang', /^bn/i.test(navigator.language || '') ? 'bn' : (new URLSearchParams(location.search).get('lang') === 'bn' ? 'bn' : 'en')),
   country: store.get('country', 'BD'),
   sid: store.get('sid', null) || (() => { const id = 'app-' + Math.random().toString(36).slice(2) + Date.now().toString(36); store.set('sid', id); return id; })(),
   voice: store.get('voice', true),
@@ -838,9 +796,6 @@ const ICONS = {
   mic:'<rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
   send:'<path d="M4 12l16-8-6 16-2.5-6.5z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>',
   chat:'<path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 9.5h8M8 12.5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-  grid:'<rect x="4" y="4" width="7" height="7" rx="2" fill="currentColor"/><rect x="13" y="4" width="7" height="7" rx="2" fill="currentColor"/><rect x="4" y="13" width="7" height="7" rx="2" fill="currentColor"/><rect x="13" y="13" width="7" height="7" rx="2" fill="currentColor"/>',
-  land:'<path d="M3 18l9-5 9 5-9 4z" fill="currentColor"/><path d="M12 12V4M12 8c-2.4 0-4-1.6-4-4 2.4 0 4 1.6 4 4zM12 8c2.4 0 4-1.6 4-4-2.4 0-4 1.6-4 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-  keyboard:'<rect x="3" y="6" width="18" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>',
   arrow:'<path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>',
   hand:'<path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11M11 10V4a1.5 1.5 0 0 1 3 0v7M14 10.5V5.5a1.5 1.5 0 0 1 3 0V14c0 4-2.6 7-6.5 7-2.6 0-4-1.2-5.4-3.4L3.6 15a1.6 1.6 0 0 1 2.6-1.8L8 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
   check:'<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>',
@@ -1022,19 +977,18 @@ async function transcribe(wav){
 function micError(kind){
   toast(kind === 'denied' ? (inAppBrowser() ? t('micInApp') : t('micDenied')) : kind === 'nomic' ? t('micNone') : t('noMic'));
 }
-const quietVoice = () => ['#talk', '#home', '', '#'].includes(location.hash);
 let rec = null;
 // One spoken answer: tap, speak, pause. onText gets what she said (once written down); onEnd(text) when done.
 function hear(btn, onText, onEnd){
   if (rec){ rec.stop(); return; }
   stopSpeech();
   if (!canRecord()){ return hearBrowser(btn, onText, onEnd); }
-  btn.classList.add('on'); if (!quietVoice()) toast(t('listening'));
+  btn.classList.add('on'); if (location.hash !== '#talk') toast(t('listening'));
   const r = recorder({
     onSegment: async (wav) => {
       rec = null; btn.classList.remove('on');
       if (!wav){ onEnd && onEnd(''); return; }
-      btn.classList.add('busy'); if (!quietVoice()) toast(t('writing'));
+      btn.classList.add('busy'); toast(t('writing'));
       try{ const text = await transcribe(wav); btn.classList.remove('busy'); if (!text){ toast(t('heardNothing')); onEnd && onEnd(''); return; } onText(text); onEnd && onEnd(text); }
       catch(e){ btn.classList.remove('busy'); onEnd && onEnd(''); }
     },
@@ -1055,11 +1009,11 @@ function hearBrowser(btn, onText, onEnd){
 }
 
 /* ============================================================== shell */
-const TITLES = {more:'more', voice:'vcT', talk:'talkT', file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
+const TITLES = {voice:'vcT', talk:'talkT', file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
 function bar(name){
   const b = $('#bar'); fill(b);
   if (name === 'home'){
-    b.append(h('a', {class:'brand', href:'#home', 'aria-label':'HerEvo'}, logo(), 'HerEvo'), h('a', {class:'chip morebtn', href:'#more', 'aria-label': t('more')}, icon('grid'), t('more')));
+    b.append(h('a', {class:'brand', href:'#home', 'aria-label':'HerEvo'}, logo(), 'HerEvo'));
   } else {
     b.append(h('a', {class:'back', href:'#home'}, icon('back'), t(TITLES[name] || 'back')));
   }
@@ -1085,7 +1039,7 @@ function openSOS(){
 }
 function quickExit(){ stopSpeech(); document.body.innerHTML = ''; try{ sessionStorage.clear(); }catch(e){} location.replace('https://www.google.com/search?q=weather'); }
 
-const VIEWS = {more: More, voice: VoiceCheck, talk: Talk, file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
+const VIEWS = {voice: VoiceCheck, talk: Talk, file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
 function route(){
   stopSpeech(); if (rec){ try{ rec.abort(); }catch(e){} rec = null; } stopLive();
   fill($('#layer'));
@@ -1100,7 +1054,7 @@ function route(){
 window.addEventListener('hashchange', route);
 
 /* ============================================================== home */
-function More(){
+function Home(){
   const tools = ['lens', 'share', 'rehearse', 'counter', 'witness'];
   const saved = store.get('path', null);
   const done = saved ? saved.done.filter(Boolean).length : 0;
@@ -1287,42 +1241,6 @@ function Champion(){
     PROFILE ? h('button', {class:'btn ghost block', type:'button', style:'margin-top:14px', onclick: () => { useProfile(null); location.hash = '#home'; }}, t('champMe')) : null);
 }
 
-/* ============================================================== voice-first home */
-function beep(freq = 880, ms = 140){
-  try{ const AC = window.AudioContext || window.webkitAudioContext; const c = new AC(); const o = c.createOscillator(), g = c.createGain(); o.frequency.value = freq; o.connect(g); g.connect(c.destination); g.gain.setValueAtTime(.0001, c.currentTime); g.gain.exponentialRampToValueAtTime(.25, c.currentTime + .02); g.gain.exponentialRampToValueAtTime(.0001, c.currentTime + ms / 1000); o.start(); o.stop(c.currentTime + ms / 1000 + .05); setTimeout(() => c.close(), ms + 300); }catch(e){}
-}
-function Home(){
-  const saved = store.get('path', null);
-  const root = h('div', {class:'vhome', 'data-state':'idle'});
-  const state = h('p', {class:'hstate', 'aria-live':'polite'}, t('tapSpeak'));
-  const heard = h('p', {class:'hheard'});
-  const set = (st, text) => { root.dataset.state = st; state.textContent = text; };
-  const orb = h('button', {class:'horb', type:'button', 'aria-label': t('tapSpeak'), onclick: () => {
-    if (rec){ rec.stop(); return; }
-    if (root.dataset.state === 'thinking') return;
-    stopSpeech(); beep(); heard.textContent = '';
-    set('listening', t('listenShort'));
-    hear(orb, (x) => { heard.textContent = '“' + x + '”'; }, (x) => {
-      if (x && x.trim().length > 2){ set('thinking', t('writeShort')); beep(660, 120); makePath(x.trim()); }
-      else set('idle', t('tapSpeak'));
-    });
-  }}, icon('mic'));
-  const tile = (cls, ic, label, href, say, i, onclick) => h('a', {class:'htile ' + cls, href: href || '#', style:`--i:${i}`, onclick: (e) => { if (onclick){ e.preventDefault(); onclick(); } else if (say) setTimeout(() => speak(say), 350); }}, icon(ic), label);
-  const typeBox = h('div', {hidden:true, style:'width:100%;text-align:left'}, tellBox());
-  const done = saved ? saved.done.filter(Boolean).length : 0;
-  fill(root,
-    h('div', {class:'hi'}, t('hello'), listenBtn(() => t('homeHello'))),
-    orb, state, heard,
-    saved ? h('a', {class:'hresume', href:'#path'}, h('span', {class:'pie', style:`--v:${Math.round(done / saved.plan.steps.length * 100)}`}, h('b', null, icon('arrow'))), h('span', null, t('tYourPath')), listenBtn(() => saved.plan.say || saved.plan.understood)) : null,
-    h('div', {class:'htiles'},
-      tile('paper', 'camera', t('tPaper'), '#lens', t('paperSay'), 0),
-      tile('land', 'land', t('tLand'), '#share', t('landSay'), 1),
-      tile('danger', 'shield', t('tDanger'), null, null, 2, openSOS)),
-    h('button', {class:'htype', type:'button', onclick: (e) => { typeBox.hidden = !typeBox.hidden; e.currentTarget.hidden = true; }}, icon('keyboard'), t('typeInstead')),
-    typeBox);
-  return root;
-}
-
 /* ============================================================== just tell me + path */
 function tellBox(){
   const input = h('textarea', {rows:'2', placeholder: t('tellPh'), 'aria-label': t('tellH'), oninput: grow});
@@ -1344,7 +1262,7 @@ async function makePath(text){
     const plan = await api('/v1/plan', {session_id:S.sid, text, lang:S.lang, country:S.country}, 60000);
     store.set('path', {text, plan, lang:S.lang, done: plan.steps.map(() => false), at: Date.now()});
     pathPending = false; route();
-    if (S.voice) setTimeout(() => { const b = $('.view-path .listen'); const first = plan.steps[0] ? '। ' + t('firstStep') + ': ' + plan.steps[0].title : ''; speak((plan.say || plan.understood) + first + (plan.ask ? '। ' + plan.ask : ''), b); }, 300);
+    if (S.voice) setTimeout(() => { const b = $('.view-path .listen'); speak(plan.say || plan.understood, b); }, 300);
   }catch(e){ pathPending = false; location.hash = '#home'; }
 }
 const TOOL_STYLE = {share:['var(--share)','scale'], lens:['var(--lens)','camera'], rehearse:['var(--rehearse)','chat'], counter:['var(--counter)','speaker'], witness:['var(--witness)','book'], call:['var(--danger)','phone'], chat:['var(--ink)','chat']};
@@ -1379,24 +1297,19 @@ function Path(){
         st.tool === 'lens' && st.paper ? h('span', null, '📄 ' + st.paper) : null,
         h('em', null, icon(ic), st.tool === 'call' ? t('call') + ' ' + num(st.number || '') : t('open'))));
   });
-  const simple = plan.steps.map((st, i) => {
-    const [c, ic] = TOOL_STYLE[st.tool] || TOOL_STYLE.chat;
-    return h('a', {class:'pstep' + (saved.done[i] ? ' done' : ''), href: stepHref(st), style:`--i:${i}`, onclick: () => launch(i, st)},
-      h('span', {class:'pic', style:`background:${c}`}, icon(ic), h('i', null, saved.done[i] ? '✓' : num(i + 1))),
-      h('b', null, st.tool === 'call' ? st.title : st.title),
-      listenBtn(() => st.title + (st.why ? '। ' + st.why : '')));
-  });
   return h('div', null,
-    h('div', {style:'display:flex;gap:12px;align-items:flex-start;margin-top:8px'}, h('p', {class:'understood', style:'flex:1'}, plan.understood), sayB),
+    h('div', {class:'heard-you'}, icon('check'), t('heardYou')),
+    h('div', {style:'display:flex;gap:12px;align-items:flex-start'}, h('p', {class:'understood', style:'flex:1'}, plan.understood), sayB),
+    h('p', {class:'quote'}, t('youSaid') + ': “' + saved.text + '”'),
     plan.danger ? h('div', {class:'alert', style:'margin-bottom:16px'}, h('b', null, t('dangerH')), h('button', {class:'btn', type:'button', onclick: openSOS}, icon('shield'), t('dangerBtn'))) : null,
     plan.share && plan.share.her_land != null ? h('a', {class:'minishare', href:'#share', onclick: () => launch(plan.steps.findIndex((x) => x.tool === 'share'), {tool:'share'})},
       h('div', {style:'flex:1'}, h('small', null, t('shareMini')), h('b', null, fmt(plan.share.her_land) + ' ', h('small', {style:'display:inline;font-size:16px'}, t('unit') + ' · ' + num(plan.share.num) + '/' + num(plan.share.den))),
         h('div', {class:'bar'}, h('i', {style:`width:${Math.max(4, plan.share.pct)}%`}))), icon('arrow')) : null,
-    h('div', {class:'psteps'}, simple),
-    h('a', {class:'pagain', href:'#home'}, icon('mic'), t('speakAgain')),
-    plan.ask ? h('div', {class:'askq'}, h('div', {style:'display:flex;gap:10px;align-items:center'}, h('b', {style:'flex:1;font-family:var(--f-display);font-size:19px'}, plan.ask), listenBtn(plan.ask)),
-      h('button', {class:'pagain', type:'button', style:'margin-top:4px', onclick: (e) => { const b = e.currentTarget; beep(); hear(b, () => {}, (a) => { if (a && a.trim()) makePath(saved.text + ' ' + a.trim()); }); }}, icon('mic'), t('answer'))) : null,
-    h('a', {class:'btn ghost block', href:'#file', style:'margin-top:22px'}, icon('book'), t('myFile')),
+    h('ol', {class:'stones'}, steps),
+    plan.ask ? h('div', {class:'askq'}, h('b', null, t('pathAsk')), h('span', null, plan.ask),
+      h('div', {class:'inrow'}, ans, h('button', {class:'send', type:'button', style:'background:var(--her);color:var(--ink)', 'aria-label': t('answer'), onclick: () => { const a = ans.value.trim(); if (a) makePath(saved.text + ' ' + a); }}, icon('send')))) : null,
+    h('a', {class:'filebtn', href:'#file'}, icon('book'), t('myFile')),
+    h('button', {class:'btn ghost block', type:'button', style:'margin-top:10px', onclick: () => { store.del('path'); location.hash = '#home'; }}, t('newPath')),
     plan.source === 'saved' ? h('p', {class:'src'}, t('saved')) : null);
 }
 function ics(d){

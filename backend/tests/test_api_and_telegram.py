@@ -109,7 +109,7 @@ def test_web_app_is_served_and_api_still_wins():
     r = client.get("/chat")
     assert r.status_code == 200 and "HerEvo" in r.text and "askApi" in r.text
     r = client.get("/")
-    assert r.status_code == 200 and "Paper Lens" in r.text and "horb" in r.text and r.headers["cache-control"] == "no-cache"
+    assert r.status_code == 200 and "Paper Lens" in r.text and r.headers["cache-control"] == "no-cache"
     assert client.get("/health").json()["ok"]
 
 
