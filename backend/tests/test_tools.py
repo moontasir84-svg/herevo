@@ -358,3 +358,13 @@ def test_tools_ask_the_lite_model_first(monkeypatch):
     monkeypatch.setattr(g, "_post", lambda httpx, model, body, timeout: order.append(model) or R())
     assert g.generate("s", [{"text": "x"}], "t", {"type": "object", "properties": {}}) == {"x": 1}
     assert order == ["gemini-flash-lite-latest"]
+
+
+def test_sale_written_down_without_ai():
+    r = client.post("/v1/sale", json={"session_id": SID, "text": "আজ ৩০টা ডিম ৩৯০ টাকায় বেচলাম"}).json()
+    assert r["ok"] and r["sale"] == {"product": "ডিম", "quantity": 30.0, "unit": "টা", "amount": 390.0}
+    r = client.post("/v1/sale", json={"session_id": SID, "text": "Vendí tlayudas por 950 pesos", "country": "MX"}).json()
+    assert r["ok"] and r["sale"]["amount"] == 950.0
+    led = client.get(f"/v1/ledger/{SID}").json()
+    assert led["total"] == 1340.0 and [x["currency"] for x in led["sales"]] == ["BDT", "MXN"]
+    assert client.post("/v1/sale", json={"session_id": SID, "text": "আমার জমি নিয়ে সমস্যা"}).json() == {"ok": False}

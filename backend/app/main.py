@@ -263,6 +263,60 @@ def inbox(session_id: str):
                           "at": r["created_at"].isoformat()} for r in rows]}
 
 
+CURRENCY = {"BD": "BDT", "KE": "KES", "MX": "MXN"}
+_BN = str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789")
+_NUMWORDS = {"এক": 1, "দুই": 2, "তিন": 3, "চার": 4, "পাঁচ": 5, "ছয়": 6, "সাত": 7, "আট": 8, "নয়": 9, "দশ": 10}
+
+
+def parse_sale(text: str) -> dict | None:
+    """A sale or earning said in plain words ('আজ ৩০টা ডিম ৩৯০ টাকায় বেচলাম', 'sold 25 kg potatoes for 600 taka').
+    Deterministic, so writing it down never waits for the AI. The amount must be said next to a currency word."""
+    import re
+    t = " ".join(text.translate(_BN).replace(",", "").split())
+    money = re.search(r"(\d+(?:\.\d+)?)\s*(?:টাকা(?:য়|র)?|taka|tk|bdt|ksh|shilingi|shillings?|pesos?|mxn|\$)", t, re.I) or \
+        re.search(r"(?:tk|ksh|\$)\s*(\d+(?:\.\d+)?)", t, re.I)
+    if not money:
+        return None
+    amount = float(money.group(1))
+    if amount <= 0 or amount > 10_000_000:
+        return None
+    rest = (t[:money.start()] + " " + t[money.end():]).strip()
+    qty = re.search(r"(\d+(?:\.\d+)?)\s*(কেজি|kg|কিলো|লিটার|litre|liter|l\b|টা|টি|জোড়া|dozen|ডজন|দিন|days?|pcs|pieces)?", rest, re.I)
+    quantity, unit = (float(qty.group(1)), (qty.group(2) or "")) if qty else (None, "")
+    if qty is None:
+        for w, n in _NUMWORDS.items():
+            if re.search(w + r"\s*(দিন|টা|টি)", rest):
+                quantity, unit = float(n), re.search(w + r"\s*(দিন|টা|টি)", rest).group(1)
+                break
+    stop = r"\b(i|sold|today|for|of|earned|got|ya|kwa|vendí|por|de|hoy|leo|nimeuza)\b|আজ|বেচলাম|বিক্রি|করেছি|পেলাম|করে|কাজ|টাকায়|টাকার|দিয়ে"
+    product = re.sub(r"\d+(?:\.\d+)?\s*(কেজি|kg|কিলো|টা|টি|দিন|days?)?", " ", rest, flags=re.I)
+    product = re.sub(stop, " ", product, flags=re.I)
+    product = re.sub("(" + "|".join(_NUMWORDS) + r")\s*(দিন|টা|টি)", " ", product)
+    product = " ".join(product.replace("।", " ").replace(".", " ").split())[:60] or "বিক্রি"
+    return {"product": product, "quantity": quantity, "unit": unit or None, "amount": amount}
+
+
+class SaleIn(BaseModel):
+    session_id: str = Field(min_length=8, max_length=100)
+    text: str = Field(min_length=2, max_length=500)
+    country: str = "BD"
+
+
+@app.post("/v1/sale")
+def record_sale(body: SaleIn):
+    """Her income record: a sale written down at once, no AI needed. Not understood -> ok=false (ask again)."""
+    if rate_limited("sale:" + body.session_id, 60):
+        raise HTTPException(429, "Too many entries. Please wait a few minutes.")
+    sale = parse_sale(body.text)
+    if not sale:
+        return {"ok": False}
+    cc = body.country.upper()
+    uid = db.user_id_for("web", body.session_id)
+    db.upsert_user(uid, "web", cc if cc in available_countries() else "BD", "bn")
+    db.add_sale(uid, {**sale, "currency": CURRENCY.get(cc, "BDT")})
+    return {"ok": True, "sale": sale}
+
+
 @app.get("/v1/ledger/{session_id}")
 def ledger(session_id: str):
     rows = db.ledger(db.user_id_for("web", session_id))

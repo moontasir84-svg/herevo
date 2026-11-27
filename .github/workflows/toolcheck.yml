@@ -36,6 +36,8 @@ jobs:
           echo "== plan (Bangla, land)"; post /v1/plan plan.json
           echo "== plan (Kenya, English)"; post /v1/plan plan2.json
           echo "== radar"; curl -s --max-time 60 $B/v1/radar/BD; echo
+          echo "== sale written down (no AI)"; curl -s -w "\n[HTTP %{http_code} in %{time_total}s]\n" --max-time 60 -H 'content-type: application/json' -d '{"session_id":"toolcheck-0004","text":"আজ ৩০টা ডিম ৩৯০ টাকায় বেচলাম"}' $B/v1/sale
+          echo "== new pages served: $(curl -s --max-time 60 $B/ | grep -c 'function Business\|function World\|function Money\|T.sw = ')"
           echo "== voice round trip: HerEvo speaks Bangla, then the recording is written down again"
           curl -s -o say.wav -w "TTS HTTP %{http_code}, %{size_download} bytes in %{time_total}s\n" --max-time 90 -H 'content-type: application/json' \
             -d '{"text":"আমার স্বামী মারা গেছেন। দেবর জমির ভাগ দিচ্ছে না।","lang":"bn","session_id":"toolcheck-0002"}' $B/v1/tts

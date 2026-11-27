@@ -53,7 +53,7 @@ img{max-width:100%;display:block}
   .tabs{display:none}
   .rail{display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;padding:22px 14px 18px;background:var(--ink);color:#fff;overflow-y:auto;
     background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.06) 1.2px,transparent 0);background-size:22px 22px}
-  .rail .logo{display:flex;align-items:center;gap:10px;font-family:var(--f-sign);font-size:34px;line-height:1;color:var(--her);text-decoration:none;padding:4px 8px 18px}
+  .rail .logo{display:flex;align-items:center;gap:10px;text-decoration:none;padding:4px 8px 18px}
   .rail .logo svg{width:40px;height:40px}
   .rail a.it{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;text-decoration:none;color:#D9D4EE;font-weight:600;font-size:16px}
   .rail a.it i{flex:none;width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--c,rgba(255,255,255,.12));color:#fff}
@@ -69,7 +69,12 @@ img{max-width:100%;display:block}
 }
 /* ---- top bar ---- */
 .bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-.brand{display:flex;align-items:center;gap:8px;text-decoration:none;font-family:var(--f-sign);font-size:27px;line-height:1;color:var(--ink)}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;line-height:1;color:var(--ink)}
+.brand svg{width:34px;height:34px}
+.wm{font-family:var(--f-display);font-size:26px;letter-spacing:-.02em;line-height:1}
+.wm .her{font-style:italic;font-weight:500}
+.wm .evo{font-weight:800;color:#2F7352}
+.rail .wm{font-size:30px}.rail .wm .her{color:#fff}.rail .wm .evo{color:#9FD9B8}
 .brand svg{width:30px;height:30px}
 .back{display:flex;align-items:center;gap:2px;min-height:44px;padding:0 8px 0 2px;border:0;background:none;font-weight:600;font-size:16px;text-decoration:none}
 .back svg{width:22px;height:22px}
@@ -505,6 +510,75 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 .pathpanel span.t{flex:1;min-width:0}
 .pathpanel small{display:block;color:#CFCBE6;font-size:14px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .homefoot .chip svg,.chip svg{width:18px;height:18px;flex:none}
+.langbtn{gap:6px}.langbtn svg{width:18px;height:18px}
+.pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pick button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:14px 16px;border-radius:18px;border:2px solid var(--line);background:#fff;text-align:left;min-height:64px}
+.pick button b{font-family:var(--f-display);font-size:19px}
+.pick button small{color:var(--muted);font-size:13px}
+.pick button[aria-pressed=true]{border-color:var(--shapla);background:var(--rehearse-2)}
+.needs-h{font-family:var(--f-display);font-weight:700;font-size:19px;text-align:center;margin:26px 0 10px}
+.needs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (min-width:900px){.needs{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.need{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px 12px;border-radius:20px;background:#fff;border:2px solid color-mix(in srgb,var(--c) 30%,transparent);text-decoration:none;text-align:center;animation:rise .45s both;animation-delay:calc(var(--i)*50ms)}
+.need .ni{width:48px;height:48px;border-radius:50%;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center}
+.need .ni svg{width:26px;height:26px}
+.need b{font-family:var(--f-display);font-weight:700;font-size:15.5px;line-height:1.2}
+.need small{font-size:11.5px;font-weight:700;color:var(--muted);background:var(--line);border-radius:99px;padding:1px 8px}
+.need.soon{opacity:.6}
+.answers{display:grid;gap:12px;margin-top:20px}
+.answer{background:#fff;border:1px solid var(--line);border-radius:22px;padding:14px 16px;animation:rise .4s both}
+.answer .q{margin:0 0 8px;color:var(--muted);font-style:italic;font-size:15px}
+.answer .a{display:flex;gap:12px;align-items:flex-start}.answer .a p{flex:1;margin:0;font-size:17px;line-height:1.55}
+.answer .steps{margin-top:12px}
+.ledger{margin-top:20px;background:#fff;border:1px solid var(--line);border-radius:24px;padding:16px}
+.ledger .ltop{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:10px}
+.ledger .ltop small{display:block;color:var(--muted);font-weight:600}
+.ledger .ltop b{font-family:var(--f-display);font-weight:800;font-size:34px;color:#B57400;line-height:1}
+.ledger table{width:100%;border-collapse:collapse;font-size:15.5px}
+.ledger td{padding:9px 4px;border-top:1px solid var(--line)}
+.ledger td.num,.evt td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.consentrow{display:flex;align-items:center;gap:12px;margin-top:14px;font-weight:600;font-size:15px}
+.wmap{height:min(52vw,380px);border-radius:22px;background:#fff;border:1px solid var(--line);margin-bottom:14px;overflow:hidden}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.wc{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid var(--line);font-size:15px}
+.wc span{font-size:12px;font-weight:700;border-radius:99px;padding:2px 8px;white-space:nowrap}
+.wc.live span{background:var(--good-2);color:var(--good)}.wc.pilot span{background:var(--warn-2);color:var(--warn)}.wc.planned span{background:var(--rehearse-2);color:var(--rehearse)}
+.chans{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.chan{padding:12px 14px;border-radius:16px;background:#fff;border:1px dashed var(--line);display:grid;gap:2px}
+.chan.live{border-style:solid;border-color:color-mix(in srgb,var(--good) 40%,transparent)}
+.chan em{font-style:normal;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.chan.live em{color:var(--good)}
+.chan b{font-family:var(--f-display);font-size:17px}.chan span{font-size:13.5px;color:var(--muted)}
+.scrollx{overflow-x:auto;border-radius:16px;border:1px solid var(--line);background:#fff}
+.evt{border-collapse:collapse;width:100%;font-size:14px;min-width:620px}
+.evt th,.evt td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}.evt th{font-size:12.5px;color:var(--muted)}
+.champwho{background:#fff;border:2px solid #B0457A33;border-radius:20px;padding:12px 16px;margin:6px 0 14px}
+.champwho summary{font-family:var(--f-display);font-weight:700;font-size:18px;display:flex;gap:8px;align-items:center;cursor:pointer;min-height:40px}
+.champwho summary svg{width:22px;height:22px;color:#B0457A}
+.champwho ol{margin:6px 0 0;padding-left:22px;display:grid;gap:6px}
+.bizpage{max-width:900px}
+.bzlead{font-size:19px;line-height:1.6;margin:0 0 16px;font-family:var(--f-display);font-weight:500}
+.bzstats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:700px){.bzstats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.bzstats div{background:var(--ink);color:#fff;border-radius:20px;padding:14px 16px;display:grid;gap:2px}
+.bzstats b{font-family:var(--f-display);font-weight:800;font-size:30px;color:var(--her);line-height:1.1}
+.bzstats span{font-size:13.5px;color:#D9D4EE}
+.bz{margin-top:28px}
+.bz h2{font-family:var(--f-display);font-weight:800;font-size:23px;margin:0 0 10px;display:flex;align-items:center;gap:10px}
+.bz h2::before{content:"";width:12px;height:12px;border-radius:4px;background:var(--shapla)}
+.bzcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.bzcards div{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:4px}
+.bzcards b{font-family:var(--f-display);font-size:17px;color:var(--rehearse)}
+.bzcards span{font-size:14.5px;color:var(--muted)}
+.bzt td:first-child{font-weight:700}
+.bzunit{display:grid;gap:0;background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.bzunit div{display:flex;justify-content:space-between;gap:12px;padding:12px 16px;border-top:1px solid var(--line);font-size:15.5px}
+.bzunit div:first-child{border-top:0}
+.bzunit b{text-align:right}
+.bzphases{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:ph}
+.bzphases li{background:#fff;border:1px solid var(--line);border-left:6px solid var(--her);border-radius:16px;padding:12px 16px;display:grid;gap:4px}
+.bzphases b{font-family:var(--f-display);font-size:17px}
+.bzphases span{color:var(--muted);font-size:15px}
+.bzlist{margin:0;padding-left:20px;display:grid;gap:6px}
 .homefoot{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:26px}
 
 /* ---- voice check ---- */
@@ -605,7 +679,8 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 .addw .inrow{display:flex;gap:8px}
 .addw input{flex:1;min-width:0;min-height:52px;border-radius:16px;border:0;background:rgba(255,255,255,.12);color:#fff;padding:0 14px;font-size:17px}
 .addw input::placeholder{color:rgba(255,255,255,.6)}
-.addw .btn{background:var(--her);color:var(--ink)}
+.addw .btn{background:var(--her);color:var(--ink);padding:0 18px;flex:none}
+.addw .inrow{flex-wrap:wrap}.addw .inrow input{flex:1 1 150px}
 .addw small{color:#CFC5B6}
 
 /* ---- radar ---- */
@@ -704,6 +779,15 @@ bn:{
   sosH:'এখনই সাহায্য', helper:'একজন সহায়তাকর্মীর সঙ্গে কথা বলুন', helperSub:'প্রশিক্ষিত মানুষ, গোপনে', exit:'দ্রুত বের হোন', exitSub:'এই পাতা বন্ধ হয়ে আবহাওয়ার পাতা খুলবে',
   cc:{BD:'বাংলাদেশ',KE:'কেনিয়া',MX:'মেক্সিকো'},
   shareOnlyBD:'এই হিসাব বাংলাদেশে প্রযোজ্য মুসলিম উত্তরাধিকার আইন অনুযায়ী। কেনিয়া বা মেক্সিকোর আইন আলাদা: মহড়া অংশে সেই দেশের অনুশীলন আছে।',
+  pickLang:'ভাষা', pickCountry:'দেশ', needsH:'তার সব দরকার, এক জায়গায়', nLand:'জমি ও ফসল', nMoney:'টাকা ও কাজ', nRights:'অধিকার', nHealth:'স্বাস্থ্য', nSafety:'নিরাপত্তা', nLearn:'শেখা', soon:'শিগগির',
+  askH:{farm:'জমি ও ফসল', health:'স্বাস্থ্য', rights:'অধিকার', learn:'শেখা'}, askSub:'বলুন বা নিচের প্রশ্নে চাপ দিন। HerEvo যাচাই করা তথ্য থেকে উত্তর দেবে।', askTap:'চাপ দিয়ে প্রশ্ন বলুন',
+  money:'আয়ের খাতা', moneySub:'বিক্রি বা আয় মুখে বলুন, HerEvo লিখে রাখবে। নিয়মিত আয়ের খাতা দেখালে ঋণ পাওয়া সহজ হয়।', moneyTap:'চাপ দিয়ে বলুন কী বেচলেন',
+  moneyEx:['আজ ৩০টা ডিম ৩৯০ টাকায় বেচলাম','২৫ কেজি আলু ৬০০ টাকায় বিক্রি করেছি','দুই দিন সেলাইয়ের কাজ করে ১২০০ টাকা পেলাম'],
+  moneyEmpty:'এখনো কোনো বিক্রি লেখা নেই।', moneyTotal:'মোট আয়', moneyCount:(n)=>`${n}টি বিক্রি`, moneyLender:'ঋণদাতাকে দেখাতে রাজি, শুধু আমি হ্যাঁ বললে', moneyStatement:'আয়ের হিসাবপত্র তৈরি করুন', moneySaved:'খাতায় লেখা হলো',
+  world:'বিশ্বজুড়ে', worldH:'যেখানে HerEvo আছে', worldSub:'এক ব্যবস্থা, অনেক দেশ ও ভাষা। প্রতিটি দেশের আইন, অফিস আর সাহায্যের নম্বর আলাদা করে যাচাই করা।',
+  wLive:'চালু', wPilot:'পাইলট', wPlanned:'পরিকল্পিত', wLangs:'ভাষা', wChannels:'যেভাবে পৌঁছায়', wEvidence:'যেখানে নারীর অধিকার আটকে যায়', wEvidenceSub:'নাম ছাড়া গণনা: HerEvo-তে আসা সমস্যা আর রাডারের সতর্কবার্তা',
+  business:'ব্যবসা মডেল', businessNote:'এই পাতা বিচারক, সহযোগী ও বিনিয়োগকারীদের জন্য (ইংরেজিতে)।',
+  champWho:'চ্যাম্পিয়ন কে?', champWhy:['গ্রামের একজন প্রশিক্ষিত নারী: এনজিও মাঠকর্মী, স্বাস্থ্যকর্মী বা স্বেচ্ছাসেবী।','যাঁদের স্মার্টফোন নেই বা যাঁরা পড়তে পারেন না, তিনি নিজের ফোনে তাঁদের হয়ে HerEvo চালান।','প্রত্যেক নারীর পথ, কাগজ আর গোপন ডায়েরি আলাদা থাকে; তালিকা বলে আজ কার খোঁজ নিতে হবে।','একজন চ্যাম্পিয়ন মাসে ৩০–৫০ জন নারীর পাশে থাকতে পারেন। এনজিও প্রতি চ্যাম্পিয়ন হিসেবে খরচ দেয়, তাই নারীর জন্য HerEvo বিনামূল্যে থাকে।'],
   moreH:'সব সাহায্য এক জায়গায়', more:'আরও', home:'হোম', homeH:'কী হয়েছে, <em>বলুন</em>', tapSpeak:'চাপ দিন, কথা বলুন', listenShort:'শুনছি… বলা শেষ হলে থামুন', writeShort:'বুঝে নিচ্ছি…', typeInstead:'লিখে বলুন', go:'দেখাও',
   homeHello:'আসসালামু আলাইকুম। আমি HerEvo। গোলাপি বোতামে চাপ দিয়ে বলুন কী হয়েছে। অথবা নিচের ছবিগুলোতে চাপ দিন।', tryA:'স্বামী মারা গেছেন, দেবর জমি দিচ্ছে না', tryB:'অফিসে ঘুষ চাইছে', tryC:'শাশুড়ি যৌতুক চায়',
   pLens:'কাগজ', pShare:'আমার ভাগ', pRehearse:'মহড়া', pCounter:'কানে কানে', pWitness:'সাক্ষী', yourPath:'আপনার পথ', firstStep:'প্রথম কাজ',
@@ -786,6 +870,15 @@ en:{
   sosH:'Help now', helper:'Talk to a trained helper', helperSub:'A real person, in confidence', exit:'Quick exit', exitSub:'This page closes and a weather page opens',
   cc:{BD:'Bangladesh',KE:'Kenya',MX:'Mexico'},
   shareOnlyBD:'This calculation follows Muslim inheritance law as applied in Bangladesh. Kenya and Mexico have different laws: practise those cases in Rehearsal.',
+  pickLang:'Language', pickCountry:'Country', needsH:'Everything she needs, one system', nLand:'Land & harvest', nMoney:'Money & work', nRights:'Rights', nHealth:'Health', nSafety:'Safety', nLearn:'Learning', soon:'Soon',
+  askH:{farm:'Land & harvest', health:'Health', rights:'Rights', learn:'Learning'}, askSub:'Speak, or tap a question below. HerEvo answers from checked information.', askTap:'Tap and ask',
+  money:'Income record', moneySub:'Say what you sold or earned; HerEvo writes it down. A regular income record makes a loan easier to get.', moneyTap:'Tap and say what you sold',
+  moneyEx:['I sold 30 eggs for 390 taka today','I sold 25 kg of potatoes for 600 taka','I earned 1,200 taka for two days of tailoring'],
+  moneyEmpty:'No sales written down yet.', moneyTotal:'Total earned', moneyCount:(n)=>`${n} sales`, moneyLender:'Share with a lender only when I say yes', moneyStatement:'Make my income statement', moneySaved:'Written in your record',
+  world:'Worldwide', worldH:'Where HerEvo works', worldSub:'One system, many countries and languages. Each country’s laws, offices and helplines are checked separately.',
+  wLive:'Live', wPilot:'Pilot', wPlanned:'Planned', wLangs:'Languages', wChannels:'How it reaches her', wEvidence:'Where women’s rights get stuck', wEvidenceSub:'Counts with no names: problems brought to HerEvo, and Radar warnings',
+  business:'Business model', businessNote:'',
+  champWho:'Who is a champion?', champWhy:['A trained woman in the village: an NGO field worker, health worker or volunteer.','For women with no smartphone or who cannot read, she runs HerEvo on her own phone on their behalf.','Each woman’s path, papers and private diary stay separate; a list shows who to check on today.','One champion can stand beside 30–50 women a month. NGOs pay per champion, so HerEvo stays free for women.'],
   moreH:'Every tool in one place', more:'More', home:'Home', homeH:'Tell me <em>what happened</em>', tapSpeak:'Tap and speak', listenShort:'Listening… pause when you finish', writeShort:'Understanding…', typeInstead:'Type instead', go:'Go',
   homeHello:'Hello, I am HerEvo. Tap the pink button and tell me what happened. Or tap one of the pictures below.', tryA:'My husband died, his brother won’t give me the land', tryB:'The office wants a bribe', tryC:'My mother-in-law demands dowry',
   pLens:'Paper', pShare:'My share', pRehearse:'Rehearse', pCounter:'Whisper', pWitness:'Witness', yourPath:'Your path', firstStep:'First',
@@ -826,6 +919,37 @@ const HELP = {
   MX:[['911',{bn:'জরুরি',en:'Emergency'}]],
 };
 
+T.sw = {
+  hello:'Habari', sos:'Msaada', back:'Rudi', listen:'Sikiliza', home:'Nyumbani', more:'Zaidi', talkT:'Ongea',
+  homeH:'Niambie <em>kilichotokea</em>', tapSpeak:'Bonyeza na uongee', listenShort:'Nakusikiliza… nyamaza ukimaliza', writeShort:'Ninaelewa…', typeInstead:'Andika badala yake',
+  homeHello:'Habari, mimi ni HerEvo. Bonyeza kitufe cha waridi uniambie kilichotokea, au gusa picha moja hapa chini.',
+  tryA:'Mume wangu amefariki, ndugu zake wanataka shamba', tryB:'Ofisi inataka hongo', tryC:'Mama mkwe anataka mahari',
+  pLens:'Karatasi', pShare:'Sehemu yangu', pRehearse:'Mazoezi', pCounter:'Mnong’ono', pWitness:'Shahidi', yourPath:'Njia yako', fileT:'Faili langu', champ:'Bingwa',
+  lens:'Lenzi ya karatasi', lensMoment:'Kabla ya kusaini', lensDesc:'Piga picha ya karatasi yoyote. HerEvo itaisoma kwa sauti na kukuonya.',
+  share:'Sehemu yangu', shareMoment:'Ardhi inapogawanywa', shareDesc:'Ona sehemu yako halisi ya ardhi.',
+  rehearse:'Mazoezi', rehearseMoment:'Kabla ya mazungumzo magumu', rehearseDesc:'Fanya mazoezi na ndugu, karani au chifu kwanza.',
+  counter:'Mnong’ono', counterMoment:'Mezani ofisini', counterDesc:'Wao wanaongea. HerEvo inakunong’oneza ukweli.',
+  witness:'Shahidi', witnessMoment:'Kilichotokea', witnessDesc:'Shajara ya siri iliyofungwa inayogeuka kuwa taarifa.',
+  testNote:'Toleo la majaribio: tumia taarifa za kubuni tu', country:'Nchi', cc:{BD:'Bangladesh',KE:'Kenya',MX:'Meksiko'},
+  needsH:'Mahitaji yake yote, mfumo mmoja', nLand:'Ardhi na mavuno', nMoney:'Pesa na kazi', nRights:'Haki', nHealth:'Afya', nSafety:'Usalama', nLearn:'Kujifunza', soon:'Inakuja',
+  money:'Daftari la mapato', world:'Duniani', business:'Mfano wa biashara', pickLang:'Lugha', pickCountry:'Nchi',
+};
+T.es = {
+  hello:'Hola', sos:'Ayuda', back:'Atrás', listen:'Escuchar', home:'Inicio', more:'Más', talkT:'Hablar',
+  homeH:'Cuéntame <em>qué pasó</em>', tapSpeak:'Toca y habla', listenShort:'Te escucho… haz una pausa al terminar', writeShort:'Entendiendo…', typeInstead:'Escribir',
+  homeHello:'Hola, soy HerEvo. Toca el botón rosa y cuéntame qué pasó, o toca una de las imágenes de abajo.',
+  tryA:'Mi esposo murió y quieren darle la parcela a mi hijo', tryB:'En la oficina me piden una mordida', tryC:'Mi suegra exige dote',
+  pLens:'Papel', pShare:'Mi parte', pRehearse:'Ensayo', pCounter:'Susurro', pWitness:'Testigo', yourPath:'Tu camino', fileT:'Mi expediente', champ:'Promotora',
+  lens:'Lupa de papeles', lensMoment:'Antes de firmar', lensDesc:'Toma una foto de cualquier papel. HerEvo lo lee en voz alta y te avisa de la trampa.',
+  share:'Mi parte', shareMoment:'Cuando se reparte la tierra', shareDesc:'Mira exactamente cuánta tierra es tuya.',
+  rehearse:'Ensayo', rehearseMoment:'Antes de la conversación difícil', rehearseDesc:'Practica con el cuñado, el funcionario o la asamblea.',
+  counter:'Susurro', counterMoment:'En la ventanilla', counterDesc:'Ellos hablan. HerEvo te susurra la verdad.',
+  witness:'Testigo', witnessMoment:'Lo que pasó', witnessDesc:'Un diario privado y sellado que se vuelve declaración.',
+  testNote:'Versión de prueba: usa solo datos inventados', country:'País', cc:{BD:'Bangladés',KE:'Kenia',MX:'México'},
+  needsH:'Todo lo que necesita, un solo sistema', nLand:'Tierra y cosecha', nMoney:'Dinero y trabajo', nRights:'Derechos', nHealth:'Salud', nSafety:'Seguridad', nLearn:'Aprender', soon:'Pronto',
+  money:'Libro de ingresos', world:'En el mundo', business:'Modelo de negocio', pickLang:'Idioma', pickCountry:'País',
+};
+
 /* ============================================================== state */
 // In champion mode each woman she helps has her own path, family, diary and code on this phone.
 const SCOPED = new Set(['path', 'family', 'witness', 'pin', 'pinSkipped', 'papers', 'minutes']);
@@ -844,7 +968,8 @@ const S = {
 };
 const q = new URLSearchParams(location.search).get('lang');
 if (q === 'bn' || q === 'en') S.lang = q;
-const t = (k) => (T[S.lang][k] !== undefined ? T[S.lang][k] : T.en[k]);
+const t = (k) => (T[S.lang] && T[S.lang][k] !== undefined ? T[S.lang][k] : T.en[k]);
+const LANGS = [['bn','বাংলা','Bangla'], ['en','English','English'], ['sw','Kiswahili','Swahili'], ['es','Español','Spanish']];
 const BN = '০১২৩৪৫৬৭৮৯';
 const num = (x) => S.lang === 'bn' ? String(x).replace(/[0-9]/g, (d) => BN[d]) : String(x);
 const fmt = (x) => num(Number(x).toFixed(2).replace(/\.?0+$/, ''));
@@ -881,6 +1006,12 @@ const ICONS = {
   land:'<path d="M3 18l9-5 9 5-9 4z" fill="currentColor"/><path d="M12 12V4M12 8c-2.4 0-4-1.6-4-4 2.4 0 4 1.6 4 4zM12 8c2.4 0 4-1.6 4-4-2.4 0-4 1.6-4 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
   keyboard:'<rect x="3" y="6" width="18" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>',
   ear:'<path d="M8 15c0-6 3-10 7.5-10S21 8 21 11.5c0 4-3.5 4.5-3.5 8 0 2.2-1.8 3.5-3.8 3.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M12 12.5c0-2.4 1.4-3.8 3.4-3.8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M2.5 9.5c1.4 1.4 1.4 4 0 5.5M5 7.5c2.5 2.5 2.5 6.5 0 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  globe:'<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18" fill="none" stroke="currentColor" stroke-width="1.8"/>',
+  coin:'<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 7.5h2a2.6 2.6 0 0 1 0 5.2H9M10 7.5V17M9 10h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  heart:'<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z" fill="currentColor"/>',
+  sprout:'<path d="M12 21V10M12 14c-3.5 0-6-2.5-6-6 3.5 0 6 2.5 6 6zM12 12c3 0 5-2 5-5-3 0-5 2-5 5z" fill="currentColor"/>',
+  scroll:'<path d="M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 8h7M9 12h7M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  chart:'<path d="M4 20h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="5" y="11" width="3.5" height="7" rx="1" fill="currentColor"/><rect x="10.3" y="7" width="3.5" height="11" rx="1" fill="currentColor"/><rect x="15.6" y="4" width="3.5" height="14" rx="1" fill="currentColor"/>',
   arrow:'<path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>',
   hand:'<path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11M11 10V4a1.5 1.5 0 0 1 3 0v7M14 10.5V5.5a1.5 1.5 0 0 1 3 0V14c0 4-2.6 7-6.5 7-2.6 0-4-1.2-5.4-3.4L3.6 15a1.6 1.6 0 0 1 2.6-1.8L8 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
   check:'<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>',
@@ -1113,21 +1244,22 @@ function hearBrowser(btn, onText, onEnd){
 }
 
 /* ============================================================== shell */
-const TITLES = {more:'more', home:'home', voice:'vcT', talk:'talkT', file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
+const TITLES = {ask:'back', money:'money', world:'world', business:'business', more:'more', home:'home', voice:'vcT', talk:'talkT', file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
 function bar(name){
   const b = $('#bar'); fill(b);
   if (name === 'home'){
-    b.append(h('a', {class:'brand', href:'#home', 'aria-label':'HerEvo'}, logo(), 'HerEvo'));
+    b.append(h('a', {class:'brand', href:'#home', 'aria-label':'HerEvo'}, logo(), wordmark()));
   } else {
     b.append(h('a', {class:'back', href:'#home'}, icon('back'), t(TITLES[name] || 'back')));
   }
   const who = currentProfile();
   fill(b, ...b.childNodes, h('span', {class:'sp'}),
     who ? h('a', {class:'chip forwho', href:'#champion', style:`border-color:${who.color}`}, h('i', {style:`background:${who.color}`}, initial(who.name)), who.name) : null,
-    h('button', {class:'chip', type:'button', 'aria-label':'Language', onclick: () => { S.lang = S.lang === 'bn' ? 'en' : 'bn'; store.set('lang', S.lang); route(); }}, t('langBtn')),
+    h('button', {class:'chip langbtn', type:'button', 'aria-label':'Language and country', onclick: openPicker}, icon('globe'), LANGS.find((l) => l[0] === S.lang)[1]),
     h('button', {class:'sos', type:'button', onclick: openSOS}, icon('shield'), t('sos')));
 }
-function logo(){ const w = document.createElement('span'); w.innerHTML = '<svg viewBox="-50 -50 100 100" aria-hidden="true">' + [...Array(8)].map((_, i) => `<path transform="rotate(${i * 45})" d="M0 -47 C12 -32 12 -18 0 -10 C-12 -18 -12 -32 0 -47Z" fill="#F48DB5" stroke="#fff" stroke-width="2"/>`).join('') + [...Array(8)].map((_, i) => `<path transform="rotate(${i * 45 + 22.5})" d="M0 -34 C9 -24 9 -14 0 -8 C-9 -14 -9 -24 0 -34Z" fill="#FFE3EF" stroke="#E5508F" stroke-width="1.5"/>`).join('') + '<circle r="13" fill="#FFB400"/></svg>'; return w.firstChild; }
+function logo(){ const w = document.createElement('span'); w.innerHTML = '<svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="mk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F7352"/><stop offset="1" stop-color="#163D2B"/></linearGradient></defs><rect width="48" height="48" rx="13" fill="#245A40"/><circle cx="24" cy="14.5" r="6.6" fill="none" stroke="#F2B33D" stroke-width="3.4"/><path d="M24 21.5V40" stroke="#E8F3EC" stroke-width="3.2" stroke-linecap="round"/><path d="M24 33.5C19 33.4 14.2 30.2 12.6 24.6C18.2 24.4 22.6 27.8 24 33.5Z" fill="#9FD9B8"/><path d="M24 33.5C29 33.4 33.8 30.2 35.4 24.6C29.8 24.4 25.4 27.8 24 33.5Z" fill="#9FD9B8"/></svg>'; return w.firstChild; }
+const wordmark = () => h('span', {class:'wm'}, h('span', {class:'her'}, 'Her'), h('span', {class:'evo'}, 'Evo'));
 // The water lily (shapla, Bangladesh's flower): HerEvo's talk button. Its petals open while she speaks.
 function lily(small){
   const outer = [...Array(12)].map((_, i) => `<path transform="rotate(${i * 30})" d="M0 -96 C20 -72 20 -42 0 -30 C-20 -42 -20 -72 0 -96Z" fill="url(#lp1)" stroke="#fff" stroke-width="2.5"/>`).join('');
@@ -1154,15 +1286,25 @@ const FLOWER = '<svg viewBox="0 0 30 30" aria-hidden="true" fill="currentColor">
 function svgHTML(html){ const w = document.createElement('span'); w.innerHTML = html; return w.firstChild; }
 const NAV = [['home','home','var(--ink)','home'], ['talk','mic','var(--shapla)','talkT'], ['path','arrow','var(--her)','yourPath'], null,
   ['lens','camera','var(--lens)','pLens'], ['share','land','var(--share)','pShare'], ['rehearse','chat','var(--rehearse)','pRehearse'], ['counter','ear','var(--counter)','pCounter'], ['witness','lock','var(--witness)','pWitness'], null,
-  ['file','book','#5B5784','fileT'], ['champion','person','#B0457A','champ'], ['more','grid','#5B5784','more']];
+  ['money','coin','#B57400','money'], ['file','book','#5B5784','fileT'], ['champion','person','#B0457A','champ'], null,
+  ['world','globe','#1F5FD0','world'], ['business','chart','#21894A','business'], ['more','grid','#5B5784','more']];
 function navs(key){
   const rail = $('#rail');
-  fill(rail, h('a', {class:'logo', href:'#home'}, logo(), 'HerEvo'),
+  fill(rail, h('a', {class:'logo', href:'#home'}, logo(), wordmark()),
     NAV.map((n) => n ? h('a', {class:'it' + (n[0] === key ? ' on' : ''), href:'#' + n[0], style:`--c:${n[2]}`}, h('i', null, icon(n[1])), t(n[3])) : h('div', {style:'height:10px'})),
     h('span', {class:'sp'}), h('p', {class:'about'}, t('testNote')));
   const tab = (k, ic, label, cls) => h('a', {class:(cls || '') + (k === key ? ' on' : ''), href:'#' + k}, ic, label);
   fill($('#tabs'), tab('home', icon('home'), t('home')), tab('lens', icon('camera'), t('pLens')), tab('talk', h('span', {class:'tmic'}, icon('mic')), t('talkT'), 'talk'), tab('share', icon('land'), t('pShare')), tab('more', icon('grid'), t('more')));
 }
+function openPicker(){
+  const close = sheet(h('h2', null, t('pickLang')),
+    h('div', {class:'pick'}, LANGS.map(([code, native, eng]) => h('button', {type:'button', 'aria-pressed': String(S.lang === code), onclick: () => { S.lang = code; store.set('lang', code); if (code === 'sw' && S.country === 'BD') S.country = 'KE'; if (code === 'es' && S.country === 'BD') S.country = 'MX'; if (code === 'bn') S.country = 'BD'; store.set('country', S.country); close(); route(); }}, h('b', null, native), h('small', null, eng)))),
+    h('h2', {class:'section'}, t('pickCountry')),
+    h('div', {class:'pick'}, ['BD', 'KE', 'MX'].map((c) => h('button', {type:'button', 'aria-pressed': String(S.country === c), onclick: () => { S.country = c; store.set('country', c); close(); route(); }}, h('b', null, FLAG[c] + ' ' + t('cc')[c]), h('small', null, COUNTRY_SUB[c][S.lang] || COUNTRY_SUB[c].en)))),
+    h('a', {class:'btn ghost block', href:'#world', style:'margin-top:14px', onclick: () => close()}, icon('globe'), t('world')));
+}
+const FLAG = {BD:'🇧🇩', KE:'🇰🇪', MX:'🇲🇽'};
+const COUNTRY_SUB = {BD:{bn:'বাংলা · পূর্ণ সংস্করণ', en:'Bangla · full version'}, KE:{bn:'কিসওয়াহিলি, ইংরেজি · পাইলট', en:'Swahili, English · pilot', sw:'Kiswahili, Kiingereza · majaribio'}, MX:{bn:'স্প্যানিশ · পাইলট', en:'Spanish · pilot', es:'Español · piloto'}};
 function sheet(...content){
   const layer = $('#layer'); fill(layer);
   const close = () => fill(layer);
@@ -1178,7 +1320,7 @@ function openSOS(){
 }
 function quickExit(){ stopSpeech(); document.body.innerHTML = ''; try{ sessionStorage.clear(); }catch(e){} location.replace('https://www.google.com/search?q=weather'); }
 
-const VIEWS = {more: More, voice: VoiceCheck, talk: Talk, file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
+const VIEWS = {ask: Ask, money: Money, world: World, business: Business, more: More, voice: VoiceCheck, talk: Talk, file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
 function route(){
   stopSpeech(); if (rec){ try{ rec.abort(); }catch(e){} rec = null; } stopLive();
   fill($('#layer'));
@@ -1202,6 +1344,8 @@ function More(){
   return h('div', null,
     h('h1', {class:'title'}, t('moreH')),
     h('p', {class:'sub'}, t('tagline')),
+    h('div', {class:'needs', style:'margin-bottom:16px'}, [['business','chart','var(--good)'], ['world','globe','var(--lens)'], ['money','coin','#B57400'], ['champion','person','#B0457A'], ['voice','mic','var(--shapla)'], ['file','book','#5B5784']].map(([k, ic, c], i) =>
+      h('a', {class:'need', href:'#' + k, style:`--c:${c};--i:${i}`}, h('span', {class:'ni'}, icon(ic)), h('b', null, t({business:'business', world:'world', money:'money', champion:'champ', voice:'vcT', file:'fileT'}[k]))))),
     h('div', {class:'bento'}, tools.map((id, i) =>
       h('a', {class:`tool tool-${id}${i === 0 ? ' wide' : ''}`, href:'#' + id, style:`--i:${i}`},
         h('div', {class:'top'}, h('span', {class:'moment'}, t(id + 'Moment')), i === 0 ? null : listenBtn(() => t(id) + '। ' + t(id + 'Desc'), 'listen')),
@@ -1316,7 +1460,7 @@ function FileView(){
       const mine = r.shares.find((x) => x.heir === (fam.deceased === 'husband' ? 'wife' : 'daughter')); if (!mine) return;
       const line = `${fmt(mine.land_each)} ${t('unit')} (${num(mine.num)}/${num(mine.den)}) / ${fmt(fam.land)} ${t('unit')}`;
       fill(shareSlot, h('h2', null, t('fileShare')), h('p', null, h('b', null, line)),
-        h('ul', null, r.shares.map((x) => h('li', null, `${T[S.lang].heir[x.heir]}${x.count > 1 ? ' ×' + num(x.count) : ''}: ${num(x.num)}/${num(x.den)} · ${fmt(x.land_each)} ${t('unit')}`))),
+        h('ul', null, r.shares.map((x) => h('li', null, `${t('heir')[x.heir]}${x.count > 1 ? ' ×' + num(x.count) : ''}: ${num(x.num)}/${num(x.den)} · ${fmt(x.land_each)} ${t('unit')}`))),
         h('p', {style:'font-size:13px;color:var(--muted)'}, r.disclaimer));
       writeLetter(line);
     }).catch(() => {});
@@ -1368,6 +1512,7 @@ function Champion(){
   const add = () => { const n = name.value.trim(); if (!n) { name.focus(); return; } const all = profiles(); const p = {id: 'w' + Date.now().toString(36), name: n, color: PCOLORS[all.length % PCOLORS.length], created: Date.now()}; all.push(p); saveProfiles(all); useProfile(p.id); location.hash = '#home'; };
   return h('div', null,
     h('h1', {class:'title'}, t('champH')), h('p', {class:'sub'}, t('champSub')),
+    h('details', {class:'champwho', open: list.length ? null : true}, h('summary', null, icon('person'), t('champWho')), h('ol', null, t('champWhy').map((x) => h('li', null, x)))),
     h('div', {class:'cstats'}, h('div', null, h('b', null, num(list.length)), h('span', null, t('champWomen'))),
       h('div', null, h('b', null, num(list.reduce((a, x) => a + left(x), 0))), h('span', null, t('champSteps'))),
       h('div', {class: hot.length ? 'hot' : ''}, h('b', null, num(hot.length)), h('span', null, t('champDanger')))),
@@ -1428,6 +1573,9 @@ function Home(){
       h('button', {class:'typebtn', type:'button', onclick: (e) => { typein.hidden = false; e.currentTarget.hidden = true; ta.focus(); }}, icon('keyboard'), t('typeInstead')), typein),
     saved ? h('a', {class:'pathpanel', href:'#path'}, h('span', {class:'in'}, h('span', {class:'pie', style:`--v:${Math.round(done / saved.plan.steps.length * 100)}`}, h('b', null, num(done) + '/' + num(saved.plan.steps.length))),
       h('span', {class:'t'}, h('strong', null, t('yourPath')), h('small', null, saved.plan.understood)), icon('arrow'))) : null,
+    h('h2', {class:'needs-h'}, t('needsH')),
+    h('div', {class:'needs'}, NEEDS.map(([k, ic, c, href, soon], i) => h('a', {class:'need' + (soon ? ' soon' : ''), href: href || '#', style:`--c:${c};--i:${i}`, onclick: (e) => { if (k === 'nSafety'){ e.preventDefault(); openSOS(); } else if (soon) e.preventDefault(); }},
+      h('span', {class:'ni'}, icon(ic)), h('b', null, t(k)), soon ? h('small', null, t('soon')) : null))),
     h('div', {class:'panels'}, panel('lens', 'camera', 'pLens', 0), panel('share', 'land', 'pShare', 1), panel('rehearse', 'chat', 'pRehearse', 2), panel('counter', 'ear', 'pCounter', 3), panel('witness', 'lock', 'pWitness', 4)),
     radarSlot,
     h('div', {class:'homefoot'},
@@ -1436,6 +1584,177 @@ function Home(){
       h('select', {class:'chip', 'aria-label': t('country'), onchange: (e) => { S.country = e.target.value; store.set('country', S.country); }},
         ['BD', 'KE', 'MX'].map((c) => { const o = h('option', {value:c}, t('country') + ': ' + t('cc')[c]); if (c === S.country) o.selected = true; return o; }))));
   return root;
+}
+
+const NEEDS = [['nLand','sprout','var(--share)','#ask/farm'], ['nMoney','coin','#B57400','#money'], ['nRights','scale','var(--lens)','#ask/rights'], ['nHealth','heart','var(--rehearse)','#ask/health'], ['nSafety','shield','var(--danger)',null], ['nLearn','book','#5B5784',null,true]];
+const TOPIC_EX = {
+  farm:{bn:['ধানের পাতা হলুদ হয়ে যাচ্ছে, কী করব?','বন্যার পরে কোন সবজি লাগাব?','বীজ কোথায় ভালো দামে পাব?'], en:['My rice leaves are turning yellow, what should I do?','What can I plant after the flood?','Where can I get good seeds at a fair price?'], sw:['Majani ya mahindi yanageuka manjano, nifanye nini?','Nipande nini baada ya mafuriko?'], es:['Las hojas de mi maíz se ponen amarillas, ¿qué hago?','¿Qué siembro después de la inundación?']},
+  health:{bn:['গর্ভাবস্থায় কোন লক্ষণ দেখলে হাসপাতালে যাব?','নবজাতকের জ্বর হলে কী করব?','মাসিকের সময় ব্যথা কমাতে কী করব?'], en:['Which signs in pregnancy mean I must go to hospital?','What should I do if my newborn has a fever?','How can I ease period pain?'], sw:['Ni dalili gani za ujauzito zinahitaji hospitali?','Mtoto mchanga ana homa, nifanye nini?'], es:['¿Qué señales del embarazo son de urgencia?','¿Qué hago si mi bebé tiene fiebre?']},
+  rights:{bn:['স্বামী চার মাস খোরপোষ দেয় না','বাবার জমিতে মেয়ের ভাগ কতটা?','বিনামূল্যে আইনি সাহায্য কোথায় পাব?'], en:['My husband has not paid maintenance for four months','How much of my father’s land is a daughter’s share?','Where can I get free legal help?'], sw:['Mume hatoi matunzo ya watoto','Msaada wa kisheria bure ninapata wapi?'], es:['El papá de mis hijos no paga la pensión','¿Dónde consigo asesoría legal gratuita?']},
+};
+function Ask(topic){
+  const tp = TOPIC_EX[topic] ? topic : 'rights';
+  const root = h('div', {'data-state':'idle', class:'askpage'});
+  const state = h('p', {class:'hstate'}, t('askTap'));
+  const answers = h('div', {class:'answers', 'aria-live':'polite'});
+  const set = (st, txt) => { root.dataset.state = st; state.textContent = txt; };
+  async function ask(text){
+    set('thinking', t('writeShort'));
+    const card = h('div', {class:'answer'}, h('p', {class:'q'}, '“' + text + '”'), h('span', {class:'dots'}, h('i'), h('i'), h('i')));
+    answers.prepend(card);
+    try{
+      const r = await api('/v1/ask', {session_id:S.sid, text, country:S.country}, 60000);
+      const say = [r.reply, ...(r.steps || []).map((x, i) => (i + 1) + '. ' + x)].join(' ');
+      const b = listenBtn(say);
+      fill(card, h('p', {class:'q'}, '“' + text + '”'), h('div', {class:'a'}, h('p', null, r.reply), b),
+        (r.steps || []).length ? h('ol', {class:'steps'}, r.steps.map((x) => h('li', null, x))) : null,
+        r.helper_alerted ? h('div', {class:'flag danger'}, icon('alert'), h('span', null, t('talkHelp'))) : null);
+      set('speaking', t('askTap')); speak(say, b, () => set('idle', t('askTap')));
+    }catch(e){ card.remove(); set('idle', t('askTap')); }
+  }
+  const mic = micButton(() => {
+    if (rec){ rec.stop(); return; }
+    set('listening', t('listenShort'));
+    hear(mic.btn, () => {}, (x) => { if (x && x.trim().length > 1) ask(x.trim()); else set('idle', t('askTap')); });
+  }, t('askTap'));
+  const ex = TOPIC_EX[tp][S.lang] || TOPIC_EX[tp].en;
+  fill(root, h('h1', {class:'title', style:'text-align:center'}, t('askH')[tp]), h('p', {class:'sub', style:'text-align:center'}, t('askSub')),
+    h('div', {class:'hero'}, mic, state, h('div', {class:'tries'}, ex.map((x) => h('button', {type:'button', onclick: () => ask(x)}, icon('speaker'), x)))), answers);
+  return root;
+}
+
+/* ============================================================== money: her income record */
+function Money(){
+  const root = h('div', {'data-state':'idle'});
+  const state = h('p', {class:'hstate'}, t('moneyTap'));
+  const said = h('div', {class:'answers'});
+  const book = h('div');
+  const set = (st, txt) => { root.dataset.state = st; state.textContent = txt; };
+  async function load(){
+    try{
+      const r = await api('/v1/ledger/' + S.sid, null, 20000, true);
+      const rows = r.sales || [];
+      const cur = rows[0] ? rows[0].currency : ({BD:'Tk', KE:'KSh', MX:'$'}[S.country]);
+      const consent = store.get('lenderOk', false);
+      fill(book, h('div', {class:'ledger'},
+        h('div', {class:'ltop'}, h('div', null, h('small', null, t('moneyTotal')), h('b', null, cur + ' ' + num(Math.round(r.total || 0).toLocaleString('en-US')))), h('span', null, t('moneyCount')(num(rows.length)))),
+        rows.length ? h('table', null, h('tbody', null, rows.slice().reverse().map((x) => h('tr', null,
+          h('td', null, new Date(x.created_at).toLocaleDateString(S.lang === 'bn' ? 'bn-BD' : 'en-GB', {day:'numeric', month:'short'})),
+          h('td', null, [x.quantity ? num(x.quantity) + ' ' + (x.unit || '') : '', x.product].join(' ').trim()),
+          h('td', {class:'num'}, num(Math.round(x.amount))))))) : h('p', {class:'empty'}, t('moneyEmpty')),
+        h('label', {class:'consentrow'}, h('button', {class:'toggle', type:'button', 'aria-pressed': String(consent), onclick: (e) => { const v = e.currentTarget.getAttribute('aria-pressed') !== 'true'; e.currentTarget.setAttribute('aria-pressed', String(v)); store.set('lenderOk', v); }}), t('moneyLender')),
+        rows.length ? h('button', {class:'btn block', type:'button', style:'margin-top:12px', onclick: statement}, icon('scroll'), t('moneyStatement')) : null));
+    }catch(e){}
+  }
+  async function record(text){
+    set('thinking', t('writeShort'));
+    try{
+      const q = await api('/v1/sale', {session_id:S.sid, text, country:S.country}, 30000);
+      if (q.ok){  // written down at once, no AI needed
+        const x = q.sale, line = t('moneySaved') + ': ' + [x.quantity ? num(x.quantity) + ' ' + (x.unit || '') : '', x.product].join(' ').replace(/\s+/g, ' ').trim() + ', ' + num(x.amount) + ' ' + ({BD:'টাকা', KE:'KSh', MX:'pesos'}[S.country] || '');
+        said.prepend(h('div', {class:'answer'}, h('p', {class:'q'}, '“' + text + '”'), h('div', {class:'a'}, h('p', null, '✓ ' + line))));
+        speak(line); set('idle', t('moneyTap')); load(); return;
+      }
+      const r = await api('/v1/ask', {session_id:S.sid, text, country:S.country}, 60000);
+      said.prepend(h('div', {class:'answer'}, h('p', {class:'q'}, '“' + text + '”'), h('div', {class:'a'}, h('p', null, r.sale ? '✓ ' + t('moneySaved') + '. ' + r.reply : r.reply))));
+      speak(r.reply); set('idle', t('moneyTap')); load();
+    }catch(e){ set('idle', t('moneyTap')); }
+  }
+  async function statement(){
+    const close = sheet(h('h2', null, t('moneyStatement')), h('div', {class:'empty'}, h('span', {class:'spinner'})));
+    try{
+      const r = await api('/v1/ask', {session_id:S.sid, text: S.lang === 'bn' ? 'আমার বিক্রির খাতা থেকে ঋণের জন্য আয়ের হিসাবপত্র (income statement) তৈরি করে দিন' : 'Please make my income statement for a loan from my sales record', country:S.country}, 60000);
+      const doc = r.document;
+      const text = doc ? (doc.text || doc.body || doc.local || JSON.stringify(doc)) : r.reply;
+      sheet(h('h2', null, doc && doc.title ? doc.title : t('moneyStatement')), h('div', {class:'statement'}, text),
+        h('div', {class:'row', style:'margin-top:14px'}, h('button', {class:'btn', type:'button', onclick: async () => { try{ await navigator.clipboard.writeText(text); toast(t('copied')); }catch(e){} }}, icon('copy'), t('copy')), h('button', {class:'btn ghost', type:'button', onclick: () => window.print()}, t('print'))));
+    }catch(e){ close(); }
+  }
+  const mic = micButton(() => {
+    if (rec){ rec.stop(); return; }
+    set('listening', t('listenShort'));
+    hear(mic.btn, () => {}, (x) => { if (x && x.trim().length > 1) record(x.trim()); else set('idle', t('moneyTap')); });
+  }, t('moneyTap'));
+  fill(root, h('h1', {class:'title', style:'text-align:center'}, t('money')), h('p', {class:'sub', style:'text-align:center'}, t('moneySub')),
+    h('div', {class:'hero'}, mic, state, h('div', {class:'tries'}, t('moneyEx').map((x) => h('button', {type:'button', onclick: () => record(x)}, icon('coin'), x)))),
+    said, book);
+  load();
+  return root;
+}
+
+/* ============================================================== worldwide */
+const WORLD = {live:{BD:'Bangladesh'}, pilot:{KE:'Kenya', MX:'Mexico'}, planned:{IN:'India', PK:'Pakistan', NG:'Nigeria', ET:'Ethiopia', ID:'Indonesia', GT:'Guatemala'}};
+function World(){
+  const root = h('div');
+  const mapBox = h('div', {id:'wmap', class:'wmap'});
+  const ev = h('div');
+  const st = (k) => WORLD.live[k] ? 'live' : WORLD.pilot[k] ? 'pilot' : 'planned';
+  const countryRow = (code, name) => h('div', {class:'wc ' + st(code)}, h('b', null, (FLAG[code] || '') + ' ' + name), h('span', null, t('w' + {live:'Live', pilot:'Pilot', planned:'Planned'}[st(code)])));
+  const channels = [['Web app', 'wLive', 'Any phone browser, voice first, works offline'], ['Telegram', 'wLive', 'Text, voice notes and photos of papers'], ['Champion', 'wLive', 'One trained woman, many women, no phone needed'], ['Offline', 'wLive', 'Share calculator and saved answers with no signal'], ['Voice call / IVR', 'wPlanned', 'Any phone, no internet'], ['SMS', 'wPlanned', 'Reminders and check-ins'], ['WhatsApp', 'wPlanned', 'Photos and documents']];
+  fill(root, h('h1', {class:'title'}, t('worldH')), h('p', {class:'sub'}, t('worldSub')), mapBox,
+    h('div', {class:'wgrid'}, Object.entries(WORLD.live).map(([c, n]) => countryRow(c, n)), Object.entries(WORLD.pilot).map(([c, n]) => countryRow(c, n)), Object.entries(WORLD.planned).map(([c, n]) => countryRow(c, n))),
+    h('h2', {class:'section'}, t('wLangs')),
+    h('div', {class:'pick'}, LANGS.map(([code, native, eng]) => h('button', {type:'button', 'aria-pressed': String(S.lang === code), onclick: () => { S.lang = code; store.set('lang', code); route(); }}, h('b', null, native), h('small', null, eng)))),
+    h('h2', {class:'section'}, t('wChannels')),
+    h('div', {class:'chans'}, channels.map(([n, k, d]) => h('div', {class:'chan ' + (k === 'wLive' ? 'live' : '')}, h('em', null, t(k)), h('b', null, n), h('span', null, d)))),
+    h('h2', {class:'section'}, t('wEvidence')), h('p', {class:'sub', style:'margin-top:-4px'}, t('wEvidenceSub')), ev);
+  // live counts: problems brought to HerEvo (/v1/evidence) and Radar warnings
+  Promise.all([api('/v1/evidence', null, 20000, true).catch(() => ({cells:[]})), ...['BD', 'KE', 'MX'].map((c) => api('/v1/radar/' + c, null, 20000, true).catch(() => ({total:0})))]).then(([e, ...rad]) => {
+    const by = {}; for (const c of e.cells || []){ by[c.country] = by[c.country] || {}; by[c.country][c.gap] = c.n; }
+    const GAP = {land_inheritance:'Land & inheritance', unpaid_wages:'Unpaid wages', family_support:'Family support', safety_threats:'Safety threats', other:'Other'};
+    fill(ev, h('div', {class:'scrollx'}, h('table', {class:'evt'}, h('thead', null, h('tr', null, h('th', null, ''), Object.values(GAP).map((g) => h('th', null, g)), h('th', null, 'Radar'))),
+      h('tbody', null, ['BD', 'KE', 'MX'].map((c, i) => h('tr', null, h('td', null, FLAG[c] + ' ' + t('cc')[c]), Object.keys(GAP).map((g) => h('td', {class:'num'}, num((by[c] || {})[g] || 0))), h('td', {class:'num'}, num(rad[i].total || 0))))))));
+    drawMap(mapBox, by);
+  });
+  return root;
+}
+function loadScript(src){ return new Promise((ok, no) => { if (document.querySelector(`script[src="${src}"]`)) return ok(); const x = document.createElement('script'); x.src = src; x.onload = ok; x.onerror = no; document.head.append(x); }); }
+async function drawMap(box, by){
+  try{
+    await loadScript('https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/js/jsvectormap.min.js');
+    await loadScript('https://cdn.jsdelivr.net/npm/jsvectormap@1.5.3/dist/maps/world.js');
+    if (!document.body.contains(box)) return;
+    const values = {}; for (const c of Object.keys(WORLD.live)) values[c] = 'live'; for (const c of Object.keys(WORLD.pilot)) values[c] = 'pilot'; for (const c of Object.keys(WORLD.planned)) values[c] = 'planned';
+    new jsVectorMap({selector:'#wmap', map:'world', zoomButtons:false, zoomOnScroll:false, draggable:false,
+      regionStyle:{initial:{fill:'#E9DFCB', stroke:'#FFF6E5', strokeWidth:.6}, hover:{fillOpacity:.85}},
+      series:{regions:[{attribute:'fill', scale:{live:'#21894A', pilot:'#FFB400', planned:'#F7A1C4'}, values}]},
+      onRegionTooltipShow(event, tip, code){ try{ const s0 = values[code]; if (s0) tip.text(tip.text() + ' · ' + t('w' + {live:'Live', pilot:'Pilot', planned:'Planned'}[s0])); }catch(e){} }});
+  }catch(e){ box.hidden = true; }
+}
+
+/* ============================================================== business model (for judges, partners, investors) */
+const BIZ = {
+  vision:'HerEvo starts with the women software ignores: one voice-first AI for her land, harvest, money, health and safety, on any phone, even offline. The same layer then grows into access infrastructure for everyone apps leave out: smallholder farmers, micro-businesses, households and the organizations that serve them.',
+  stats:[['Free','for every woman, always'], ['4','languages: Bangla, English, Kiswahili, Español'], ['3','countries: Bangladesh live, Kenya and Mexico pilots'], ['30–50','women per trained champion each month']],
+  barriers:[['Literacy','Voice first: a big mic, spoken answers, pictures, recorded voice, typing optional'], ['Language','Bangla, Swahili, Spanish and English; laws and offices checked per country'], ['Connectivity','Offline tier: share calculator and saved answers work with no signal; the app installs from the browser'], ['Fragmentation','One system for land, harvest, money, health, safety and rights, instead of five apps'], ['Trust','Checked facts only for laws, fees and numbers; human helpers for danger; sources and saved answers when the AI is down'], ['Affordability','Free for her; paid by the institutions whose programs she makes work']],
+  engines:[['Women','Free','Core tools always free','Never charge the woman; never sell her data'], ['NGOs and legal-aid programs','Champion seats','US$15–25 per champion per month, with case dashboards and evidence reports','Will an NGO renew after a 3-month pilot?'], ['Government and donor programs','District deployments','Annual contract per district, tied to outcomes (land records updated, dower recovered, women served)','Can procurement cycles support the margin?'], ['Microfinance and banks','Verified income records','A fee per income statement shared, only after she says yes','Do lenders accept it, and does it lower her loan cost?'], ['Agri cooperatives and input firms','Farmer advisory licence','Per member per year for local-language farm guidance','Does it change yields or input waste?'], ['Telecom operators','Distribution partnership','Zero-rated access, revenue share on bundles','Does it raise retention in rural segments?'], ['Software builders','API and licensing','Per call for Bangla/Swahili voice, Paper Lens and the rights engine','Is the capability worth embedding?']],
+  unit:[['Champion seat (price to test)','US$20 / month'], ['Women served per champion','40 / month'], ['AI and voice per woman (estimate)','about US$0.25 / month'], ['Hosting and support per seat (estimate)','about US$3 / month'], ['Contribution per seat','about US$7 / month (≈35%)'], ['Cost falls with','model routing, recorded voice, caching, offline answers']],
+  phases:[['Phase 1 · Prove one painful workflow','Bangladesh: widows claiming land share and dower. 1 NGO partner, 20 champions, about 800 women. Measure: land records updated, papers not signed, dower recovered.'], ['Phase 2 · Repeatability','Playbooks for champions and partners, offline sync, pricing tested with a paid pilot, retention and cost per woman served.'], ['Phase 3 · Distribution partnerships','Legal-aid programs, NGOs, cooperatives, microfinance and telecoms; train-the-trainer for champions.'], ['Phase 4 · Regional expansion','Kenya and Mexico from pilot to live; then India, Pakistan, Nigeria, Ethiopia. Localize laws and workflows, not just words.'], ['Phase 5 · Access infrastructure','The same voice-first layer for micro-businesses, farmers, households and field organizations, with partner APIs.']],
+  gates:[['0 · Thesis','25+ interviews with women, champions and NGOs; one urgent problem and a clear payer'], ['1 · Prototype','Women complete the land-share path by voice without help (this build)'], ['2 · Paid pilot','A partner pays; retention and outcomes measured; support cost known'], ['3 · Fit','Renewals, referrals, healthy margin, repeatable partner onboarding'], ['4 · Scale','Predictable growth across countries; diversified revenue'], ['5 · Strategic readiness','Audited metrics, security, IP and data records; buyer or investor case']],
+  metrics:[['Her outcomes','Land records updated, papers not signed, dower and maintenance recovered, protection orders filed'], ['Adoption','Women reached per champion, time to first answer, voice completion rate'], ['Retention','Paths completed, return within 30 days, champion renewals'], ['Economics','Revenue per seat, AI cost per woman, contribution margin, payback'], ['Reliability','Answer time, offline success, voice recognition accuracy in Bangla'], ['Safety and trust','Danger cases handed to humans, harmful-error rate, consent and deletion']],
+  moats:['Workflow depth: the whole journey (path, papers, rehearsal, office, file), not a chat','Distribution: champions and NGO partners reach women apps never reach','Local-language voice: Bangla and Swahili evaluation sets and recorded voices','Checked legal knowledge per country, with saved answers when the AI is down','Consented, anonymous evidence (Radar) that shows officials where rights fail','Trust: free for her, nothing sold, private diary on her phone, 30-day deletion'],
+  risks:[['Too broad too early','One country, one workflow first; stage gates before new modules'], ['Weak willingness to pay','Institutions pay, not women; paid pilot before scaling'], ['Unsafe or wrong advice','Checked facts only, human escalation, legal disclaimer, evaluations'], ['Connectivity and devices','Offline tier, small pages, works on low-cost Android'], ['Free incumbents copy it','Distribution, workflow depth and local trust are hard to copy'], ['AI cost','Lite models, recorded voice, caching, offline answers'], ['Regulation and data','Country legal review, data minimization, no data sales']],
+  ambition:'The team’s long-term ambition is to become global access infrastructure. Reaching, for example, US$30B a year would need on the order of 50M paying consumer accounts, 2M businesses and 5,000 enterprise contracts at once: a scenario to earn stage by stage, not a forecast. A strategic buyer (cloud, telecom, payments or productivity platform) would value the assets this path builds: trusted distribution in underserved regions, local-language voice AI, offline-first workflows, a partner network and consented evidence.',
+  next:[['Days 1–30','Interview 25+ women, champions and 3 NGOs; map the land-share workflow; competitor map; price hypotheses'], ['Days 31–60','Usability tests by voice with women who cannot read; offline tests; sign one paid pilot'], ['Days 61–90','Pilot with 20 champions; track outcomes, retention and cost per woman; decide to continue, change or stop']],
+};
+function Business(){
+  const sec = (title, ...kids) => h('section', {class:'bz'}, h('h2', null, title), ...kids);
+  const table = (head, rows) => h('div', {class:'scrollx'}, h('table', {class:'evt bzt'}, h('thead', null, h('tr', null, head.map((x) => h('th', null, x)))), h('tbody', null, rows.map((r) => h('tr', null, r.map((x) => h('td', null, x)))))));
+  return h('div', {class:'bizpage', lang:'en'},
+    t('businessNote') ? h('p', {class:'lenshint', lang:S.lang}, icon('info'), h('span', null, t('businessNote'))) : null,
+    h('h1', {class:'title'}, 'Business model and growth'),
+    h('p', {class:'bzlead'}, BIZ.vision),
+    h('div', {class:'bzstats'}, BIZ.stats.map(([n, l]) => h('div', null, h('b', null, n), h('span', null, l)))),
+    sec('Six barriers, one answer each', h('div', {class:'bzcards'}, BIZ.barriers.map(([a, b]) => h('div', null, h('b', null, a), h('span', null, b))))),
+    sec('Who pays: revenue engines', h('p', {class:'sub'}, 'Women never pay. The institutions whose programs she makes work do. Each engine is tested separately.'), table(['Payer', 'Engine', 'Pricing basis', 'Validation question'], BIZ.engines)),
+    sec('Unit economics of one champion seat', h('p', {class:'sub'}, 'Assumptions to test in the paid pilot, not results.'), h('div', {class:'bzunit'}, BIZ.unit.map(([a, b]) => h('div', null, h('span', null, a), h('b', null, b))))),
+    sec('Go to market', h('ol', {class:'bzphases'}, BIZ.phases.map(([a, b]) => h('li', null, h('b', null, a), h('span', null, b))))),
+    sec('Stage gates: move on only with evidence', table(['Stage', 'Exit evidence'], BIZ.gates)),
+    sec('What we measure', table(['Category', 'Metrics'], BIZ.metrics)),
+    sec('Why it is hard to copy', h('ul', {class:'bzlist'}, BIZ.moats.map((x) => h('li', null, x)))),
+    sec('Risks and how we reduce them', table(['Risk', 'Mitigation'], BIZ.risks)),
+    sec('Long-term ambition', h('p', null, BIZ.ambition), h('p', {class:'src'}, 'Built with the team’s “Global AI Support Infrastructure” strategic blueprint (27 November 2026). All figures are scenarios that need validation.')),
+    sec('Next 90 days', table(['When', 'What'], BIZ.next)));
 }
 
 /* ============================================================== just tell me + path */
@@ -1668,12 +1987,12 @@ function Share(){
     for (const s of res.shares){
       for (let i = 0; i < s.count; i++){
         const isHer = s.heir === her() && i === 0;
-        const p = h('div', {class:'parcel' + (isHer ? ' her' : ''), style:`flex:${s.pct} 1 0;background-color:${isHer ? 'var(--her)' : HEIR_COLOR[s.heir]}`, title: T[S.lang].heir[s.heir]});
+        const p = h('div', {class:'parcel' + (isHer ? ' her' : ''), style:`flex:${s.pct} 1 0;background-color:${isHer ? 'var(--her)' : HEIR_COLOR[s.heir]}`, title: t('heir')[s.heir]});
         if (isHer){ p.append(h('span', {class:'you'}, t('you'))); if (keptPct) p.append(h('span', {class:'kept', style:`height:${keptPct}%`})); }
         if (s.pct >= 6) p.append(h('span', {class:'lbl'}, fmt(s.land_each)));
         parcels.push(p);
       }
-      const name = T[S.lang].heir[s.heir] + (s.count > 1 ? ` ×${num(s.count)}` : '');
+      const name = t('heir')[s.heir] + (s.count > 1 ? ` ×${num(s.count)}` : '');
       legend.push(h('div', null, h('i', {style:`background:${s.heir === her() ? 'var(--her)' : HEIR_COLOR[s.heir]}`}), h('b', null, name),
         h('span', null, `${num(s.num)}/${num(s.den)}${s.count > 1 ? ' ' + t('each') : ''} · ${fmt(s.land_each)} ${t('unit')}`)));
     }
