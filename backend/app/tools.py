@@ -679,8 +679,8 @@ PLAN_SCHEMA = {
                       "tool": {"type": "string", "enum": list(TOOLS_FOR_PLAN)},
                       "title": {"type": "string", "description": "an action in her language, at most 8 words"},
                       "why": {"type": "string", "description": "one short sentence in her language"},
-                      "scenario": {"type": "string", "description": "for tool=rehearse: one scenario id from the list"},
-                      "place": {"type": "string", "description": "for tool=counter: one place id from the list"},
+                      "scenario": {"type": "string", "enum": list(SCENARIOS), "description": "for tool=rehearse: the scenario id"},
+                      "place": {"type": "string", "enum": list(PLACES), "description": "for tool=counter: the place id"},
                       "paper": {"type": "string", "description": "for tool=lens: which paper to photograph, her language"},
                       "number": {"type": "string", "description": "for tool=call: the number, from the checked facts only"}},
                       "required": ["tool", "title", "why"]}},
@@ -694,7 +694,8 @@ maybe messy), what is happening to her. Understand her situation and build her a
 HerEvo's tools. Write in {lang}, warm and plain, for a woman who may not read well.
 
 HerEvo's tools:
-- share: works out her exact lawful share of land or property after a death (needs who died and who survived).
+- share: works out her exact lawful share of land after a death, under Muslim law as applied in Bangladesh ONLY \
+(needs who died and who survived). Never use it for Kenya or Mexico.
 - lens: she photographs a paper (deed, notice, kabinnama, loan paper) and HerEvo reads it aloud and warns her before \
 signing. Say which paper in `paper`.
 - rehearse: she practises a hard conversation with the AI playing the other person. Scenario ids: {scenarios}.
@@ -775,15 +776,33 @@ def _fill_share(fam: dict | None) -> dict | None:
             "pct": round(float(mine.each) * 100, 2)}
 
 
-def _clean_steps(steps, country: str) -> list[dict]:
+def _scenario_for(text: str, country: str) -> str:
+    """The rehearsal that fits her words best, when the AI did not pick one."""
+    if country == "KE":
+        return "ke_home"
+    if country == "MX":
+        return "mx_ejido"
+    t = text.lower()
+    if any(k in t for k in ("যৌতুক", "dowry")):
+        return "dowry"
+    if any(k in t for k in ("ঘুষ", "bribe", "অফিস", "office", "নামজারি", "mutation")):
+        return "land_office"
+    if any(k in t for k in ("দেনমোহর", "মোহর", "খোরপোষ", "সালিশ", "dower", "maintenance", "salish")):
+        return "salish"
+    return "inlaw_land"
+
+
+def _clean_steps(steps, country: str, text: str = "") -> list[dict]:
     out = []
     for st in (steps or [])[:5]:
         if not isinstance(st, dict) or st.get("tool") not in TOOLS_FOR_PLAN or not st.get("title"):
             continue
+        if st["tool"] == "share" and country != "BD":
+            continue  # the share calculator is Bangladesh Muslim law only
         item = {"tool": st["tool"], "title": _clip(st["title"], 80), "why": _clip(st.get("why"), 200)}
         if st["tool"] == "rehearse":
             sc = st.get("scenario")
-            item["scenario"] = sc if sc in SCENARIOS else None
+            item["scenario"] = sc if sc in SCENARIOS and SCENARIOS[sc]["country"] == country else _scenario_for(text, country)
         if st["tool"] == "counter":
             item["place"] = st.get("place") if st.get("place") in PLACES else "land_office"
         if st["tool"] == "lens":
@@ -809,14 +828,14 @@ def plan(text: str, lang: str, country: str) -> dict:
                                                   facts=facts_for(country)),
                                [{"text": "What she said:\n" + text}], "make_path", PLAN_SCHEMA, seconds=25,
                                temperature=0.3)
-            steps = _clean_steps(raw.get("steps"), country)
+            steps = _clean_steps(raw.get("steps"), country, text)
             if steps:
                 fam = raw.get("family") if isinstance(raw.get("family"), dict) else None
                 is_danger = bool(raw.get("danger")) or (danger.escalate and danger.kind == "danger")
                 if is_danger and steps[0]["tool"] != "call":
                     steps.insert(0, _call_step(lang, country))
                 return {"understood": _clip(raw.get("understood"), 240), "say": _clip(raw.get("say"), 500),
-                        "danger": is_danger, "share": _fill_share(fam), "steps": steps[:5],
+                        "danger": is_danger, "share": _fill_share(fam) if country == "BD" else None, "steps": steps[:5],
                         "ask": _clip(raw.get("ask"), 200), "source": "ai"}
             reason = "no steps"
         except Exception as exc:
@@ -841,7 +860,7 @@ def _saved_plan(text: str, lang: str, country: str, danger: bool) -> dict:
     steps: list[dict] = []
     has = lambda *ks: any(k in t for k in ks)  # noqa: E731
     fam = _guess_family(text)
-    share = _fill_share(fam)
+    share = _fill_share(fam) if country == "BD" else None
     if danger:
         steps.append(_call_step(lang, country))
     if has("মারে", "মারধর", "ধাক্কা", "নির্যাতন", "beat", "hit", "push", "abuse", "violence", "threat", "হুমকি"):
@@ -851,8 +870,9 @@ def _saved_plan(text: str, lang: str, country: str, danger: bool) -> dict:
         steps.append({"tool": "rehearse", "scenario": "dowry", "title": L("শান্তভাবে না বলার মহড়া দিন", "Practise saying no calmly"),
                       "why": L("যৌতুক চাওয়া অপরাধ। আগে থেকে কথা গুছিয়ে রাখুন।", "Demanding dowry is a crime. Prepare your words.")})
     if fam or has("জমি", "land", "inherit", "ভাগ", "শামবা", "shamba", "ejido", "parcela", "tierra"):
-        steps.append({"tool": "share", "title": L("জমিতে আমার ভাগ দেখুন", "See my share of the land"),
-                      "why": L("আইনে আপনার কতটা, আগে নিশ্চিত হোন।", "Know exactly what the law gives you first.")})
+        if country == "BD":
+            steps.append({"tool": "share", "title": L("জমিতে আমার ভাগ দেখুন", "See my share of the land"),
+                          "why": L("আইনে আপনার কতটা, আগে নিশ্চিত হোন।", "Know exactly what the law gives you first.")})
         if has("সই", "টিপ", "দলিল", "কাগজ", "sign", "paper", "deed", "thumb"):
             steps.append({"tool": "lens", "paper": L("যে কাগজে সই চাইছে", "The paper they want you to sign"),
                           "title": L("সই করার আগে কাগজটা পড়িয়ে নিন", "Have the paper read before you sign"),

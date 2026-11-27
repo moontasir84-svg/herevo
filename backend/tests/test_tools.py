@@ -203,7 +203,7 @@ def test_plan_with_ai_cleans_steps_and_computes_share(ai):
                       {"tool": "teleport", "title": "x", "why": "y"}], "ask": ""})
     r = client.post("/v1/plan", json={"session_id": SID, "lang": "en", "text": "my husband died..."}).json()
     assert r["source"] == "ai" and [s["tool"] for s in r["steps"]] == ["share", "rehearse", "call"]
-    assert r["steps"][1]["scenario"] is None          # unknown scenario dropped
+    assert r["steps"][1]["scenario"] == "inlaw_land"  # unknown scenario replaced by the one that fits
     assert r["steps"][2]["number"] == "999"           # a number not in the checked facts is replaced
     assert r["share"]["her_land"] == 7.5              # 1/8 of 60, computed by HerEvo, not the AI
     assert "inlaw_land" in f.calls[0]["system"]
@@ -253,3 +253,15 @@ def test_minutes_with_ai_and_saved(ai):
     ai(error=ValueError("down"))
     r = client.post("/v1/minutes", json={"session_id": SID, "lines": lines, "lang": "en"}).json()
     assert r["source"] == "saved" and r["lines"] == lines and r["warnings"] and "2 things" in r["summary"]
+
+
+def test_plan_never_uses_bangladesh_law_for_kenya(ai):
+    ai({"understood": "Husband died; clan wants the shamba.", "say": "x", "danger": False,
+        "family": {"deceased": "husband", "sons": 3, "land": 2},
+        "steps": [{"tool": "share", "title": "Check share", "why": "x"},
+                  {"tool": "rehearse", "title": "Practise", "why": "x", "scenario": "inlaw_land"}]})
+    r = client.post("/v1/plan", json={"session_id": SID, "lang": "en", "country": "KE", "text": "my husband died, the clan wants the shamba"}).json()
+    assert r["share"] is None and [s["tool"] for s in r["steps"]] == ["rehearse"] and r["steps"][0]["scenario"] == "ke_home"
+    ai(error=ValueError("down"))
+    r = client.post("/v1/plan", json={"session_id": SID, "lang": "en", "country": "KE", "text": "My husband died, 2 sons, his brothers want the land"}).json()
+    assert r["share"] is None and "share" not in [s["tool"] for s in r["steps"]]

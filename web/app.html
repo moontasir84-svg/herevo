@@ -619,6 +619,7 @@ bn:{
   // sos
   sosH:'এখনই সাহায্য', helper:'একজন সহায়তাকর্মীর সঙ্গে কথা বলুন', helperSub:'প্রশিক্ষিত মানুষ, গোপনে', exit:'দ্রুত বের হোন', exitSub:'এই পাতা বন্ধ হয়ে আবহাওয়ার পাতা খুলবে',
   cc:{BD:'বাংলাদেশ',KE:'কেনিয়া',MX:'মেক্সিকো'},
+  shareOnlyBD:'এই হিসাব বাংলাদেশে প্রযোজ্য মুসলিম উত্তরাধিকার আইন অনুযায়ী। কেনিয়া বা মেক্সিকোর আইন আলাদা: মহড়া অংশে সেই দেশের অনুশীলন আছে।',
   talkT:'কথা বলুন', talkEntry:'শুধু কথা বলতে চাই, পড়তে হবে না', talk_idle:'বলটায় চাপ দিন, তারপর কথা বলুন', talk_listening:'শুনছি… বলা শেষ হলে একটু থামুন', talk_thinking:'ভাবছি…', talk_speaking:'বলছি… থামাতে বলটায় চাপ দিন',
   talkEnd:'কথা শেষ', talkType:'বা লিখুন', talkHelp:'একজন সহায়তাকর্মীকে জানানো হয়েছে।',
   listenAll:'পুরো সভা শুনুন', listenAllSub:'সালিশ বা অফিসে কথা চলার সময় ফোনটা পাশে রাখুন। সমস্যা হলেই কানে বলব, শেষে লিখে রাখব কে কী কথা দিল।', listeningLive:(n)=>`শুনছি… ${n}টি কথা`, stopListen:'থামান',
@@ -693,6 +694,7 @@ en:{
   samples:[['SAMPLE: At night my husband got angry and pushed me. I hit the wall and my arm is bruised.',-21],['SAMPLE: He took my phone and locked the door. He does not let me visit my parents.',-14],['SAMPLE: He threatens divorce if I do not bring dowry money. The neighbour aunty heard it.',-3]],
   sosH:'Help now', helper:'Talk to a trained helper', helperSub:'A real person, in confidence', exit:'Quick exit', exitSub:'This page closes and a weather page opens',
   cc:{BD:'Bangladesh',KE:'Kenya',MX:'Mexico'},
+  shareOnlyBD:'This calculation follows Muslim inheritance law as applied in Bangladesh. Kenya and Mexico have different laws: practise those cases in Rehearsal.',
   talkT:'Talk', talkEntry:"I just want to talk, I can't read", talk_idle:'Tap the circle, then speak', talk_listening:'Listening… pause when you finish', talk_thinking:'Thinking…', talk_speaking:'Speaking… tap the circle to stop',
   talkEnd:'End', talkType:'or type', talkHelp:'A trained helper has been told.',
   listenAll:'Listen to the whole meeting', listenAllSub:'Keep the phone beside you at the salish or office. I whisper only when something is wrong, and write down who promised what.', listeningLive:(n)=>`Listening… ${n} things heard`, stopListen:'Stop',
@@ -1283,7 +1285,7 @@ function Share(){
       h('p', {class:'disc'}, res.disclaimer)),
       mine ? h('div', {class:'next'}, h('a', {href:'#rehearse/' + (S.country === 'KE' ? 'ke_home' : S.country === 'MX' ? 'mx_ejido' : 'inlaw_land'), style:'background:var(--rehearse)', onclick: () => { try{ sessionStorage.setItem('herevo.ctx', `Her lawful share is ${herLand} decimals (${mine.num}/${mine.den}) of ${F.land} decimals.` + (keptPct ? ` They offer only ${offered}.` : '')); }catch(e){} }}, icon('chat'), h('span', null, t('practice')), icon('arrow'))) : null);
   }
-  root.append(h('h1', {class:'title'}, t('shareH')), h('p', {class:'sub'}, t('shareSub')), form, out);
+  root.append(h('h1', {class:'title'}, t('shareH')), h('p', {class:'sub'}, t('shareSub')), S.country !== 'BD' ? h('div', {class:'gap', style:'margin:0 0 12px'}, icon('info'), h('span', null, t('shareOnlyBD'))) : null, form, out);
   drawForm(); compute();
   return root;
 }
