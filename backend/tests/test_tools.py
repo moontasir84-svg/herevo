@@ -202,9 +202,8 @@ def test_plan_with_ai_cleans_steps_and_computes_share(ai):
                       {"tool": "call", "title": "Call", "why": "Help.", "number": "12345"},
                       {"tool": "teleport", "title": "x", "why": "y"}], "ask": ""})
     r = client.post("/v1/plan", json={"session_id": SID, "lang": "en", "text": "my husband died..."}).json()
-    assert r["source"] == "ai" and [s["tool"] for s in r["steps"]] == ["share", "rehearse", "call"]
+    assert r["source"] == "ai" and [s["tool"] for s in r["steps"]] == ["share", "rehearse"]  # unchecked number dropped
     assert r["steps"][1]["scenario"] == "inlaw_land"  # unknown scenario replaced by the one that fits
-    assert r["steps"][2]["number"] == "999"           # a number not in the checked facts is replaced
     assert r["share"]["her_land"] == 7.5              # 1/8 of 60, computed by HerEvo, not the AI
     assert "inlaw_land" in f.calls[0]["system"]
 

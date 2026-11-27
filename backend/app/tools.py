@@ -810,7 +810,9 @@ def _clean_steps(steps, country: str, text: str = "") -> list[dict]:
         if st["tool"] == "call":
             num = re.sub(r"[^0-9]", "", _norm_digits(str(st.get("number") or "")))
             allowed = re.findall(r"\b\d{3,5}\b", facts_for(country))
-            item["number"] = num if num in allowed else SAFETY_NUMBERS.get(country, "999").split(" / ")[0]
+            if num not in allowed:
+                continue  # never show a label next to a different number; danger adds the emergency call itself
+            item["number"] = num
         out.append(item)
     return out
 
