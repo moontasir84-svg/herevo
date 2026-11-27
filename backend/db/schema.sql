@@ -127,3 +127,35 @@ CREATE TABLE IF NOT EXISTS radar (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS radar_country_time ON radar (country, created_at);
+
+-- Accounts: a name she chooses and a PIN (no phone number, no email). Only a salted hash of the PIN is kept.
+CREATE TABLE IF NOT EXISTS accounts (
+    id            TEXT PRIMARY KEY,
+    name_key      TEXT UNIQUE NOT NULL,           -- the name, lower-cased, to find the account
+    display_name  TEXT NOT NULL,
+    pin_hash      TEXT NOT NULL,                  -- pbkdf2-sha256 with its own salt
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS account_tokens (
+    token_hash  TEXT PRIMARY KEY,
+    account_id  TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+-- Her chat history (only when she has an account; she can delete any chat or the whole account).
+CREATE TABLE IF NOT EXISTS chats (
+    id          TEXT PRIMARY KEY,
+    account_id  TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+    title       TEXT NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS chats_account ON chats (account_id, updated_at DESC);
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id          BIGSERIAL PRIMARY KEY,
+    chat_id     TEXT NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
+    role        TEXT NOT NULL,                    -- her | herevo | helper
+    text        TEXT NOT NULL,
+    extra       JSONB,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS chat_messages_chat ON chat_messages (chat_id, id);

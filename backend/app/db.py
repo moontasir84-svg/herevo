@@ -370,3 +370,122 @@ def impact(days: int = 30) -> dict:
         rows = conn.execute("SELECT country, count(*) AS n FROM users WHERE created_at > now() - make_interval(days => %s) GROUP BY country", (days,)).fetchall()
         out["countries"] = {(r["country"] if isinstance(r, dict) else r[0]): int(r["n"] if isinstance(r, dict) else r[1]) for r in rows}
     return out
+
+
+# --- Accounts and chat history ---------------------------------------------------------------------------------
+
+def _pin_hash(pin: str, salt: bytes | None = None) -> str:
+    import hashlib
+    import os
+    salt = salt or os.urandom(16)
+    h = hashlib.pbkdf2_hmac("sha256", pin.encode(), salt, 200_000)
+    return salt.hex() + "$" + h.hex()
+
+
+def _pin_ok(pin: str, stored: str) -> bool:
+    import hmac
+    salt, _ = stored.split("$", 1)
+    return hmac.compare_digest(_pin_hash(pin, bytes.fromhex(salt)), stored)
+
+
+def _token_hash(token: str) -> str:
+    import hashlib
+    return hashlib.sha256(("herevo-token:" + token).encode()).hexdigest()
+
+
+def name_key(name: str) -> str:
+    return " ".join(name.split()).casefold()
+
+
+def create_account(name: str, pin: str) -> dict | None:
+    """None if the name is taken."""
+    import secrets
+    acc_id = secrets.token_hex(12)
+    with pool().connection() as conn:
+        r = conn.execute("INSERT INTO accounts (id, name_key, display_name, pin_hash) VALUES (%s, %s, %s, %s) "
+                         "ON CONFLICT (name_key) DO NOTHING RETURNING id",
+                         (acc_id, name_key(name), " ".join(name.split()), _pin_hash(pin))).fetchone()
+    return {"id": acc_id, "name": " ".join(name.split())} if r else None
+
+
+def check_login(name: str, pin: str) -> dict | None:
+    with pool().connection() as conn:
+        r = conn.execute("SELECT id, display_name, pin_hash FROM accounts WHERE name_key = %s", (name_key(name),)).fetchone()
+    if not r:
+        return None
+    row = r if isinstance(r, dict) else {"id": r[0], "display_name": r[1], "pin_hash": r[2]}
+    return {"id": row["id"], "name": row["display_name"]} if _pin_ok(pin, row["pin_hash"]) else None
+
+
+def new_token(account_id: str) -> str:
+    import secrets
+    token = secrets.token_urlsafe(32)
+    with pool().connection() as conn:
+        conn.execute("INSERT INTO account_tokens (token_hash, account_id) VALUES (%s, %s)", (_token_hash(token), account_id))
+    return token
+
+
+def account_for_token(token: str) -> dict | None:
+    with pool().connection() as conn:
+        r = conn.execute("SELECT a.id, a.display_name FROM account_tokens t JOIN accounts a ON a.id = t.account_id "
+                         "WHERE t.token_hash = %s", (_token_hash(token),)).fetchone()
+    if not r:
+        return None
+    return {"id": r["id"], "name": r["display_name"]} if isinstance(r, dict) else {"id": r[0], "name": r[1]}
+
+
+def drop_token(token: str) -> None:
+    with pool().connection() as conn:
+        conn.execute("DELETE FROM account_tokens WHERE token_hash = %s", (_token_hash(token),))
+
+
+def delete_account(account_id: str) -> None:
+    with pool().connection() as conn:
+        conn.execute("DELETE FROM accounts WHERE id = %s", (account_id,))
+
+
+def list_chats(account_id: str) -> list[dict]:
+    with pool().connection() as conn:
+        rows = conn.execute("SELECT id, title, updated_at FROM chats WHERE account_id = %s ORDER BY updated_at DESC LIMIT 100",
+                            (account_id,)).fetchall()
+    out = []
+    for r in rows:
+        r = r if isinstance(r, dict) else {"id": r[0], "title": r[1], "updated_at": r[2]}
+        out.append({"id": r["id"], "title": r["title"], "updated": r["updated_at"].isoformat()})
+    return out
+
+
+def get_chat(account_id: str, chat_id: str) -> dict | None:
+    with pool().connection() as conn:
+        c = conn.execute("SELECT id, title FROM chats WHERE id = %s AND account_id = %s", (chat_id, account_id)).fetchone()
+        if not c:
+            return None
+        rows = conn.execute("SELECT role, text, extra, created_at FROM chat_messages WHERE chat_id = %s ORDER BY id",
+                            (chat_id,)).fetchall()
+    c = c if isinstance(c, dict) else {"id": c[0], "title": c[1]}
+    msgs = []
+    for r in rows:
+        r = r if isinstance(r, dict) else {"role": r[0], "text": r[1], "extra": r[2], "created_at": r[3]}
+        msgs.append({"role": r["role"], "text": r["text"], "extra": r["extra"], "at": r["created_at"].isoformat()})
+    return {"id": c["id"], "title": c["title"], "messages": msgs}
+
+
+def add_chat_messages(account_id: str, chat_id: str, title: str, messages: list[dict]) -> bool:
+    """Creates the chat on its first messages. False if the chat belongs to someone else."""
+    from psycopg.types.json import Jsonb
+    with pool().connection() as conn:
+        owner = conn.execute("SELECT account_id FROM chats WHERE id = %s", (chat_id,)).fetchone()
+        if owner and (owner["account_id"] if isinstance(owner, dict) else owner[0]) != account_id:
+            return False
+        if not owner:
+            conn.execute("INSERT INTO chats (id, account_id, title) VALUES (%s, %s, %s)", (chat_id, account_id, title))
+        for m in messages:
+            conn.execute("INSERT INTO chat_messages (chat_id, role, text, extra) VALUES (%s, %s, %s, %s)",
+                         (chat_id, m["role"], m["text"], Jsonb(m.get("extra")) if m.get("extra") is not None else None))
+        conn.execute("UPDATE chats SET updated_at = now() WHERE id = %s", (chat_id,))
+    return True
+
+
+def delete_chat(account_id: str, chat_id: str) -> None:
+    with pool().connection() as conn:
+        conn.execute("DELETE FROM chats WHERE id = %s AND account_id = %s", (chat_id, account_id))

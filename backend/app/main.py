@@ -13,6 +13,7 @@
   POST /v1/statement                 Witness diary notes -> dated statement
   POST /v1/share                     exact inheritance shares (for the land picture)
   POST /v1/stt                       her recorded voice -> text (any browser; audio never stored)
+  POST /v1/account, GET /v1/chats     name + PIN login; her chat history (create, read, add, delete)
   POST /v1/plan                      "just tell me": her words -> a path through the tools
   POST /v1/minutes                   listen mode: the record of a meeting (who promised what)
   POST /v1/radar, GET /v1/radar/{cc} anonymous warnings (bribes, pressure to sign) and their counts
@@ -261,6 +262,108 @@ def inbox(session_id: str):
     rows = db.take_inbox(db.user_id_for("web", session_id))
     return {"messages": [{"id": r["id"], "case": r["escalation_id"], "text": r["text"], "quote": r["quote"],
                           "at": r["created_at"].isoformat()} for r in rows]}
+
+
+# --- Accounts (name + PIN) and chat history ----------------------------------------------------------------------
+from fastapi import Header  # noqa: E402
+
+
+class AccountIn(BaseModel):
+    name: str = Field(min_length=2, max_length=40)
+    pin: str = Field(pattern=r"^[0-9]{4,6}$")
+    create: bool = False
+
+
+def _account(authorization: str | None) -> dict:
+    token = (authorization or "").removeprefix("Bearer ").strip()
+    acc = db.account_for_token(token) if token else None
+    if not acc:
+        raise HTTPException(401, "Please log in")
+    return acc
+
+
+def _sid(acc: dict) -> str:
+    """Her account's own session id: her path, income record and memory follow her to any phone."""
+    return "acct-" + acc["id"]
+
+
+@app.post("/v1/account")
+def account_login(body: AccountIn):
+    """Log in, or create an account with create=true. A name and a 4-6 digit PIN; no phone, no email."""
+    key = "login:" + db.name_key(body.name)
+    if rate_limited(key, 8):
+        raise HTTPException(429, "Too many tries. Please wait 10 minutes.")
+    if body.create:
+        acc = db.create_account(body.name, body.pin)
+        if not acc:
+            raise HTTPException(409, "This name is taken. Add a number or a village name.")
+    else:
+        acc = db.check_login(body.name, body.pin)
+        if not acc:
+            raise HTTPException(401, "Name or PIN is wrong.")
+    return {"token": db.new_token(acc["id"]), "name": acc["name"], "sid": _sid(acc)}
+
+
+@app.get("/v1/account")
+def account_me(authorization: str | None = Header(default=None)):
+    acc = _account(authorization)
+    return {"name": acc["name"], "sid": _sid(acc)}
+
+
+@app.post("/v1/account/logout")
+def account_logout(authorization: str | None = Header(default=None)):
+    token = (authorization or "").removeprefix("Bearer ").strip()
+    if token:
+        db.drop_token(token)
+    return {"ok": True}
+
+
+@app.delete("/v1/account")
+def account_delete(authorization: str | None = Header(default=None)):
+    """Deletes her account and all her chats, for good."""
+    db.delete_account(_account(authorization)["id"])
+    return {"ok": True}
+
+
+class ChatMsg(BaseModel):
+    role: str = Field(pattern=r"^(her|herevo|helper)$")
+    text: str = Field(min_length=1, max_length=8000)
+    extra: dict | None = None
+
+
+class ChatAppend(BaseModel):
+    title: str = Field(default="", max_length=120)
+    messages: list[ChatMsg] = Field(min_length=1, max_length=40)
+
+
+@app.get("/v1/chats")
+def chats(authorization: str | None = Header(default=None)):
+    return {"chats": db.list_chats(_account(authorization)["id"])}
+
+
+@app.get("/v1/chats/{chat_id}")
+def chat_get(chat_id: str, authorization: str | None = Header(default=None)):
+    c = db.get_chat(_account(authorization)["id"], chat_id)
+    if not c:
+        raise HTTPException(404, "Chat not found")
+    return c
+
+
+@app.post("/v1/chats/{chat_id}")
+def chat_add(chat_id: str, body: ChatAppend, authorization: str | None = Header(default=None)):
+    acc = _account(authorization)
+    if not (8 <= len(chat_id) <= 64) or not chat_id.replace("-", "").isalnum():
+        raise HTTPException(422, "Bad chat id")
+    title = (body.title or body.messages[0].text)[:80]
+    if not db.add_chat_messages(acc["id"], chat_id, title, [m.model_dump() for m in body.messages]):
+        raise HTTPException(404, "Chat not found")
+    return {"ok": True}
+
+
+@app.delete("/v1/chats/{chat_id}")
+def chat_delete(chat_id: str, authorization: str | None = Header(default=None)):
+    db.delete_chat(_account(authorization)["id"], chat_id)
+    return {"ok": True}
 
 
 CURRENCY = {"BD": "BDT", "KE": "KES", "MX": "MXN"}

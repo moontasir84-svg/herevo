@@ -39,6 +39,15 @@ jobs:
           echo "== sale written down (no AI)"; curl -s -w "\n[HTTP %{http_code} in %{time_total}s]\n" --max-time 60 -H 'content-type: application/json' -d '{"session_id":"toolcheck-0004","text":"আজ ৩০টা ডিম ৩৯০ টাকায় বেচলাম"}' $B/v1/sale
           echo "== partner dashboard"; curl -s --max-time 60 $B/v1/impact; echo
           echo "== new pages served: $(curl -s --max-time 60 $B/ | grep -c 'function Business\|function World\|function Money\|T.sw = ')"
+          echo "== chat-first app served: $(curl -s --max-time 60 $B/ | grep -c 'function composer\|function openAccount\|const Chats')"
+          echo "== account: create, save a chat, read it back, delete"
+          N="toolcheck $(date +%s)"
+          TOK=$(curl -s --max-time 60 -H 'content-type: application/json' -d "{\"name\":\"$N\",\"pin\":\"482913\",\"create\":true}" $B/v1/account | python3 -c "import sys,json; print(json.load(sys.stdin).get('token',''))")
+          echo "token issued: $([ -n "$TOK" ] && echo yes || echo NO)"
+          curl -s --max-time 60 -H "authorization: Bearer $TOK" -H 'content-type: application/json' -d '{"messages":[{"role":"her","text":"test question"},{"role":"herevo","text":"test answer"}]}' $B/v1/chats/toolcheck-chat-1; echo
+          curl -s --max-time 60 -H "authorization: Bearer $TOK" $B/v1/chats; echo
+          curl -s --max-time 60 -o /dev/null -w "wrong PIN -> HTTP %{http_code}\n" -H 'content-type: application/json' -d "{\"name\":\"$N\",\"pin\":\"000000\"}" $B/v1/account
+          curl -s --max-time 60 -o /dev/null -w "delete account -> HTTP %{http_code}\n" -X DELETE -H "authorization: Bearer $TOK" $B/v1/account
           echo "== voice round trip: HerEvo speaks Bangla, then the recording is written down again"
           curl -s -o say.wav -w "TTS HTTP %{http_code}, %{size_download} bytes in %{time_total}s\n" --max-time 90 -H 'content-type: application/json' \
             -d '{"text":"আমার স্বামী মারা গেছেন। দেবর জমির ভাগ দিচ্ছে না।","lang":"bn","session_id":"toolcheck-0002"}' $B/v1/tts

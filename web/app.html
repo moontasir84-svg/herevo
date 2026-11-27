@@ -440,6 +440,114 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 .view-talk .lilybtn{margin-top:28px}
 @media (max-width:899px){.view-talk{padding-bottom:96px!important}}
 @media (min-width:900px){.view-talk{margin:-10px -40px -80px!important;min-height:calc(100vh - 64px)!important}}
+/* ---- conversation ---- */
+.tabs{display:none!important}
+.menubtn{display:none;width:44px;height:44px;border:0;border-radius:12px;background:none;align-items:center;justify-content:center;margin-left:-6px}
+.menubtn svg{width:24px;height:24px}
+.iconbtn{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:#fff;display:inline-flex;align-items:center;justify-content:center;color:var(--muted)}
+.iconbtn svg{width:20px;height:20px}.iconbtn.on{color:var(--shapla);border-color:var(--shapla)}
+.chatpage{display:flex;flex-direction:column;min-height:calc(100dvh - 140px);max-width:780px;margin:0 auto}
+.chatlog{flex:1;display:flex;flex-direction:column;gap:14px;padding:6px 0 18px}
+.msg{display:flex;gap:10px;align-items:flex-end;animation:rise .3s both}
+.msg .av{flex:none;width:34px;height:34px;border-radius:11px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.msg .av svg{width:34px;height:34px}
+.msg.her{justify-content:flex-end}
+.msg.her .bub{background:var(--ink);color:#fff;border-radius:22px 22px 6px 22px;max-width:82%;padding:11px 16px;font-size:16.5px;white-space:pre-wrap}
+.msg.her .bub.pending{opacity:.75;display:flex;gap:8px;align-items:center}
+.msg.her .bub.pending .spinner{width:16px;height:16px;border-width:2px}
+.msg.herevo .bub,.msg.helper .bub{background:#fff;border:1px solid var(--line);border-radius:22px 22px 22px 6px;max-width:88%;padding:12px 16px;font-size:16.5px;line-height:1.6;box-shadow:0 2px 8px rgba(29,26,58,.04)}
+.msg.herevo .bub p{margin:0;white-space:pre-wrap}
+.msg.herevo .bub .steps{margin-top:10px}
+.msg.helper .av{background:var(--witness);color:#fff}.msg.helper .av svg{width:20px;height:20px}
+.msg.helper .bub{border-color:var(--witness);background:var(--witness-2)}
+.msg.helper .bub small{display:block;font-weight:700;color:var(--witness);font-size:12.5px}
+.bub.typing{display:flex;align-items:center;gap:10px;color:var(--muted)}
+.bub .tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}
+.mini{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--paper);display:inline-flex;align-items:center;justify-content:center;color:var(--ink)}
+.mini svg{width:17px;height:17px}.mini.playing{background:var(--shapla);color:#fff;border-color:var(--shapla)}
+.act{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:99px;border:1.5px solid var(--line);background:#fff;text-decoration:none;font-weight:600;font-size:14px;color:var(--ink)}
+.act svg{width:16px;height:16px;color:var(--shapla)}
+.doccard{margin-top:10px;border:1px dashed var(--line);border-radius:14px;padding:10px 12px;background:var(--paper)}
+.doccard pre{white-space:pre-wrap;font-family:var(--f-body);font-size:14.5px;margin:6px 0;max-height:240px;overflow:auto}
+.savebanner{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:var(--rehearse-2);font-size:14.5px;font-weight:600}
+.savebanner svg{width:20px;height:20px;flex:none;color:var(--shapla)}.savebanner span{flex:1}
+.savebanner button{border:0;background:var(--shapla);color:#fff;border-radius:99px;min-height:36px;padding:0 14px;font-weight:700}
+.welcome{display:flex;flex-direction:column;align-items:center;text-align:center;padding:16px 4px 0}
+.wlogo svg{width:68px;height:68px;border-radius:20px;box-shadow:0 10px 24px rgba(36,90,64,.25)}
+.welcome h1{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,6vw,34px);line-height:1.2;margin:16px 0 6px}
+.welcome p{color:var(--muted);font-size:16.5px;max-width:30em;margin:0 0 20px}
+.wchips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;max-width:620px}
+@media (min-width:700px){.wchips{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.wchip{display:flex;align-items:center;gap:10px;text-align:left;padding:12px;border-radius:18px;border:1.5px solid var(--line);background:#fff;font-weight:600;font-size:15px;line-height:1.3;min-height:64px;transition:transform .15s,border-color .15s}
+.wchip:hover{border-color:var(--c);transform:translateY(-1px)}
+.wchip .wi{flex:none;width:40px;height:40px;border-radius:12px;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center}
+.wchip .wi svg{width:22px;height:22px}
+/* the input bar */
+.composer2{position:sticky;bottom:0;z-index:6;padding:10px 0 calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--paper) 30%)}
+.cbar{display:flex;align-items:flex-end;gap:8px;background:#fff;border:1.5px solid var(--line);border-radius:30px;padding:6px;box-shadow:0 8px 28px rgba(29,26,58,.10)}
+.cbar:focus-within{border-color:var(--shapla)}
+.cfield{flex:1;min-width:0}
+.cfield textarea{width:100%;border:0;outline:0;resize:none;background:none;font-size:17px;line-height:1.4;padding:12px 6px;max-height:140px;color:var(--ink)}
+.cbtn{flex:none;width:48px;height:48px;border-radius:50%;border:0;display:flex;align-items:center;justify-content:center;text-decoration:none}
+.cbtn svg{width:24px;height:24px}
+.cbtn.cam{background:var(--lens-2);color:var(--lens)}
+.cbtn.mic2{background:radial-gradient(circle at 35% 30%,#FF7DB2,#E5307A 60%,#B0175C);color:#fff;width:54px;height:54px;box-shadow:0 6px 16px rgba(229,48,122,.4)}
+.cbtn.mic2.on{background:var(--danger)}
+.cbtn.send2{background:var(--ink);color:#fff}
+.cbtn.cancel{background:var(--paper);color:var(--muted)}
+.cbar.rec{align-items:center;border-color:var(--danger)}
+.recmid{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:0 4px;position:relative}
+.recmid .dot{width:12px;height:12px;border-radius:50%;background:var(--danger);animation:pulse2 1s infinite;flex:none}
+.recmid .tm{font-variant-numeric:tabular-nums;font-weight:700;flex:none}
+.recmid .lv{flex:1;display:flex;align-items:center;gap:3px;height:32px;overflow:hidden}
+.recmid .lv i{flex:1;min-width:2px;max-width:5px;height:4px;border-radius:2px;background:var(--shapla);transition:height .1s}
+.recmid small{position:absolute;left:30px;bottom:-16px;font-size:11.5px;color:var(--muted);white-space:nowrap}
+/* side menu / drawer */
+.rail .railtop{display:flex;align-items:center;justify-content:space-between}
+.closedrawer{display:none;width:40px;height:40px;border:0;background:none;color:#fff}.closedrawer svg{width:22px;height:22px}
+.newchat{display:flex;align-items:center;gap:10px;margin:4px 4px 8px;min-height:48px;padding:0 14px;border-radius:14px;border:1.5px dashed rgba(255,255,255,.35);background:rgba(255,255,255,.06);color:#fff;font-weight:700;font-size:15.5px}
+.newchat svg{width:20px;height:20px;color:var(--her)}
+.hist{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;margin-bottom:6px}
+.rail .logo svg{width:38px;height:38px;flex:none}
+.lshort{display:none}
+@media (max-width:480px){.langbtn .lfull{display:none}.langbtn .lshort{display:inline}.bar{gap:6px}}
+@media (max-width:400px){.iconbtn{width:38px;height:38px}.bar .brand .wm{font-size:19px!important}.bar .brand svg{width:30px;height:30px}.langbtn{padding-left:9px!important;padding-right:9px!important}.bar .sos{padding-left:11px!important;padding-right:11px!important}.menubtn{width:38px}}
+@media (max-width:374px){.bar .brand .wm{display:none}}
+.hrow{display:flex;align-items:center;border-radius:12px}.hrow:hover,.hrow.on{background:rgba(255,255,255,.08)}
+.hrow a{flex:1;min-width:0;padding:9px 12px;color:#D9D4EE;text-decoration:none;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hrow button{flex:none;width:34px;height:34px;border:0;background:none;color:#8F89B3;opacity:0;display:flex;align-items:center;justify-content:center}
+.hrow:hover button,.hrow.on button{opacity:1}.hrow button svg{width:16px;height:16px}
+.hnone{color:#8F89B3;font-size:13.5px;margin:2px 12px 8px}
+.navgrp summary{cursor:pointer;list-style:none}.navgrp summary::-webkit-details-marker{display:none}
+.navgrp summary::after{content:" ▾";font-size:11px}
+.accbox{display:flex;align-items:center;gap:10px;padding:10px;border-radius:16px;background:rgba(255,255,255,.07);margin-top:8px}
+.accbox .av{flex:none;width:36px;height:36px;border-radius:50%;background:var(--shapla);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.accbox .av svg{width:20px;height:20px}
+.accbox b{flex:1;min-width:0;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.accbox button{border:0;border-radius:99px;min-height:36px;padding:0 14px;font-weight:700;background:rgba(255,255,255,.14);color:#fff}
+.accbox .loginbtn{background:var(--her);color:var(--ink)}
+.linkbtn{display:block;margin:12px auto 0;border:0;background:none;color:var(--shapla);font-weight:700;min-height:44px}
+.err{color:var(--danger);font-weight:600;min-height:1.2em;margin:8px 0}
+.pick.big button{min-height:84px;justify-content:center}.pick.big b{font-size:24px}
+@media (max-width:899px){
+  .menubtn{display:inline-flex}
+  .rail{display:flex;flex-direction:column;gap:4px;position:fixed;z-index:60;top:0;bottom:0;left:0;width:min(86vw,320px);padding:16px 12px 16px;background:var(--ink);color:#fff;overflow-y:auto;transform:translateX(-105%);transition:transform .25s ease}
+  body.drawer .rail{transform:none;box-shadow:20px 0 60px rgba(0,0,0,.35)}
+  body.drawer::after{content:"";position:fixed;inset:0;z-index:55;background:rgba(21,18,15,.45)}
+  .closedrawer{display:flex}
+  .rail .logo{display:flex;align-items:center;gap:10px;text-decoration:none;padding:4px 8px 12px}
+  .rail a.it{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;text-decoration:none;color:#D9D4EE;font-weight:600;font-size:16px}
+  .rail a.it i{flex:none;width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--c,rgba(255,255,255,.12));color:#fff}
+  .rail a.it i svg{width:19px;height:19px}
+  .rail a.it.on{background:#fff;color:var(--ink)}
+  .rail .grp{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8F89B3;margin:12px 12px 4px;font-weight:700}
+  .rail .sp{flex:1}.rail .about{color:#8F89B3;font-size:13px;padding:8px 12px}
+  main{padding-bottom:24px!important}
+  .composer{bottom:0!important}
+  .bar .brand .wm{font-size:22px}
+}
+@media (min-width:900px){.shell{grid-template-columns:280px minmax(0,1fr)}.view-home main,.chatpage{padding-bottom:0}}
+
 /* ---- the big mic: the one thing she needs to find ---- */
 .micwrap{position:relative;width:min(54vw,200px);height:min(54vw,200px);margin:30px 0 18px;--lvl:0}
 .micwrap::before,.micwrap::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:5px solid var(--her);opacity:0;animation:callme 2.4s ease-out infinite;pointer-events:none}
@@ -966,6 +1074,11 @@ T.es = {
   money:'Libro de ingresos', world:'En el mundo', business:'Modelo de negocio', pickLang:'Idioma', pickCountry:'País',
 };
 
+Object.assign(T.bn, {"newChat": "নতুন কথা", "history": "আগের কথা", "noHistory": "এখনো কোনো কথা নেই", "tools": "সরঞ্জাম", "aboutH": "HerEvo সম্পর্কে", "login": "লগইন", "logout": "লগআউট", "account": "অ্যাকাউন্ট", "wTitle": "আসসালামু আলাইকুম! আমি HerEvo", "wSub": "জমি, ফসল, টাকা, স্বাস্থ্য বা নিরাপত্তা: যেকোনো কথা লিখুন বা মাইকে বলুন। আমি আপনার ভাষায় উত্তর দেব।", "ph": "এখানে লিখুন…", "recHint": "বলুন… থামলে নিজে থেকেই পাঠাবে", "recCancel": "বাতিল", "recSend": "পাঠান", "transcribing": "শুনে লিখছি…", "typing": "HerEvo লিখছে…", "helperName": "সহায়তাকর্মী", "you": "আপনি", "c1": "আমার জমির ভাগ কত?", "c2": "কাগজ পড়ে শোনাও", "c3": "অফিসে ঘুষ চাইছে", "c4": "ধানের পাতা হলুদ হয়ে যাচ্ছে", "c5": "আজকের বিক্রি লিখুন", "c6": "আমি বিপদে আছি", "q1": "আমার স্বামী মারা গেছেন। জমিতে আমার ভাগ কত?", "q3": "ভূমি অফিসের লোক নামজারির জন্য পাঁচ হাজার টাকা চাইছে।", "q4": "ধানের পাতা হলুদ হয়ে যাচ্ছে, কী করব?", "aShare": "আমার ভাগ দেখুন", "aRehearse": "কথার মহড়া দিন", "aLens": "কাগজ পড়ান", "aMoney": "আয়ের খাতা", "aWitness": "গোপন ডায়েরি", "aSOS": "এখনই সাহায্য", "aCounter": "অফিসে পাশে থাকব", "saveBanner": "লগইন করলে আপনার কথা অন্য ফোনেও থাকবে।", "loginH": "লগইন", "createH": "নতুন অ্যাকাউন্ট", "nameL": "আপনার নাম", "nameHint": "যেকোনো নাম, যেমন “রিনা চরপাড়া”", "pinL": "গোপন সংখ্যা (৪–৬ অঙ্ক)", "loginGo": "লগইন করুন", "createGo": "অ্যাকাউন্ট খুলুন", "haveAcc": "আগে অ্যাকাউন্ট আছে? লগইন করুন", "noAcc": "অ্যাকাউন্ট নেই? নতুন খুলুন", "accNote": "ফোন নম্বর বা ইমেইল লাগবে না। আপনার কথা শুধু আপনি দেখবেন, যেকোনো সময় মুছে ফেলতে পারবেন।", "deleteAcc": "অ্যাকাউন্ট ও সব কথা মুছুন", "welcomeLang": "আপনার ভাষা বেছে নিন", "voiceOn": "উত্তর শুনিয়ে দেবে", "voiceOff": "উত্তর শুধু লেখা", "delChat": "মুছুন", "menu": "মেনু", "guest": "অতিথি", "copied2": "কপি হয়েছে"});
+Object.assign(T.en, {"newChat": "New chat", "history": "Your chats", "noHistory": "No chats yet", "tools": "Tools", "aboutH": "About HerEvo", "login": "Log in", "logout": "Log out", "account": "Account", "wTitle": "Hello! I am HerEvo", "wSub": "Land, harvest, money, health or safety: type or speak anything. I answer in your language.", "ph": "Type here…", "recHint": "Speak… it sends when you pause", "recCancel": "Cancel", "recSend": "Send", "transcribing": "Writing down what you said…", "typing": "HerEvo is writing…", "helperName": "Trained helper", "you": "You", "c1": "What is my share of the land?", "c2": "Read a paper to me", "c3": "The office wants a bribe", "c4": "My rice leaves are turning yellow", "c5": "Write down today’s sales", "c6": "I am in danger", "q1": "My husband died. What is my share of the land?", "q3": "The land office clerk wants five thousand taka for my mutation.", "q4": "My rice leaves are turning yellow, what should I do?", "aShare": "See my share", "aRehearse": "Practise the talk", "aLens": "Read a paper", "aMoney": "Income record", "aWitness": "Private diary", "aSOS": "Get help now", "aCounter": "I’ll be with you at the office", "saveBanner": "Log in to keep your chats on any phone.", "loginH": "Log in", "createH": "New account", "nameL": "Your name", "nameHint": "Any name, for example “Rina Charpara”", "pinL": "Secret number (4–6 digits)", "loginGo": "Log in", "createGo": "Create account", "haveAcc": "Already have an account? Log in", "noAcc": "No account? Create one", "accNote": "No phone number or email needed. Only you see your chats, and you can delete them any time.", "deleteAcc": "Delete my account and all chats", "welcomeLang": "Choose your language", "voiceOn": "Answers read aloud", "voiceOff": "Answers as text only", "delChat": "Delete", "menu": "Menu", "guest": "Guest", "copied2": "Copied"});
+Object.assign(T.sw, {"newChat": "Mazungumzo mapya", "history": "Mazungumzo yako", "noHistory": "Bado hakuna mazungumzo", "tools": "Zana", "aboutH": "Kuhusu HerEvo", "login": "Ingia", "logout": "Toka", "account": "Akaunti", "wTitle": "Habari! Mimi ni HerEvo", "wSub": "Ardhi, mavuno, pesa, afya au usalama: andika au sema chochote. Ninajibu kwa lugha yako.", "ph": "Andika hapa…", "recHint": "Ongea… itatuma ukinyamaza", "recCancel": "Ghairi", "recSend": "Tuma", "transcribing": "Ninaandika ulichosema…", "typing": "HerEvo inaandika…", "helperName": "Msaidizi", "you": "Wewe", "c1": "Sehemu yangu ya ardhi ni ipi?", "c2": "Nisomee karatasi", "c3": "Ofisi inataka hongo", "c4": "Majani ya mahindi yanageuka manjano", "c5": "Andika mauzo ya leo", "c6": "Niko hatarini", "q1": "Mume wangu amefariki. Sehemu yangu ya ardhi ni ipi?", "q3": "Karani anataka hongo ili kushughulikia hati yangu.", "q4": "Majani ya mahindi yanageuka manjano, nifanye nini?", "aShare": "Ona sehemu yangu", "aRehearse": "Fanya mazoezi", "aLens": "Soma karatasi", "aMoney": "Daftari la mapato", "aWitness": "Shajara ya siri", "aSOS": "Pata msaada sasa", "aCounter": "Nitakuwa nawe ofisini", "saveBanner": "Ingia ili mazungumzo yako yabaki kwenye simu yoyote.", "loginH": "Ingia", "createH": "Akaunti mpya", "nameL": "Jina lako", "nameHint": "Jina lolote, mfano “Amina Kisumu”", "pinL": "Namba ya siri (tarakimu 4–6)", "loginGo": "Ingia", "createGo": "Fungua akaunti", "haveAcc": "Una akaunti? Ingia", "noAcc": "Huna akaunti? Fungua", "accNote": "Hakuna namba ya simu wala barua pepe. Ni wewe tu unayeona mazungumzo yako.", "deleteAcc": "Futa akaunti na mazungumzo yote", "welcomeLang": "Chagua lugha yako", "voiceOn": "Majibu yanasomwa kwa sauti", "voiceOff": "Majibu kwa maandishi tu", "delChat": "Futa", "menu": "Menyu", "guest": "Mgeni", "copied2": "Imenakiliwa"});
+Object.assign(T.es, {"newChat": "Nueva conversación", "history": "Tus conversaciones", "noHistory": "Aún no hay conversaciones", "tools": "Herramientas", "aboutH": "Sobre HerEvo", "login": "Entrar", "logout": "Salir", "account": "Cuenta", "wTitle": "¡Hola! Soy HerEvo", "wSub": "Tierra, cosecha, dinero, salud o seguridad: escribe o habla de lo que sea. Respondo en tu idioma.", "ph": "Escribe aquí…", "recHint": "Habla… se envía cuando haces una pausa", "recCancel": "Cancelar", "recSend": "Enviar", "transcribing": "Escribiendo lo que dijiste…", "typing": "HerEvo está escribiendo…", "helperName": "Acompañante", "you": "Tú", "c1": "¿Cuál es mi parte de la tierra?", "c2": "Léeme un papel", "c3": "En la oficina piden mordida", "c4": "Mi maíz tiene hojas amarillas", "c5": "Anotar las ventas de hoy", "c6": "Estoy en peligro", "q1": "Mi esposo murió. ¿Cuál es mi parte de la parcela?", "q3": "En la oficina me piden dinero extra para mi trámite.", "q4": "Mi maíz tiene hojas amarillas, ¿qué hago?", "aShare": "Ver mi parte", "aRehearse": "Ensayar la conversación", "aLens": "Leer un papel", "aMoney": "Libro de ingresos", "aWitness": "Diario privado", "aSOS": "Pedir ayuda ya", "aCounter": "Te acompaño en la oficina", "saveBanner": "Entra para guardar tus conversaciones en cualquier teléfono.", "loginH": "Entrar", "createH": "Cuenta nueva", "nameL": "Tu nombre", "nameHint": "Cualquier nombre, por ejemplo “Lucía Oaxaca”", "pinL": "Número secreto (4–6 dígitos)", "loginGo": "Entrar", "createGo": "Crear cuenta", "haveAcc": "¿Ya tienes cuenta? Entra", "noAcc": "¿No tienes cuenta? Crea una", "accNote": "Sin número de teléfono ni correo. Solo tú ves tus conversaciones y puedes borrarlas cuando quieras.", "deleteAcc": "Borrar mi cuenta y todo", "welcomeLang": "Elige tu idioma", "voiceOn": "Respuestas en voz alta", "voiceOff": "Respuestas solo en texto", "delChat": "Borrar", "menu": "Menú", "guest": "Invitada", "copied2": "Copiado"});
+
 /* ============================================================== state */
 // In champion mode each woman she helps has her own path, family, diary and code on this phone.
 const SCOPED = new Set(['path', 'family', 'witness', 'pin', 'pinSkipped', 'papers', 'minutes']);
@@ -977,13 +1090,15 @@ const store = {
   del(k){ try{ localStorage.removeItem(skey(k)); }catch(e){} },
 };
 const S = {
-  lang: store.get('lang', 'bn'),
+  lang: store.get('lang', (() => { const l = (navigator.language || 'bn').slice(0, 2).toLowerCase(); return ['bn', 'en', 'sw', 'es'].includes(l) ? l : 'en'; })()),
   country: store.get('country', 'BD'),
   sid: store.get('sid', null) || (() => { const id = 'app-' + Math.random().toString(36).slice(2) + Date.now().toString(36); store.set('sid', id); return id; })(),
   voice: store.get('voice', true),
 };
+let ACCOUNT = (() => { try{ return JSON.parse(localStorage.getItem('herevo.account') || 'null'); }catch(e){ return null; } })();
+if (ACCOUNT && ACCOUNT.sid) S.sid = ACCOUNT.sid;  // her path, income record and memory follow her account
 const q = new URLSearchParams(location.search).get('lang');
-if (q === 'bn' || q === 'en') S.lang = q;
+if (['bn', 'en', 'sw', 'es'].includes(q)){ S.lang = q; store.set('lang', q); }
 const t = (k) => (T[S.lang] && T[S.lang][k] !== undefined ? T[S.lang][k] : T.en[k]);
 const LANGS = [['bn','বাংলা','Bangla'], ['en','English','English'], ['sw','Kiswahili','Swahili'], ['es','Español','Spanish']];
 const BN = '০১২৩৪৫৬৭৮৯';
@@ -1028,6 +1143,12 @@ const ICONS = {
   sprout:'<path d="M12 21V10M12 14c-3.5 0-6-2.5-6-6 3.5 0 6 2.5 6 6zM12 12c3 0 5-2 5-5-3 0-5 2-5 5z" fill="currentColor"/>',
   scroll:'<path d="M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 8h7M9 12h7M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
   chart:'<path d="M4 20h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="5" y="11" width="3.5" height="7" rx="1" fill="currentColor"/><rect x="10.3" y="7" width="3.5" height="11" rx="1" fill="currentColor"/><rect x="15.6" y="4" width="3.5" height="14" rx="1" fill="currentColor"/>',
+  menu:'<path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>',
+  mute:'<path d="M4 9.5v5h4l5 4.2V5.3L8 9.5z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  plus:'<path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>',
+  trash:'<path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>',
+  user:'<circle cx="12" cy="8.5" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
   arrow:'<path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>',
   hand:'<path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11M11 10V4a1.5 1.5 0 0 1 3 0v7M14 10.5V5.5a1.5 1.5 0 0 1 3 0V14c0 4-2.6 7-6.5 7-2.6 0-4-1.2-5.4-3.4L3.6 15a1.6 1.6 0 0 1 2.6-1.8L8 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
   check:'<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>',
@@ -1056,6 +1177,18 @@ let toastTimer;
 function toast(msg){ const old = $('.toast'); if (old) old.remove(); const el = h('div', {class:'toast', role:'status'}, msg); ($('.device') || document.body).append(el); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.remove(), 3800); }
 
 /* ============================================================== network */
+async function authApi(path, method = 'GET', body){
+  const r = await fetch(path, {method, headers: Object.assign({'content-type':'application/json'}, ACCOUNT ? {authorization:'Bearer ' + ACCOUNT.token} : {}), body: body ? JSON.stringify(body) : undefined});
+  if (r.status === 401 && ACCOUNT){ setAccount(null); }
+  if (!r.ok) throw Object.assign(new Error('http ' + r.status), {status: r.status, detail: await r.json().catch(() => ({}))});
+  return r.json();
+}
+function setAccount(acc){
+  ACCOUNT = acc;
+  try{ if (acc) localStorage.setItem('herevo.account', JSON.stringify(acc)); else localStorage.removeItem('herevo.account'); }catch(e){}
+  S.sid = acc ? acc.sid : (store.get('sid', null) || S.sid);
+  if (!acc){ try{ localStorage.removeItem('herevo.sid'); }catch(e){} S.sid = 'app-' + Math.random().toString(36).slice(2) + Date.now().toString(36); store.set('sid', S.sid); }
+}
 async function api(path, body, timeout = 60000, quiet = false){
   const c = new AbortController(); const timer = setTimeout(() => c.abort(), timeout);
   const slow = setTimeout(() => { if (!quiet) toast(t('waking')); }, 9000);
@@ -1185,7 +1318,7 @@ function recorder({continuous = false, onSegment, onLevel, onStart, onError, max
       if (loud){ if (!speaking){ speaking = true; } lastLoud = now; }
       if (!speaking){
         if (chunks.length > 4) chunks.shift();  // keep a little audio from just before she starts
-        if (!continuous && now - began > maxSilentStart){ finish(false); }
+        if (!continuous && now - began > maxSilentStart){ finish(false); onSegment && onSegment(null); }
         return;
       }
       const pause = now - lastLoud, long = now - segStart > 28000;
@@ -1260,10 +1393,11 @@ function hearBrowser(btn, onText, onEnd){
 }
 
 /* ============================================================== shell */
-const TITLES = {partner:'partner', ask:'back', money:'money', world:'world', business:'business', more:'more', home:'home', voice:'vcT', talk:'talkT', file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
+const TITLES = {chat:'home', partner:'partner', ask:'back', money:'money', world:'world', business:'business', more:'more', home:'home', voice:'vcT', talk:'talkT', file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
 function bar(name){
   const b = $('#bar'); fill(b);
-  if (name === 'home'){
+  b.append(h('button', {class:'menubtn', type:'button', 'aria-label': t('menu'), onclick: openDrawer}, icon('menu')));
+  if (name === 'home' || name === 'chat'){
     b.append(h('a', {class:'brand', href:'#home', 'aria-label':'HerEvo'}, logo(), wordmark()));
   } else {
     b.append(h('a', {class:'back', href:'#home'}, icon('back'), t(TITLES[name] || 'back')));
@@ -1271,7 +1405,8 @@ function bar(name){
   const who = currentProfile();
   fill(b, ...b.childNodes, h('span', {class:'sp'}),
     who ? h('a', {class:'chip forwho', href:'#champion', style:`border-color:${who.color}`}, h('i', {style:`background:${who.color}`}, initial(who.name)), who.name) : null,
-    h('button', {class:'chip langbtn', type:'button', 'aria-label':'Language and country', onclick: openPicker}, icon('globe'), LANGS.find((l) => l[0] === S.lang)[1]),
+    h('button', {class:'iconbtn' + (S.voice ? ' on' : ''), type:'button', title: S.voice ? t('voiceOn') : t('voiceOff'), 'aria-label': S.voice ? t('voiceOn') : t('voiceOff'), 'aria-pressed': String(!!S.voice), onclick: (e) => { S.voice = !S.voice; store.set('voice', S.voice); if (!S.voice) stopSpeech(); e.currentTarget.classList.toggle('on', S.voice); e.currentTarget.setAttribute('aria-pressed', String(S.voice)); toast(S.voice ? t('voiceOn') : t('voiceOff')); }}, icon(S.voice ? 'speaker' : 'mute')),
+    h('button', {class:'chip langbtn', type:'button', 'aria-label':'Language and country', onclick: openPicker}, icon('globe'), h('span', {class:'lfull'}, LANGS.find((l) => l[0] === S.lang)[1]), h('span', {class:'lshort'}, S.lang.toUpperCase())),
     h('button', {class:'sos', type:'button', onclick: openSOS}, icon('shield'), t('sos')));
 }
 function logo(){ const w = document.createElement('span'); w.innerHTML = '<svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="mk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F7352"/><stop offset="1" stop-color="#163D2B"/></linearGradient></defs><rect width="48" height="48" rx="13" fill="#245A40"/><circle cx="24" cy="14.5" r="6.6" fill="none" stroke="#F2B33D" stroke-width="3.4"/><path d="M24 21.5V40" stroke="#E8F3EC" stroke-width="3.2" stroke-linecap="round"/><path d="M24 33.5C19 33.4 14.2 30.2 12.6 24.6C18.2 24.4 22.6 27.8 24 33.5Z" fill="#9FD9B8"/><path d="M24 33.5C29 33.4 33.8 30.2 35.4 24.6C29.8 24.4 25.4 27.8 24 33.5Z" fill="#9FD9B8"/></svg>'; return w.firstChild; }
@@ -1304,14 +1439,33 @@ const NAV = [['home','home','var(--ink)','home'], ['talk','mic','var(--shapla)',
   ['lens','camera','var(--lens)','pLens'], ['share','land','var(--share)','pShare'], ['rehearse','chat','var(--rehearse)','pRehearse'], ['counter','ear','var(--counter)','pCounter'], ['witness','lock','var(--witness)','pWitness'], null,
   ['money','coin','#B57400','money'], ['file','book','#5B5784','fileT'], ['champion','person','#B0457A','champ'], null,
   ['world','globe','#1F5FD0','world'], ['partner','chart','#0E7C86','partner'], ['business','coin','#21894A','business'], ['more','grid','#5B5784','more']];
+const TOOLS_NAV = [['talk','mic','var(--shapla)','talkT'], ['path','arrow','var(--her)','yourPath'], ['lens','camera','var(--lens)','pLens'], ['share','land','var(--share)','pShare'], ['rehearse','chat','var(--rehearse)','pRehearse'], ['counter','ear','var(--counter)','pCounter'], ['witness','lock','var(--witness)','pWitness'], ['money','coin','#B57400','money'], ['file','book','#5B5784','fileT']];
+const ABOUT_NAV = [['champion','person','#B0457A','champ'], ['world','globe','#1F5FD0','world'], ['partner','chart','#0E7C86','partner'], ['business','coin','#21894A','business'], ['voice','mic','#5B5784','vcT']];
 function navs(key){
   const rail = $('#rail');
-  fill(rail, h('a', {class:'logo', href:'#home'}, logo(), wordmark()),
-    NAV.map((n) => n ? h('a', {class:'it' + (n[0] === key ? ' on' : ''), href:'#' + n[0], style:`--c:${n[2]}`}, h('i', null, icon(n[1])), t(n[3])) : h('div', {style:'height:10px'})),
-    h('span', {class:'sp'}), h('p', {class:'about'}, t('testNote')));
-  const tab = (k, ic, label, cls) => h('a', {class:(cls || '') + (k === key ? ' on' : ''), href:'#' + k}, ic, label);
-  fill($('#tabs'), tab('home', icon('home'), t('home')), tab('lens', icon('camera'), t('pLens')), tab('talk', h('span', {class:'tmic'}, icon('mic')), t('talkT'), 'talk'), tab('share', icon('land'), t('pShare')), tab('more', icon('grid'), t('more')));
+  const item = (n) => h('a', {class:'it' + (n[0] === key ? ' on' : ''), href:'#' + n[0], style:`--c:${n[2]}`, onclick: closeDrawer}, h('i', null, icon(n[1])), t(n[3]));
+  const hist = h('div', {class:'hist'});
+  fill(rail, h('div', {class:'railtop'}, h('a', {class:'logo', href:'#home', onclick: closeDrawer}, logo(), wordmark()), h('button', {class:'closedrawer', type:'button', 'aria-label':'Close', onclick: closeDrawer}, icon('x'))),
+    h('button', {class:'newchat', type:'button', onclick: () => { closeDrawer(); startNewChat(); }}, icon('plus'), t('newChat')),
+    h('div', {class:'grp'}, t('history')), hist,
+    h('details', {class:'navgrp', open: true}, h('summary', {class:'grp'}, t('tools')), TOOLS_NAV.map(item)),
+    h('details', {class:'navgrp', open: ABOUT_NAV.some((n) => n[0] === key) || null}, h('summary', {class:'grp'}, t('aboutH')), ABOUT_NAV.map(item)),
+    h('span', {class:'sp'}),
+    h('div', {class:'accbox'}, ACCOUNT ? [h('span', {class:'av'}, initial(ACCOUNT.name)), h('b', null, ACCOUNT.name), h('button', {type:'button', onclick: openAccount}, t('account'))]
+      : [h('span', {class:'av'}, icon('user')), h('b', null, t('guest')), h('button', {type:'button', class:'loginbtn', onclick: openAccount}, t('login'))]),
+    h('p', {class:'about'}, t('testNote')));
+  loadHistory(hist, key);
 }
+async function loadHistory(box, key){
+  const list = await Chats.list();
+  const cur = (key === 'home' || key === 'chat') && Chats.cur ? Chats.cur.id : null;
+  fill(box, list.length ? list.slice(0, 30).map((c) => h('div', {class:'hrow' + (c.id === cur ? ' on' : '')},
+    h('a', {href:'#chat/' + c.id, onclick: closeDrawer}, c.title),
+    h('button', {type:'button', 'aria-label': t('delChat'), title: t('delChat'), onclick: async () => { await Chats.remove(c.id); if (Chats.cur && Chats.cur.id === c.id) Chats.cur = null; route(); }}, icon('trash'))))
+    : h('p', {class:'hnone'}, t('noHistory')));
+}
+function openDrawer(){ document.body.classList.add('drawer'); }
+function closeDrawer(){ document.body.classList.remove('drawer'); }
 function openPicker(){
   const close = sheet(h('h2', null, t('pickLang')),
     h('div', {class:'pick'}, LANGS.map(([code, native, eng]) => h('button', {type:'button', 'aria-pressed': String(S.lang === code), onclick: () => { S.lang = code; store.set('lang', code); if (code === 'sw' && S.country === 'BD') S.country = 'KE'; if (code === 'es' && S.country === 'BD') S.country = 'MX'; if (code === 'bn') S.country = 'BD'; store.set('country', S.country); close(); route(); }}, h('b', null, native), h('small', null, eng)))),
@@ -1336,19 +1490,53 @@ function openSOS(){
 }
 function quickExit(){ stopSpeech(); document.body.innerHTML = ''; try{ sessionStorage.clear(); }catch(e){} location.replace('https://www.google.com/search?q=weather'); }
 
-const VIEWS = {partner: Partner, ask: Ask, money: Money, world: World, business: Business, more: More, voice: VoiceCheck, talk: Talk, file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
+const VIEWS = {chat: Home, partner: Partner, ask: Ask, money: Money, world: World, business: Business, more: More, voice: VoiceCheck, talk: Talk, file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
 function route(){
   stopSpeech(); if (rec){ try{ rec.abort(); }catch(e){} rec = null; } stopLive();
   fill($('#layer'));
   document.documentElement.lang = S.lang;
   const [name, arg] = (location.hash.slice(1) || 'home').split('/');
   const key = VIEWS[name] ? name : 'home';
-  bar(key); navs(key);
+  bar(key); navs(key); closeDrawer();
   const v = h('div', {class:'view view-' + key}); v.append(VIEWS[key](arg));
   fill($('#view'), v);
   const app = $('#app'); if (app.scrollTop) app.scrollTop = 0; window.scrollTo(0, 0);
 }
 window.addEventListener('hashchange', route);
+
+/* ============================================================== chats: on her phone, or on her account */
+const Chats = {
+  cur: null,
+  local(){ return store.get('chats', []); },
+  saveLocal(list){ store.set('chats', list.slice(0, 40)); },
+  async list(){
+    if (ACCOUNT){ try{ return (await authApi('/v1/chats')).chats; }catch(e){ return []; } }
+    return this.local().map((c) => ({id:c.id, title:c.title, updated:c.updated}));
+  },
+  async open(id){
+    if (ACCOUNT){ try{ const c = await authApi('/v1/chats/' + id); this.cur = {id:c.id, title:c.title, messages:c.messages}; return this.cur; }catch(e){ return null; } }
+    const c = this.local().find((x) => x.id === id); this.cur = c ? JSON.parse(JSON.stringify(c)) : null; return this.cur;
+  },
+  start(){ this.cur = {id:'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8), title:'', messages:[]}; return this.cur; },
+  async add(msgs){
+    const c = this.cur || this.start();
+    if (!c.title){ const first = msgs.find((m) => m.role === 'her'); if (first) c.title = first.text.slice(0, 60); }
+    c.messages.push(...msgs);
+    if (ACCOUNT){ try{ await authApi('/v1/chats/' + c.id, 'POST', {title:c.title, messages:msgs.map((m) => ({role:m.role, text:m.text, extra:m.extra || null}))}); }catch(e){} return; }
+    const list = this.local().filter((x) => x.id !== c.id);
+    list.unshift({id:c.id, title:c.title || '…', updated:new Date().toISOString(), messages:c.messages.slice(-120)});
+    this.saveLocal(list);
+  },
+  async remove(id){
+    if (ACCOUNT){ try{ await authApi('/v1/chats/' + id, 'DELETE'); }catch(e){} return; }
+    this.saveLocal(this.local().filter((x) => x.id !== id));
+  },
+  async uploadGuestChats(){  // when she logs in, the chats she had on this phone come with her
+    for (const c of this.local().reverse()){ try{ for (let i = 0; i < c.messages.length; i += 40) await authApi('/v1/chats/' + c.id, 'POST', {title:c.title, messages:c.messages.slice(i, i + 40).map((m) => ({role:m.role, text:m.text, extra:m.extra || null}))}); }catch(e){} }
+    this.saveLocal([]);
+  },
+};
+function startNewChat(){ Chats.cur = null; if (location.hash === '#home' || location.hash === '') route(); else location.hash = '#home'; }
 
 /* ============================================================== home */
 function More(){
@@ -1542,64 +1730,155 @@ function Champion(){
 function beep(freq = 880, ms = 140){
   try{ const AC = window.AudioContext || window.webkitAudioContext; const c = new AC(); const o = c.createOscillator(), g = c.createGain(); o.frequency.value = freq; o.connect(g); g.connect(c.destination); g.gain.setValueAtTime(.0001, c.currentTime); g.gain.exponentialRampToValueAtTime(.25, c.currentTime + .02); g.gain.exponentialRampToValueAtTime(.0001, c.currentTime + ms / 1000); o.start(); o.stop(c.currentTime + ms / 1000 + .05); setTimeout(() => c.close(), ms + 300); }catch(e){}
 }
-function Home(){
-  const saved = store.get('path', null);
-  const root = h('div', {'data-state':'idle'});
-  const state = h('p', {class:'hstate', 'aria-live':'polite'}, t('tapSpeak'));
-  const heard = h('p', {class:'hheard'});
-  const set = (st, text) => { root.dataset.state = st; state.textContent = text; };
-  let recNow = null;
-  const mic = micButton(() => {
-    if (recNow){ recNow.stop(); return; }
-    if (root.dataset.state === 'thinking') return;
-    stopSpeech(); heard.textContent = '';
-    if (!canRecord()){  // no recording here: the browser's own listening, then the words
-      set('listening', t('listenShort'));
-      return hear(mic.btn, (x) => { heard.textContent = '“' + x + '”'; }, (x) => { if (x && x.trim().length > 2){ set('thinking', t('writeShort')); makePath(x.trim()); } else set('idle', t('tapSpeak')); });
-    }
-    beep(); set('listening', t('listenShort'));
-    recNow = recorder({
-      onLevel: (v) => mic.level(v),
-      onError: (kind) => { recNow = null; mic.level(0); micError(kind); set('idle', t('tapSpeak')); },
-      onSegment: async (wav) => {
-        recNow = null; mic.level(0);
-        if (!wav){ set('idle', t('tapSpeak')); toast(t('heardNothing')); return; }
-        set('thinking', t('writeShort')); beep(660, 110);
-        makePath(null, await toB64(wav));
-      }});
-  }, t('tapSpeak'));
-  const btn = mic;
-  const ex = t('tellEx');
-  const tries = h('div', {class:'tries'}, [[t('tryA'), ex[0]], [t('tryB'), ex[1]], [t('tryC'), ex[3]]].map(([label, full]) =>
-    h('button', {type:'button', onclick: () => { heard.textContent = '“' + full + '”'; set('thinking', t('writeShort')); makePath(full); }}, icon('speaker'), label)));
-  const ta = h('textarea', {rows:'1', placeholder: t('tellPh')});
-  const typein = h('div', {class:'typein', hidden:true}, ta, h('button', {class:'send', type:'button', style:'background:var(--shapla)', 'aria-label': t('go'), onclick: () => { const v = ta.value.trim(); if (v.length > 2) makePath(v); }}, icon('send')));
-  const panel = (id, ic, label, i) => h('a', {class:'panel', href:'#' + id, style:`--c:var(--${id});--i:${i}`},
-    h('span', {class:'in'}, h('span', {class:'fl a'}, svgHTML(FLOWER)), h('span', {class:'fl b'}, svgHTML(FLOWER)),
-      h('span', {class:'medal'}, svgHTML(PETALS), h('span', null, icon(ic))), h('b', null, t(label)), h('small', null, t(id + 'Moment'))),
-    listenBtn(() => t(id) + '। ' + t(id + 'Desc'), 'listen'));
-  const done = saved ? saved.done.filter(Boolean).length : 0;
-  const radarSlot = h('div');
-  api('/v1/radar/' + S.country, null, 20000, true).then((r) => { if (r.total) fill(radarSlot, h('a', {class:'radarstrip', href:'#counter'}, icon('alert'), h('span', null, t('radarStrip')(num(r.total))))); }).catch(() => {});
-  fill(root,
-    h('section', {class:'hero'},
-      h('div', {class:'greet'}, t('hello'), listenBtn(() => t('homeHello'))),
-      (() => { const e = h('h1'); e.innerHTML = t('homeH'); return e; })(),
-      mic, state, heard, tries,
-      h('button', {class:'typebtn', type:'button', onclick: (e) => { typein.hidden = false; e.currentTarget.hidden = true; ta.focus(); }}, icon('keyboard'), t('typeInstead')), typein),
-    saved ? h('a', {class:'pathpanel', href:'#path'}, h('span', {class:'in'}, h('span', {class:'pie', style:`--v:${Math.round(done / saved.plan.steps.length * 100)}`}, h('b', null, num(done) + '/' + num(saved.plan.steps.length))),
-      h('span', {class:'t'}, h('strong', null, t('yourPath')), h('small', null, saved.plan.understood)), icon('arrow'))) : null,
-    h('h2', {class:'needs-h'}, t('needsH')),
-    h('div', {class:'needs'}, NEEDS.map(([k, ic, c, href, soon], i) => h('a', {class:'need' + (soon ? ' soon' : ''), href: href || '#', style:`--c:${c};--i:${i}`, onclick: (e) => { if (k === 'nSafety'){ e.preventDefault(); openSOS(); } else if (soon) e.preventDefault(); }},
-      h('span', {class:'ni'}, icon(ic)), h('b', null, t(k)), soon ? h('small', null, t('soon')) : null))),
-    h('div', {class:'panels'}, panel('lens', 'camera', 'pLens', 0), panel('share', 'land', 'pShare', 1), panel('rehearse', 'chat', 'pRehearse', 2), panel('counter', 'ear', 'pCounter', 3), panel('witness', 'lock', 'pWitness', 4)),
-    radarSlot,
-    h('div', {class:'homefoot'},
-      h('a', {class:'chip', href:'#champion', style:'text-decoration:none'}, icon('person'), t('champMode')),
-      h('a', {class:'chip', href:'#voice', style:'text-decoration:none'}, icon('mic'), t('vcLink')),
-      h('select', {class:'chip', 'aria-label': t('country'), onchange: (e) => { S.country = e.target.value; store.set('country', S.country); }},
-        ['BD', 'KE', 'MX'].map((c) => { const o = h('option', {value:c}, t('country') + ': ' + t('cc')[c]); if (c === S.country) o.selected = true; return o; }))));
+const ACTIONS = {
+  RIGHTS:[['aShare','land','#share'], ['aRehearse','chat','#rehearse'], ['aLens','camera','#lens']],
+  EARN:[['aMoney','coin','#money']],
+  SAFETY:[['aSOS','shield',null], ['aWitness','lock','#witness']],
+};
+function Home(id){
+  const root = h('div', {class:'chatpage'});
+  const log = h('div', {class:'chatlog', 'aria-live':'polite'});
+  const scrollDown = () => setTimeout(() => { const last = log.lastElementChild; if (last) last.scrollIntoView({behavior:'smooth', block:'end'}); }, 50);
+  function bubble(m){
+    if (m.role === 'her') return h('div', {class:'msg her'}, h('div', {class:'bub'}, m.text));
+    if (m.role === 'helper') return h('div', {class:'msg helper'}, h('span', {class:'av'}, icon('user')), h('div', {class:'bub'}, h('small', null, t('helperName')), m.text));
+    const x = m.extra || {};
+    const say = [m.text, ...(x.steps || []).map((st, i) => (i + 1) + '. ' + st)].join(' ');
+    const acts = (ACTIONS[x.intent] || []).map(([k, ic, href]) => h('a', {class:'act', href: href || '#', onclick: (e) => { if (!href){ e.preventDefault(); openSOS(); } }}, icon(ic), t(k)));
+    return h('div', {class:'msg herevo'}, h('span', {class:'av'}, logo()),
+      h('div', {class:'bub'}, h('p', null, m.text),
+        (x.steps || []).length ? h('ol', {class:'steps'}, x.steps.map((st) => h('li', null, st))) : null,
+        x.document ? h('div', {class:'doccard'}, h('b', null, x.document.title || ''), h('pre', null, x.document.text || ''), h('button', {type:'button', class:'act', onclick: async () => { try{ await navigator.clipboard.writeText(x.document.text || ''); toast(t('copied2')); }catch(e){} }}, icon('copy'), t('copy'))) : null,
+        h('div', {class:'tools'}, listenBtn(say, 'mini'), h('button', {class:'mini', type:'button', 'aria-label': t('copy'), onclick: async () => { try{ await navigator.clipboard.writeText(say); toast(t('copied2')); }catch(e){} }}, icon('copy')), acts)));
+  }
+  function welcome(){
+    const chip = (ic, label, fn, c) => h('button', {class:'wchip', type:'button', style:`--c:${c}`, onclick: fn}, h('span', {class:'wi'}, icon(ic)), label);
+    return h('div', {class:'welcome'}, h('div', {class:'wlogo'}, logo()), h('h1', null, t('wTitle')), h('p', null, t('wSub')),
+      h('div', {class:'wchips'},
+        chip('land', t('c1'), () => send(t('q1')), 'var(--share)'),
+        chip('camera', t('c2'), () => { location.hash = '#lens'; }, 'var(--lens)'),
+        chip('ear', t('c3'), () => send(t('q3')), 'var(--counter)'),
+        chip('sprout', t('c4'), () => send(t('q4')), '#2E7D32'),
+        chip('coin', t('c5'), () => { location.hash = '#money'; }, '#B57400'),
+        chip('shield', t('c6'), openSOS, 'var(--danger)')));
+  }
+  async function draw(){
+    if (id && (!Chats.cur || Chats.cur.id !== id)) await Chats.open(id);
+    const c = Chats.cur;
+    if (!c || !c.messages.length){ fill(log, welcome()); return; }
+    fill(log, c.messages.map(bubble), !ACCOUNT && c.messages.length >= 2 ? h('div', {class:'savebanner'}, icon('user'), h('span', null, t('saveBanner')), h('button', {type:'button', onclick: openAccount}, t('login'))) : null);
+    scrollDown();
+  }
+  async function send(text, pending){
+    text = (text || '').trim(); if (!text) return;
+    if (!Chats.cur) Chats.start();
+    if (log.querySelector('.welcome')) fill(log);
+    const her = {role:'her', text};
+    if (pending) pending.replaceWith(bubble(her)); else log.append(bubble(her));
+    const wait = h('div', {class:'msg herevo'}, h('span', {class:'av'}, logo()), h('div', {class:'bub typing'}, h('span', {class:'dots'}, h('i'), h('i'), h('i')), h('small', null, t('typing'))));
+    log.append(wait); scrollDown();
+    try{
+      const r = await api('/v1/ask', {session_id:S.sid, text, country:S.country}, 60000);
+      const msg = {role:'herevo', text:r.reply, extra:{steps:r.steps || [], document:r.document || null, intent:r.intent || null}};
+      wait.replaceWith(bubble(msg)); scrollDown();
+      await Chats.add([her, msg]);
+      if (S.voice) speak([r.reply, ...(r.steps || []).map((st, i) => (i + 1) + '. ' + st)].join(' '), log.lastElementChild.querySelector('.listen, .mini'));
+      if (Chats.cur.messages.length === 2) navs('home');  // the new chat appears in the history list
+    }catch(e){ wait.remove(); }
+  }
+  const bar0 = composer(send, (pendingText) => { if (log.querySelector('.welcome')) fill(log); const b = h('div', {class:'msg her'}, h('div', {class:'bub pending'}, h('span', {class:'spinner'}), ' ', pendingText)); log.append(b); scrollDown(); return b; });
+  fill(root, log, bar0);
+  draw();
+  watchHelpers(log, bubble);
   return root;
+}
+// The input bar: camera, text, and a mic that turns into a recording bar (cancel, live level, timer, send).
+function composer(onSend, onPending){
+  const ta = h('textarea', {rows:'1', placeholder: t('ph'), 'aria-label': t('ph'), oninput: () => { grow(); swap(); }, onkeydown: (e) => { if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); go(); } }});
+  const grow = () => { ta.style.height = 'auto'; ta.style.height = Math.min(140, ta.scrollHeight) + 'px'; };
+  const go = () => { const v = ta.value.trim(); if (!v) return; ta.value = ''; grow(); swap(); onSend(v); };
+  const send = h('button', {class:'cbtn send2', type:'button', 'aria-label': t('recSend'), onclick: go}, icon('send'));
+  const mic = h('button', {class:'cbtn mic2', type:'button', 'aria-label': t('tapSpeak'), onclick: () => startRec()}, icon('mic'));
+  const swap = () => { const has = !!ta.value.trim(); send.hidden = !has; mic.hidden = has; };
+  const normal = h('div', {class:'cbar'}, h('a', {class:'cbtn cam', href:'#lens', 'aria-label': t('aLens'), title: t('aLens')}, icon('camera')), h('div', {class:'cfield'}, ta), mic, send);
+  const levels = h('span', {class:'lv'}, Array.from({length:18}, () => h('i')));
+  const timer = h('span', {class:'tm'}, '0:00');
+  let r = null, tick = null, t0 = 0, cancelled = false;
+  const recbar = h('div', {class:'cbar rec', hidden:true},
+    h('button', {class:'cbtn cancel', type:'button', 'aria-label': t('recCancel'), onclick: () => { cancelled = true; stopRec(); }}, icon('x')),
+    h('div', {class:'recmid'}, h('span', {class:'dot'}), timer, levels, h('small', null, t('recHint'))),
+    h('button', {class:'cbtn send2', type:'button', 'aria-label': t('recSend'), onclick: () => { if (r) r.stop(); }}, icon('send')));
+  function stopRec(){ if (r){ const x = r; r = null; cancelled ? x.abort() : x.stop(); } clearInterval(tick); recbar.hidden = true; normal.hidden = false; }
+  function startRec(){
+    stopSpeech();
+    if (!canRecord()){  // the browser's own listening as a fallback
+      return hear(mic, (x) => { ta.value = x; grow(); swap(); }, (x) => { if (x && x.trim()) go(); });
+    }
+    cancelled = false; normal.hidden = true; recbar.hidden = false; beep(); t0 = Date.now();
+    tick = setInterval(() => { const sec = Math.floor((Date.now() - t0) / 1000); timer.textContent = Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); }, 250);
+    let k = 0;
+    r = recorder({maxSilentStart: 12000,
+      onLevel: (v) => { const bars = levels.children; bars[k % bars.length].style.height = (4 + v * 26) + 'px'; k++; },
+      onError: (kind) => { micError(kind); stopRec(); },
+      onSegment: async (wav) => {
+        clearInterval(tick); recbar.hidden = true; normal.hidden = false; r = null;
+        if (cancelled) return;
+        if (!wav){ toast(t('heardNothing')); return; }
+        const pend = onPending ? onPending(t('transcribing')) : null;
+        try{ const text = await transcribe(wav); if (!text){ if (pend) pend.remove(); toast(t('heardNothing')); return; } onSend(text, pend); }
+        catch(e){ if (pend) pend.remove(); }
+      }});
+  }
+  swap();
+  return h('div', {class:'composer2'}, normal, recbar);
+}
+let helperTimer = null;
+function watchHelpers(log, bubble){
+  clearInterval(helperTimer);
+  helperTimer = setInterval(async () => {
+    if (!document.body.contains(log)){ clearInterval(helperTimer); return; }
+    try{
+      const r = await (await fetch('/v1/inbox/' + S.sid)).json();
+      for (const m of r.messages || []){ const msg = {role:'helper', text:m.text}; log.append(bubble(msg)); await Chats.add([msg]); speak(m.text); log.lastElementChild.scrollIntoView({behavior:'smooth'}); }
+    }catch(e){}
+  }, 8000);
+}
+function openAccount(){
+  closeDrawer();
+  if (ACCOUNT){
+    const close = sheet(h('h2', null, ACCOUNT.name), h('p', {class:'sub'}, t('accNote')),
+      h('button', {class:'btn block', type:'button', onclick: async () => { try{ await authApi('/v1/account/logout', 'POST'); }catch(e){} setAccount(null); Chats.cur = null; close(); route(); }}, t('logout')),
+      h('button', {class:'danger-link', type:'button', style:'display:block;margin:14px auto 0', onclick: async (e) => { if (e.currentTarget.dataset.sure !== '1'){ e.currentTarget.dataset.sure = '1'; e.currentTarget.textContent = t('confirmDelete'); return; } try{ await authApi('/v1/account', 'DELETE'); }catch(err){} setAccount(null); Chats.cur = null; close(); route(); }}, t('deleteAcc')));
+    return;
+  }
+  let create = false;
+  const name = h('input', {type:'text', maxlength:'40', autocomplete:'username', placeholder: t('nameHint')});
+  const pin = h('input', {type:'password', inputmode:'numeric', pattern:'[0-9]*', maxlength:'6', autocomplete:'current-password', placeholder:'••••'});
+  const err = h('p', {class:'err', role:'alert'});
+  const title = h('h2', null, t('loginH'));
+  const go = h('button', {class:'btn block', type:'button', onclick: submit}, t('loginGo'));
+  const sw = h('button', {class:'linkbtn', type:'button', onclick: () => { create = !create; title.textContent = create ? t('createH') : t('loginH'); go.textContent = create ? t('createGo') : t('loginGo'); sw.textContent = create ? t('haveAcc') : t('noAcc'); err.textContent = ''; }}, t('noAcc'));
+  async function submit(){
+    err.textContent = '';
+    if (name.value.trim().length < 2 || !/^[0-9]{4,6}$/.test(pin.value)){ err.textContent = t('pinL'); return; }
+    go.disabled = true;
+    try{
+      const r = await authApi('/v1/account', 'POST', {name:name.value, pin:pin.value, create});
+      setAccount({token:r.token, name:r.name, sid:r.sid});
+      await Chats.uploadGuestChats();
+      Chats.cur = null; close(); route();
+    }catch(e){ err.textContent = (e.detail && e.detail.detail) || t('busy'); }
+    go.disabled = false;
+  }
+  const close = sheet(title, h('p', {class:'sub'}, t('accNote')),
+    h('label', {class:'inp'}, t('nameL'), name), h('label', {class:'inp', style:'margin-top:10px'}, t('pinL'), pin), err, go, sw);
+  setTimeout(() => name.focus(), 200);
+}
+function firstVisitLanguage(){
+  let chosen = false; try{ chosen = localStorage.getItem('herevo.lang') !== null; }catch(e){}
+  if (chosen) return;
+  const close = sheet(h('div', {class:'wlogo', style:'margin:4px auto 10px'}, logo()), h('h2', {style:'text-align:center'}, LANGS.map((l) => T[l[0]].welcomeLang).join(' · ')),
+    h('div', {class:'pick big'}, LANGS.map(([code, native, eng]) => h('button', {type:'button', onclick: () => { S.lang = code; store.set('lang', code); S.country = {bn:'BD', sw:'KE', es:'MX'}[code] || S.country; store.set('country', S.country); close(); route(); }}, h('b', null, native), h('small', null, eng)))));
 }
 
 const NEEDS = [['nLand','sprout','var(--share)','#ask/farm'], ['nMoney','coin','#B57400','#money'], ['nRights','scale','var(--lens)','#ask/rights'], ['nHealth','heart','var(--rehearse)','#ask/health'], ['nSafety','shield','var(--danger)',null], ['nLearn','book','#5B5784',null,true]];
@@ -1793,6 +2072,7 @@ function Business(){
     sec('Long-term ambition', h('p', null, BIZ.ambition), h('p', {class:'src'}, 'Built with the team’s “Global AI Support Infrastructure” strategic blueprint (27 November 2026). All figures are scenarios that need validation.')),
     sec('Next 90 days', table(['When', 'What'], BIZ.next)));
 }
+
 
 /* ============================================================== just tell me + path */
 function tellBox(){
@@ -2373,6 +2653,7 @@ try{ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) na
 try{ const a = localStorage.getItem('herevo.active'); if (a && profiles().some((p) => p.id === a)) PROFILE = a; }catch(e){}
 try{ speechSynthesis.getVoices(); }catch(e){}
 route();
+firstVisitLanguage();
 </script>
 </body>
 </html>
