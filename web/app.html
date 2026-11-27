@@ -1285,7 +1285,7 @@ function Share(){
       h('p', {class:'disc'}, res.disclaimer)),
       mine ? h('div', {class:'next'}, h('a', {href:'#rehearse/' + (S.country === 'KE' ? 'ke_home' : S.country === 'MX' ? 'mx_ejido' : 'inlaw_land'), style:'background:var(--rehearse)', onclick: () => { try{ sessionStorage.setItem('herevo.ctx', `Her lawful share is ${herLand} decimals (${mine.num}/${mine.den}) of ${F.land} decimals.` + (keptPct ? ` They offer only ${offered}.` : '')); }catch(e){} }}, icon('chat'), h('span', null, t('practice')), icon('arrow'))) : null);
   }
-  root.append(h('h1', {class:'title'}, t('shareH')), h('p', {class:'sub'}, t('shareSub')), S.country !== 'BD' ? h('div', {class:'gap', style:'margin:0 0 12px'}, icon('info'), h('span', null, t('shareOnlyBD'))) : null, form, out);
+  fill(root, h('h1', {class:'title'}, t('shareH')), h('p', {class:'sub'}, t('shareSub')), S.country !== 'BD' ? h('div', {class:'gap', style:'margin:0 0 12px'}, icon('info'), h('span', null, t('shareOnlyBD'))) : null, form, out);
   drawForm(); compute();
   return root;
 }
@@ -1501,7 +1501,7 @@ function lockScreen(root, mode){
     else if (first === hash){ store.set('pin', hash); unlocked = true; diary(root); }
     else { first = null; code = ''; paint(); label.textContent = t('pinSet'); err.textContent = t('pinMismatch'); }
   }
-  box.append(h('span', {class:'avatar', style:'background:var(--witness);width:64px;height:64px;border-radius:22px'}, icon('lock')), label, dots, err,
+  fill(box, h('span', {class:'avatar', style:'background:var(--witness);width:64px;height:64px;border-radius:22px'}, icon('lock')), label, dots, err,
     h('div', {class:'pad'}, ['1','2','3','4','5','6','7','8','9','','0','⌫'].map((k) => k === '' ? h('span') : h('button', {type:'button', onclick: () => press(k)}, k === '⌫' ? '⌫' : num(k)))),
     mode === 'set' ? h('button', {class:'finish', type:'button', onclick: () => { store.set('pinSkipped', true); unlocked = true; diary(root); }}, t('skipPin')) : null);
   fill(root, h('h1', {class:'title'}, t('witnessH')), box);
