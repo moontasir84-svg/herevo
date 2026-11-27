@@ -1254,7 +1254,8 @@ function Share(){
     if (!(F.land > 0)) return;
     const kids = F.sons + F.daughters > 0;
     const body = {deceased:F.deceased, wives:F.wives, husband:F.husband, sons:F.sons, daughters:F.daughters, father:F.father, mother:F.mother, siblings: kids ? null : F.siblings, land:F.land, lang:S.lang};
-    try{ lastRes = await api('/v1/share', body, 30000); drawField(lastRes); }catch(e){}
+    try{ lastRes = await api('/v1/share', body, 15000, true); }catch(e){ lastRes = shareOffline(body); }
+    drawField(lastRes);
   }
   function drawField(res){
     if (!res.ok){ fill(out, h('div', {class:'gap', style:'margin-top:20px'}, icon('info'), h('span', null, t('lawyer')))); return; }
@@ -1288,6 +1289,53 @@ function Share(){
   fill(root, h('h1', {class:'title'}, t('shareH')), h('p', {class:'sub'}, t('shareSub')), S.country !== 'BD' ? h('div', {class:'gap', style:'margin:0 0 12px'}, icon('info'), h('span', null, t('shareOnlyBD'))) : null, form, out);
   drawForm(); compute();
   return root;
+}
+
+/* Offline copy of HerEvo's inheritance rules (same as backend/app/inheritance.py, exact fractions), so My Share
+   still works with no signal. The server is used whenever it answers. */
+const gcd = (a, b) => b ? gcd(b, a % b) : Math.abs(a);
+const Q = (n, d = 1) => { const g = gcd(n, d) || 1; return d < 0 ? [-n / g, -d / g] : [n / g, d / g]; };
+const qa = (x, y) => Q(x[0] * y[1] + y[0] * x[1], x[1] * y[1]), qs = (x, y) => Q(x[0] * y[1] - y[0] * x[1], x[1] * y[1]);
+const qm = (x, y) => Q(x[0] * y[0], x[1] * y[1]), qd = (x, y) => Q(x[0] * y[1], x[1] * y[0]), qv = (x) => x[0] / x[1];
+const roundEven = (v) => { const fl = Math.floor(v); return Math.abs(v - fl - .5) < 1e-9 ? (fl % 2 === 0 ? fl : fl + 1) : Math.round(v); };  // like Python's round()
+function shareOffline(f){
+  const male = ['husband', 'father'].includes(f.deceased);
+  const lang = S.lang === 'bn' ? 'bn' : 'en';
+  const disc = lang === 'bn' ? 'এটি বাংলাদেশে প্রযোজ্য মুসলিম আইনের সাধারণ হিসাব (ফোনে রাখা নিয়ম থেকে)। কোনো পদক্ষেপ নেওয়ার আগে বিনামূল্যে আইনি সহায়তা (১৬৪৩০) থেকে মিলিয়ে নিন।'
+    : 'General calculation under Muslim law as applied in Bangladesh (from the rules saved on this phone). Check with free legal aid (16430) before acting.';
+  const kids = f.sons + f.daughters > 0;
+  if (!kids && !f.father) return {ok:false, reason:'other relatives', disclaimer:disc};
+  if (!kids && f.mother && f.siblings == null) return {ok:false, reason:'siblings needed', disclaimer:disc};
+  const sh = {};
+  const spouse = male ? (f.wives ? 'wife' : null) : (f.husband ? 'husband' : null);
+  if (spouse === 'wife') sh.wife = kids ? Q(1, 8) : Q(1, 4);
+  if (spouse === 'husband') sh.husband = kids ? Q(1, 4) : Q(1, 2);
+  let residue = null;
+  if (kids){
+    if (f.mother) sh.mother = Q(1, 6);
+    if (f.father) sh.father = Q(1, 6);
+    if (f.sons) residue = 'children';
+    else { sh.daughter = f.daughters === 1 ? Q(1, 2) : Q(2, 3); residue = f.father ? 'father' : null; }
+  } else {
+    if (f.mother){ const third = (f.siblings || 0) >= 2 ? Q(1, 6) : Q(1, 3); const left = spouse ? qs(Q(1), sh[spouse]) : Q(1); sh.mother = spouse && third[1] === 3 ? qm(third, left) : third; }
+    residue = 'father';
+  }
+  let total = Object.values(sh).reduce(qa, Q(0));
+  let S2 = {...sh};
+  if (qv(total) > 1){ for (const k in S2) S2[k] = qd(S2[k], total); total = Q(1); }
+  const rest = qs(Q(1), total);
+  const lines = {...S2};
+  if (rest[0] && residue === 'children'){ const units = 2 * f.sons + f.daughters; lines.son = qd(qm(rest, Q(2 * f.sons)), Q(units)); if (f.daughters) lines.daughter = qd(qm(rest, Q(f.daughters)), Q(units)); }
+  else if (rest[0] && residue === 'father'){ lines.father = qa(lines.father || Q(0), rest); }
+  else if (rest[0]){ const blood = Object.entries(S2).filter(([k]) => k !== 'wife' && k !== 'husband'); const bt = blood.reduce((a, [, v]) => qa(a, v), Q(0)); if (!bt[0]) return {ok:false, reason:'legal aid', disclaimer:disc}; for (const [k, v] of blood) lines[k] = qa(v, qd(qm(rest, v), bt)); }
+  const counts = {wife:f.wives, husband:1, son:f.sons, daughter:f.daughters, father:1, mother:1};
+  const shares = [];
+  for (const heir of ['wife', 'husband', 'son', 'daughter', 'mother', 'father']){
+    if (!lines[heir] || !lines[heir][0]) continue;
+    const n = counts[heir] || 1, each = qd(lines[heir], Q(n));
+    shares.push({heir, count:n, num:each[0], den:each[1], pct: Math.round(qv(each) * 100000) / 1000, land_each: f.land ? roundEven(each[0] * f.land * 100 / each[1]) / 100 : null});
+  }
+  return {ok:true, shares, disclaimer:disc, offline:true};
 }
 
 /* ============================================================== rehearsal */
@@ -1556,6 +1604,7 @@ async function makeStatement(entries){
 }
 
 /* ============================================================== start */
+try{ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('/sw.js'); }catch(e){}
 try{ const a = localStorage.getItem('herevo.active'); if (a && profiles().some((p) => p.id === a)) PROFILE = a; }catch(e){}
 try{ speechSynthesis.getVoices(); }catch(e){}
 route();
