@@ -5,27 +5,28 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>HerEvo</title>
 <meta name="description" content="HerEvo gets rural women ready for the moments where their rights are decided: reading a paper before she signs, seeing her share of the land, rehearsing the hard conversation, a whisper at the office desk, and a sealed diary of what happened.">
-<meta name="theme-color" content="#15120F">
+<meta name="theme-color" content="#FFF6E5">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wdth,wght@75..125,300..800&family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Galada&family=Baloo+Da+2:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap">
 <style>
 :root{
-  --paper:#F4EEE3; --surface:#FFFBF4; --ink:#1B1713; --muted:#6B6157; --line:#E3D8C5; --night:#15120F;
-  --lens:#2B45D4; --lens-2:#E6EAFD;
-  --share:#1D7A4B; --share-2:#DCEFE3;
-  --rehearse:#8A3B9E; --rehearse-2:#F2E4F6;
-  --counter:#C2600E; --counter-2:#FCEBD9;
-  --witness:#1E4E5B; --witness-2:#DBE9ED;
-  --danger:#D0362A; --danger-2:#FBE4E1; --warn:#AD7208; --warn-2:#FAF0D7; --good:#1D7A4B; --good-2:#DCEFE3;
-  --her:#F29E2E;
-  --f-display:'Anek Bangla','Hind Siliguri','Noto Sans Bengali',system-ui,sans-serif;
+  --paper:#FFF6E5; --surface:#FFFFFF; --ink:#1D1A3A; --muted:#6E6680; --line:#EEDFC4; --night:#1D1A3A;
+  --lens:#1F5FD0; --lens-2:#E3ECFC;
+  --share:#21894A; --share-2:#DDF2E3;
+  --rehearse:#C2267A; --rehearse-2:#FBE3EF;
+  --counter:#E07A00; --counter-2:#FFEFD6;
+  --witness:#0E7C86; --witness-2:#D9F0F1;
+  --danger:#DF3A1F; --danger-2:#FDE5DF; --warn:#B57400; --warn-2:#FFF1D2; --good:#21894A; --good-2:#DDF2E3;
+  --her:#FFB400; --shapla:#E5508F;
+  --f-display:'Baloo Da 2','Hind Siliguri','Noto Sans Bengali',system-ui,sans-serif;
   --f-body:'Hind Siliguri','Noto Sans Bengali',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-sign:'Galada','Baloo Da 2','Noto Sans Bengali',cursive;
   color-scheme:light;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+body{background-color:var(--paper);background-image:radial-gradient(circle at 1px 1px,rgba(194,38,122,.07) 1.2px,transparent 0);background-size:22px 22px;color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer}
 a{color:inherit}
@@ -33,31 +34,42 @@ img{max-width:100%;display:block}
 [hidden]{display:none!important}
 :focus-visible{outline:3px solid var(--lens);outline-offset:2px}
 
-/* ---- stage: phone on desktop, full screen on a phone ---- */
-.pitch{display:none}
-.device{position:relative;min-height:100vh;min-height:100dvh}
-.app{min-height:100vh;min-height:100dvh;background:var(--paper);position:relative}
-@media (min-width:980px){
-  body{background:var(--night);background-image:radial-gradient(60rem 40rem at 85% 10%,rgba(43,69,212,.22),transparent 60%),radial-gradient(50rem 30rem at 10% 90%,rgba(194,96,14,.18),transparent 60%),radial-gradient(40rem 30rem at 40% 40%,rgba(138,59,158,.12),transparent 60%)}
-  .stage{display:grid;grid-template-columns:minmax(0,1fr) 410px;gap:clamp(40px,6vw,96px);max-width:1200px;margin:0 auto;padding:40px 48px;min-height:100vh;align-items:center}
-  .pitch{display:block;color:#F4EEE3}
-  .device{min-height:0;height:min(860px,calc(100vh - 80px));border-radius:46px;border:11px solid #050403;box-shadow:0 0 0 1.5px #3a332c,0 50px 100px rgba(0,0,0,.55);overflow:hidden;background:var(--paper)}
-  .app{height:100%;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
-  .app::-webkit-scrollbar{display:none}
+/* ---- shell: a real app on every screen. Laptop: side rail. Phone: bottom tabs. ---- */
+.shell{min-height:100vh;min-height:100dvh}
+.rail{display:none}
+.main{min-width:0}
+#app{position:relative}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:end;
+  padding:6px max(8px,env(safe-area-inset-left,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-right,0px));
+  background:#fff;border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(29,26,58,.06)}
+.tabs a{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--muted);font-weight:600;font-size:12.5px;min-height:54px;justify-content:center;border-radius:14px}
+.tabs a svg{width:26px;height:26px}
+.tabs a.on{color:var(--ink)}
+.tabs a.on svg{color:var(--rehearse)}
+.tabs a.talk{margin-top:-26px}
+.tabs a.talk .lily{width:64px;height:64px}
+@media (min-width:900px){
+  .shell{display:grid;grid-template-columns:248px minmax(0,1fr)}
+  .tabs{display:none}
+  .rail{display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;padding:22px 14px 18px;background:var(--ink);color:#fff;overflow-y:auto;
+    background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.06) 1.2px,transparent 0);background-size:22px 22px}
+  .rail .logo{display:flex;align-items:center;gap:10px;font-family:var(--f-sign);font-size:34px;line-height:1;color:var(--her);text-decoration:none;padding:4px 8px 18px}
+  .rail .logo svg{width:40px;height:40px}
+  .rail a.it{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;text-decoration:none;color:#D9D4EE;font-weight:600;font-size:16px}
+  .rail a.it i{flex:none;width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--c,rgba(255,255,255,.12));color:#fff}
+  .rail a.it i svg{width:19px;height:19px}
+  .rail a.it:hover{background:rgba(255,255,255,.07)}
+  .rail a.it.on{background:#fff;color:var(--ink)}
+  .rail .grp{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8F89B3;margin:14px 12px 4px;font-weight:700}
+  .rail .sp{flex:1}
+  .rail .about{color:#8F89B3;font-size:13.5px;padding:8px 12px;line-height:1.45}
+  main{max-width:1040px;margin:0 auto;padding:10px 40px 80px!important}
+  .bar{padding-left:40px!important;padding-right:40px!important}
+  .bar .brand{display:none}
 }
-.pitch .kicker{font-family:var(--f-display);font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:#C9BFAF;display:flex;align-items:center;gap:10px}
-.pitch h1{font-family:var(--f-display);font-weight:700;font-size:clamp(32px,3.1vw,46px);line-height:1.06;letter-spacing:-.01em;margin:16px 0 16px;text-wrap:balance;font-stretch:92%}
-.pitch h1 em{font-style:normal;color:var(--her)}
-.pitch p.lead{font-size:17px;line-height:1.6;color:#DCD3C6;max-width:34em;margin:0 0 26px}
-.pitch ol{list-style:none;margin:0;padding:0;display:grid;gap:10px;max-width:36em}
-.pitch li{display:grid;grid-template-columns:14px 130px 1fr;gap:14px;align-items:baseline;padding:8px 0;border-top:1px solid rgba(244,238,227,.12);font-size:16px;color:#DCD3C6}
-.pitch li b{font-family:var(--f-display);font-weight:600;color:#F4EEE3;font-size:17px}
-.pitch li i{width:12px;height:12px;border-radius:4px;display:block;transform:translateY(2px)}
-.pitch .meta{margin-top:26px;font-size:14px;color:#A89E90}
-
 /* ---- top bar ---- */
 .bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-.brand{display:flex;align-items:center;gap:8px;text-decoration:none;font-family:var(--f-display);font-weight:700;font-size:21px;letter-spacing:-.01em}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;font-family:var(--f-sign);font-size:27px;line-height:1;color:var(--ink)}
 .brand svg{width:30px;height:30px}
 .back{display:flex;align-items:center;gap:2px;min-height:44px;padding:0 8px 0 2px;border:0;background:none;font-weight:600;font-size:16px;text-decoration:none}
 .back svg{width:22px;height:22px}
@@ -67,7 +79,7 @@ img{max-width:100%;display:block}
 .sos svg{width:18px;height:18px}
 
 /* ---- common ---- */
-main{padding:6px 18px 140px}
+main{padding:6px 18px 150px}
 .view{animation:enter .35s cubic-bezier(.2,.8,.2,1) both}
 @keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes rise{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
@@ -90,8 +102,8 @@ main{padding:6px 18px 140px}
 .listen.dark{background:var(--ink);color:#fff}
 .listen.playing{animation:pulse 1s infinite}
 @keyframes pulse{50%{box-shadow:0 0 0 8px rgba(255,255,255,.15)}}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:14px;font-size:15px;z-index:100;max-width:min(92vw,380px);box-shadow:0 10px 30px rgba(0,0,0,.3);animation:enter .25s both}
-@media (min-width:980px){.toast{position:absolute}}
+.toast{position:fixed;left:16px;right:16px;margin:0 auto;width:fit-content;bottom:24px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:14px;font-size:15px;z-index:100;max-width:min(92vw,380px);box-shadow:0 10px 30px rgba(0,0,0,.3);animation:enter .25s both}
+
 .spinner{width:22px;height:22px;border-radius:50%;border:3px solid currentColor;border-right-color:transparent;animation:spin .8s linear infinite;display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -338,7 +350,7 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 /* ---- sheet ---- */
 .scrim{position:fixed;inset:0;background:rgba(21,18,15,.5);z-index:50;animation:fade .2s both}
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:51;background:var(--paper);border-radius:28px 28px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom,0px));max-height:88%;overflow:auto;animation:up .3s cubic-bezier(.2,.8,.2,1) both}
-@media (min-width:980px){.scrim,.sheet{position:absolute}}
+@media (min-width:900px){.sheet{left:50%;right:auto;bottom:24px;width:min(560px,92vw);transform:translateX(-50%);border-radius:28px;animation:fade .25s both}}
 @keyframes fade{from{opacity:0}}
 @keyframes up{from{transform:translateY(100%)}}
 .sheet .x{position:absolute;top:10px;right:12px;width:44px;height:44px;border-radius:50%;border:0;background:var(--surface);font-size:26px;line-height:1;color:var(--muted)}
@@ -390,8 +402,8 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 .understood{font-family:var(--f-display);font-weight:600;font-size:24px;line-height:1.3;margin:0 0 14px;text-wrap:pretty}
 .quote{font-size:14.5px;color:var(--muted);border-left:3px solid var(--line);padding-left:12px;margin:0 0 16px;font-style:italic}
 .minishare{display:flex;align-items:center;gap:14px;padding:14px;border-radius:20px;background:var(--share);color:#fff;margin-bottom:16px;text-decoration:none;animation:rise .5s both}
-.minishare .bar{flex:1;height:14px;border-radius:7px;background:rgba(255,255,255,.25);overflow:hidden;margin-top:8px}
-.minishare .bar i{display:block;height:100%;background:var(--her);border-radius:7px}
+.minishare .sbar{flex:1;height:14px;border-radius:7px;background:rgba(255,255,255,.25);overflow:hidden;margin-top:8px}
+.minishare .sbar i{display:block;height:100%;background:var(--her);border-radius:7px}
 .minishare b{font-family:var(--f-display);font-size:30px;line-height:1}
 .minishare small{display:block;font-size:13px;opacity:.85}
 .stones{list-style:none;margin:0;padding:0;display:grid;gap:14px;position:relative}
@@ -416,6 +428,66 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 .remind svg{width:24px;height:24px;flex:none;color:var(--her)}
 .remind span{flex:1}
 .remind small{display:block;font-weight:500;opacity:.8;font-size:13.5px}
+
+@media (max-width:899px){.composer{bottom:calc(68px + env(safe-area-inset-bottom,0px))}.toast{bottom:96px}}
+[data-state=speaking] .lily .core{animation:talkpulse2 .5s ease-in-out infinite alternate}
+@keyframes talkpulse2{to{transform:scale(1.1)}}
+.view-talk .lilybtn{margin-top:28px}
+@media (max-width:899px){.view-talk{padding-bottom:96px!important}}
+@media (min-width:900px){.view-talk{margin:-10px -40px -80px!important;min-height:calc(100vh - 64px)!important}}
+/* ---- home: the water lily and the rickshaw panels ---- */
+.hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:4px 0 8px}
+.hero .greet{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--muted);font-size:17px}
+.hero .greet .listen{width:40px;height:40px}
+.hero h1{font-family:var(--f-sign);font-weight:400;font-size:clamp(44px,11vw,64px);line-height:1.05;margin:6px 0 4px;color:var(--ink)}
+.hero h1 em{font-style:normal;color:var(--rehearse)}
+.lilybtn{position:relative;border:0;background:none;padding:0;width:min(58vw,230px);height:min(58vw,230px);margin:22px 0 14px;cursor:pointer}
+.lily{display:block;width:100%;height:100%;overflow:visible}
+.lily .outer{transform-origin:50% 50%;animation:turn 40s linear infinite}
+.lily .inner{transform-origin:50% 50%;animation:turn 60s linear infinite reverse}
+.lily .core{transform-origin:50% 50%;transition:transform .3s}
+@keyframes turn{to{transform:rotate(360deg)}}
+[data-state=listening] .lily .outer{animation:bloom .9s ease-in-out infinite alternate}
+[data-state=listening] .lily .inner{animation:bloom .9s ease-in-out infinite alternate-reverse}
+[data-state=listening] .lily .core{transform:scale(1.06)}
+[data-state=thinking] .lily .outer{animation:turn 2.4s linear infinite}
+[data-state=thinking] .lily .inner{animation:turn 1.6s linear infinite reverse}
+@keyframes bloom{from{transform:scale(.94)}to{transform:scale(1.08)}}
+.hstate{font-family:var(--f-display);font-weight:700;font-size:25px;margin:4px 0 0;line-height:1.2}
+.hheard{margin:2px 0 0;color:var(--muted);font-size:16.5px;font-style:italic;min-height:1.5em;max-width:28em}
+.tries{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.tries button{border:1.5px dashed var(--shapla);background:#fff;color:var(--ink);border-radius:99px;padding:8px 14px;font-weight:600;font-size:14.5px;display:inline-flex;gap:6px;align-items:center;min-height:42px}
+.tries button svg{width:16px;height:16px;color:var(--shapla)}
+.typebtn{display:inline-flex;align-items:center;gap:8px;border:0;background:none;color:var(--muted);font-weight:600;min-height:44px;font-size:15px;margin-top:4px}
+.typebtn svg{width:20px;height:20px}
+.typein{display:flex;gap:8px;width:100%;max-width:560px;margin-top:8px}
+.typein textarea{flex:1;min-height:54px;resize:none;padding:14px 16px;border-radius:20px;border:2px solid var(--line);background:#fff;font-size:17px}
+.panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px}
+@media (min-width:640px){.panels{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:1100px){.panels{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.panel{position:relative;display:block;padding:8px;border-radius:26px;background:var(--c);color:#fff;text-decoration:none;box-shadow:0 10px 24px color-mix(in srgb,var(--c) 30%,transparent);animation:rise .5s both;animation-delay:calc(var(--i)*70ms);transition:transform .18s}
+.panel:active{transform:scale(.97)}
+.panel:hover{transform:translateY(-2px)}
+.panel .in{position:relative;height:100%;min-height:178px;border:2px dashed rgba(255,255,255,.6);border-radius:19px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px 8px 14px;overflow:hidden}
+.panel .medal{width:86px;height:86px;display:flex;align-items:center;justify-content:center;position:relative}
+.panel .medal svg.petals{position:absolute;inset:0;width:100%;height:100%}
+.panel .medal span{position:relative;width:58px;height:58px;border-radius:50%;background:#fff;color:var(--c);display:flex;align-items:center;justify-content:center}
+.panel .medal span svg{width:30px;height:30px}
+.panel b{font-family:var(--f-sign);font-weight:400;font-size:27px;line-height:1.05}
+.panel small{font-size:13.5px;font-weight:600;opacity:.92;line-height:1.3}
+.panel .fl{position:absolute;width:30px;height:30px;color:rgba(255,255,255,.55)}
+.panel .fl.a{top:6px;left:6px}.panel .fl.b{bottom:6px;right:6px;transform:rotate(180deg)}
+.panel .listen{position:absolute;top:8px;right:8px;width:38px;height:38px;background:rgba(255,255,255,.22)}
+.panel .listen svg{width:19px;height:19px}
+.pathpanel{display:flex;align-items:center;gap:14px;margin-top:18px;padding:8px;border-radius:24px;background:var(--ink);color:#fff;text-decoration:none}
+.pathpanel .in{flex:1;display:flex;align-items:center;gap:14px;border:2px dashed rgba(255,255,255,.35);border-radius:18px;padding:12px 14px}
+.pathpanel .pie{--v:0;flex:none;width:54px;height:54px;border-radius:50%;background:conic-gradient(var(--her) calc(var(--v)*1%),rgba(255,255,255,.15) 0);display:flex;align-items:center;justify-content:center}
+.pathpanel .pie b{width:42px;height:42px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;font-size:14px}
+.pathpanel strong{display:block;font-family:var(--f-sign);font-weight:400;font-size:24px;color:var(--her)}
+.pathpanel span.t{flex:1;min-width:0}
+.pathpanel small{display:block;color:#CFCBE6;font-size:14px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.homefoot .chip svg,.chip svg{width:18px;height:18px;flex:none}
+.homefoot{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:26px}
 
 /* ---- voice check ---- */
 .vlist{display:grid;gap:8px}
@@ -542,31 +614,15 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 </style>
 </head>
 <body>
-<div class="stage">
-  <aside class="pitch" aria-label="About HerEvo">
-    <div class="kicker"><svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#F29E2E"/><path d="M16 25V12.5M16 17c-3.6 0-5.8-2.3-5.8-5.8 3.6 0 5.8 2.3 5.8 5.8zM16 17c3.6 0 5.8-2.3 5.8-5.8-3.6 0-5.8 2.3-5.8 5.8z" fill="none" stroke="#15120F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>HerEvo</div>
-    <h1>Most apps answer her questions. HerEvo gets her <em>ready for the room</em> where her rights are decided.</h1>
-    <p class="lead">Rural women rarely lose land, dower or safety for lack of information. They lose them in five moments: a paper they can't read, the day land is divided, the hard conversation, the office desk, and the night nobody wrote down. HerEvo is built for those moments. Voice first, in Bangla.</p>
-    <ol>
-      <li><i style="background:var(--her)"></i><b>Just tell me</b><span>She says what is happening, in her own words. The AI understands, computes what it can, and lays out her path, opening each tool already filled in.</span></li>
-      <li><i style="background:var(--lens)"></i><b>Paper Lens</b><span>Photograph any paper. It reads it aloud, highlights dates and amounts, and says "do not sign" when a paper gives her land away.</span></li>
-      <li><i style="background:var(--share)"></i><b>My Share</b><span>Exact Islamic-law shares, computed (not guessed), drawn as her field. Shows what is being kept from her.</span></li>
-      <li><i style="background:var(--rehearse)"></i><b>Rehearsal</b><span>The AI plays the brother-in-law, the bribe-asking clerk or the salish chairman. A coach scores every line.</span></li>
-      <li><i style="background:var(--counter)"></i><b>Whisper</b><span>At the real desk: what the official said, the truth, and the one sentence to say back.</span></li>
-      <li><i style="background:var(--witness)"></i><b>Witness</b><span>A PIN-locked diary sealed with a hash chain on her phone, turned into a dated statement for a protection order.</span></li>
-      <li><i style="background:#B0457A"></i><b>Champion</b><span>One trained village woman, one phone, many women: each with her own path, diary and code, and a list of who to check on today.</span></li>
-      <li><i style="background:var(--danger)"></i><b>Radar</b><span>One tap warns the next woman: anonymous counts of bribes and pressure by office and area, evidence officials can't ignore.</span></li>
-    </ol>
-    <p class="meta">Test version: made-up data only · Bangladesh, Kenya, Mexico · Works with Gemini (test) and Claude</p>
-  </aside>
-  <div class="device">
-    <div class="app" id="app">
-      <header class="bar" id="bar"></header>
-      <main id="view"></main>
-    </div>
-    <div id="layer"></div>
+<div class="shell">
+  <nav class="rail" id="rail" aria-label="HerEvo"></nav>
+  <div class="main" id="app">
+    <header class="bar" id="bar"></header>
+    <main id="view"></main>
   </div>
+  <nav class="tabs" id="tabs" aria-label="HerEvo"></nav>
 </div>
+<div id="layer"></div>
 <script>
 'use strict';
 /* ============================================================== strings */
@@ -630,10 +686,13 @@ bn:{
   sosH:'এখনই সাহায্য', helper:'একজন সহায়তাকর্মীর সঙ্গে কথা বলুন', helperSub:'প্রশিক্ষিত মানুষ, গোপনে', exit:'দ্রুত বের হোন', exitSub:'এই পাতা বন্ধ হয়ে আবহাওয়ার পাতা খুলবে',
   cc:{BD:'বাংলাদেশ',KE:'কেনিয়া',MX:'মেক্সিকো'},
   shareOnlyBD:'এই হিসাব বাংলাদেশে প্রযোজ্য মুসলিম উত্তরাধিকার আইন অনুযায়ী। কেনিয়া বা মেক্সিকোর আইন আলাদা: মহড়া অংশে সেই দেশের অনুশীলন আছে।',
+  moreH:'সব সাহায্য এক জায়গায়', more:'আরও', home:'হোম', homeH:'কী হয়েছে, <em>বলুন</em>', tapSpeak:'ফুলে চাপ দিন, কথা বলুন', listenShort:'শুনছি… বলা শেষ হলে থামুন', writeShort:'বুঝে নিচ্ছি…', typeInstead:'লিখে বলুন', go:'দেখাও',
+  homeHello:'আসসালামু আলাইকুম। আমি HerEvo। শাপলা ফুলে চাপ দিয়ে বলুন কী হয়েছে। অথবা নিচের ছবিগুলোতে চাপ দিন।', tryA:'স্বামী মারা গেছেন, দেবর জমি দিচ্ছে না', tryB:'অফিসে ঘুষ চাইছে', tryC:'শাশুড়ি যৌতুক চায়',
+  pLens:'কাগজ', pShare:'আমার ভাগ', pRehearse:'মহড়া', pCounter:'কানে কানে', pWitness:'সাক্ষী', yourPath:'আপনার পথ', firstStep:'প্রথম কাজ',
   vcT:'ভয়েস পরীক্ষা', vcLink:'ভয়েস কাজ করছে কি না পরীক্ষা করুন', vcH:'ভয়েস পরীক্ষা', vcSub:'এক চাপে দেখে নিন এই ফোনে HerEvo শুনতে ও বলতে পারছে কি না।', vcStart:'পরীক্ষা শুরু করুন', vcAgain:'আবার পরীক্ষা করুন',
   vcSpeak:'HerEvo-র কণ্ঠ', vcSpeakOk:'শুনতে পেয়েছেন? (বাজানো হয়েছে)', vcMic:'মাইক্রোফোন', vcMicNow:'এখন বাংলায় কিছু বলুন, তারপর থামুন…', vcWrite:'কথা লিখে নেওয়া', vcPhoneVoice:'ফোনের নিজের বাংলা কণ্ঠ', vcBrowser:'ব্রাউজার',
   vcYes:'আছে', vcNo:'নেই (সমস্যা নেই, HerEvo-র কণ্ঠ ব্যবহার হবে)', vcInApp:'অ্যাপের ভেতরের ব্রাউজার: মাইক চলবে না। Chrome-এ খুলুন।', vcFail:'কাজ করছে না', vcSample:'আমি HerEvo। আপনার কথা শুনতে পাচ্ছি।',
-  talkT:'কথা বলুন', talkEntry:'শুধু কথা বলতে চাই, পড়তে হবে না', talk_idle:'বলটায় চাপ দিন, তারপর কথা বলুন', talk_listening:'শুনছি… বলা শেষ হলে একটু থামুন', talk_thinking:'ভাবছি…', talk_speaking:'বলছি… থামাতে বলটায় চাপ দিন',
+  talkT:'কথা বলুন', talkEntry:'শুধু কথা বলতে চাই, পড়তে হবে না', talk_idle:'ফুলে চাপ দিন, তারপর কথা বলুন', talk_listening:'শুনছি… বলা শেষ হলে একটু থামুন', talk_thinking:'ভাবছি…', talk_speaking:'বলছি… থামাতে ফুলে চাপ দিন',
   talkEnd:'কথা শেষ', talkType:'বা লিখুন', talkHelp:'একজন সহায়তাকর্মীকে জানানো হয়েছে।',
   listenAll:'পুরো সভা শুনুন', listenAllSub:'সালিশ বা অফিসে কথা চলার সময় ফোনটা পাশে রাখুন। সমস্যা হলেই কানে বলব, শেষে লিখে রাখব কে কী কথা দিল।', listeningLive:(n)=>`শুনছি… ${n}টি কথা`, stopListen:'থামান',
   makeMinutes:'সভার রেকর্ড তৈরি করুন', minutesH:'সভার রেকর্ড', promisesH:'কে কী কথা দিল', warningsH:'সাবধান', nextH:'এরপর', heardLines:'যা শোনা গেছে', savedToFile:'আপনার ফাইলে রাখা হলো',
@@ -709,10 +768,13 @@ en:{
   sosH:'Help now', helper:'Talk to a trained helper', helperSub:'A real person, in confidence', exit:'Quick exit', exitSub:'This page closes and a weather page opens',
   cc:{BD:'Bangladesh',KE:'Kenya',MX:'Mexico'},
   shareOnlyBD:'This calculation follows Muslim inheritance law as applied in Bangladesh. Kenya and Mexico have different laws: practise those cases in Rehearsal.',
+  moreH:'Every tool in one place', more:'More', home:'Home', homeH:'Tell me <em>what happened</em>', tapSpeak:'Tap the flower and speak', listenShort:'Listening… pause when you finish', writeShort:'Understanding…', typeInstead:'Type instead', go:'Go',
+  homeHello:'Hello, I am HerEvo. Tap the water lily and tell me what happened. Or tap one of the pictures below.', tryA:'My husband died, his brother won’t give me the land', tryB:'The office wants a bribe', tryC:'My mother-in-law demands dowry',
+  pLens:'Paper', pShare:'My share', pRehearse:'Rehearse', pCounter:'Whisper', pWitness:'Witness', yourPath:'Your path', firstStep:'First',
   vcT:'Voice check', vcLink:'Check that voice works', vcH:'Voice check', vcSub:'One tap shows whether HerEvo can hear and speak on this phone.', vcStart:'Start the check', vcAgain:'Check again',
   vcSpeak:"HerEvo's voice", vcSpeakOk:'Did you hear it? (it played)', vcMic:'Microphone', vcMicNow:'Now say something, then pause…', vcWrite:'Writing down what you said', vcPhoneVoice:"The phone's own voice for this language", vcBrowser:'Browser',
   vcYes:'yes', vcNo:"no (that's fine, HerEvo's voice is used)", vcInApp:'In-app browser: the microphone will not work. Open in Chrome.', vcFail:'not working', vcSample:'I am HerEvo. I can hear you.',
-  talkT:'Talk', talkEntry:"I just want to talk, I can't read", talk_idle:'Tap the circle, then speak', talk_listening:'Listening… pause when you finish', talk_thinking:'Thinking…', talk_speaking:'Speaking… tap the circle to stop',
+  talkT:'Talk', talkEntry:"I just want to talk, I can't read", talk_idle:'Tap the flower, then speak', talk_listening:'Listening… pause when you finish', talk_thinking:'Thinking…', talk_speaking:'Speaking… tap the flower to stop',
   talkEnd:'End', talkType:'or type', talkHelp:'A trained helper has been told.',
   listenAll:'Listen to the whole meeting', listenAllSub:'Keep the phone beside you at the salish or office. I whisper only when something is wrong, and write down who promised what.', listeningLive:(n)=>`Listening… ${n} things heard`, stopListen:'Stop',
   makeMinutes:'Make the meeting record', minutesH:'Meeting record', promisesH:'Who promised what', warningsH:'Careful', nextH:'Next', heardLines:'What was heard', savedToFile:'Saved in your file',
@@ -796,6 +858,11 @@ const ICONS = {
   mic:'<rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
   send:'<path d="M4 12l16-8-6 16-2.5-6.5z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>',
   chat:'<path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 9.5h8M8 12.5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  grid:'<rect x="4" y="4" width="7" height="7" rx="2" fill="currentColor"/><rect x="13" y="4" width="7" height="7" rx="2" fill="currentColor"/><rect x="4" y="13" width="7" height="7" rx="2" fill="currentColor"/><rect x="13" y="13" width="7" height="7" rx="2" fill="currentColor"/>',
+  home:'<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z" fill="currentColor"/>',
+  land:'<path d="M3 18l9-5 9 5-9 4z" fill="currentColor"/><path d="M12 12V4M12 8c-2.4 0-4-1.6-4-4 2.4 0 4 1.6 4 4zM12 8c2.4 0 4-1.6 4-4-2.4 0-4 1.6-4 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  keyboard:'<rect x="3" y="6" width="18" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>',
+  ear:'<path d="M8 15c0-6 3-10 7.5-10S21 8 21 11.5c0 4-3.5 4.5-3.5 8 0 2.2-1.8 3.5-3.8 3.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M12 12.5c0-2.4 1.4-3.8 3.4-3.8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M2.5 9.5c1.4 1.4 1.4 4 0 5.5M5 7.5c2.5 2.5 2.5 6.5 0 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
   arrow:'<path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>',
   hand:'<path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11M11 10V4a1.5 1.5 0 0 1 3 0v7M14 10.5V5.5a1.5 1.5 0 0 1 3 0V14c0 4-2.6 7-6.5 7-2.6 0-4-1.2-5.4-3.4L3.6 15a1.6 1.6 0 0 1 2.6-1.8L8 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
   check:'<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>',
@@ -983,12 +1050,12 @@ function hear(btn, onText, onEnd){
   if (rec){ rec.stop(); return; }
   stopSpeech();
   if (!canRecord()){ return hearBrowser(btn, onText, onEnd); }
-  btn.classList.add('on'); if (location.hash !== '#talk') toast(t('listening'));
+  btn.classList.add('on'); if (!['#talk', '#home', '', '#'].includes(location.hash)) toast(t('listening'));
   const r = recorder({
     onSegment: async (wav) => {
       rec = null; btn.classList.remove('on');
       if (!wav){ onEnd && onEnd(''); return; }
-      btn.classList.add('busy'); toast(t('writing'));
+      btn.classList.add('busy'); if (!['#talk', '#home', '', '#'].includes(location.hash)) toast(t('writing'));
       try{ const text = await transcribe(wav); btn.classList.remove('busy'); if (!text){ toast(t('heardNothing')); onEnd && onEnd(''); return; } onText(text); onEnd && onEnd(text); }
       catch(e){ btn.classList.remove('busy'); onEnd && onEnd(''); }
     },
@@ -1009,7 +1076,7 @@ function hearBrowser(btn, onText, onEnd){
 }
 
 /* ============================================================== shell */
-const TITLES = {voice:'vcT', talk:'talkT', file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
+const TITLES = {more:'more', home:'home', voice:'vcT', talk:'talkT', file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
 function bar(name){
   const b = $('#bar'); fill(b);
   if (name === 'home'){
@@ -1023,7 +1090,35 @@ function bar(name){
     h('button', {class:'chip', type:'button', 'aria-label':'Language', onclick: () => { S.lang = S.lang === 'bn' ? 'en' : 'bn'; store.set('lang', S.lang); route(); }}, t('langBtn')),
     h('button', {class:'sos', type:'button', onclick: openSOS}, icon('shield'), t('sos')));
 }
-function logo(){ const w = document.createElement('span'); w.innerHTML = '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#1B1713"/><path d="M16 25V12.5M16 17c-3.6 0-5.8-2.3-5.8-5.8 3.6 0 5.8 2.3 5.8 5.8zM16 17c3.6 0 5.8-2.3 5.8-5.8-3.6 0-5.8 2.3-5.8 5.8z" fill="none" stroke="#F29E2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'; return w.firstChild; }
+function logo(){ const w = document.createElement('span'); w.innerHTML = '<svg viewBox="-50 -50 100 100" aria-hidden="true">' + [...Array(8)].map((_, i) => `<path transform="rotate(${i * 45})" d="M0 -47 C12 -32 12 -18 0 -10 C-12 -18 -12 -32 0 -47Z" fill="#F48DB5" stroke="#fff" stroke-width="2"/>`).join('') + [...Array(8)].map((_, i) => `<path transform="rotate(${i * 45 + 22.5})" d="M0 -34 C9 -24 9 -14 0 -8 C-9 -14 -9 -24 0 -34Z" fill="#FFE3EF" stroke="#E5508F" stroke-width="1.5"/>`).join('') + '<circle r="13" fill="#FFB400"/></svg>'; return w.firstChild; }
+// The water lily (shapla, Bangladesh's flower): HerEvo's talk button. Its petals open while she speaks.
+function lily(small){
+  const outer = [...Array(12)].map((_, i) => `<path transform="rotate(${i * 30})" d="M0 -96 C20 -72 20 -42 0 -30 C-20 -42 -20 -72 0 -96Z" fill="url(#lp1)" stroke="#fff" stroke-width="2.5"/>`).join('');
+  const inner = [...Array(8)].map((_, i) => `<path transform="rotate(${i * 45 + 22.5})" d="M0 -70 C15 -52 15 -32 0 -22 C-15 -32 -15 -52 0 -70Z" fill="url(#lp2)" stroke="#fff" stroke-width="2"/>`).join('');
+  const w = document.createElement('span');
+  w.innerHTML = `<svg class="lily" viewBox="-100 -100 200 200" aria-hidden="true"><defs>
+    <linearGradient id="lp1" x1="0" y1="-1" x2="0" y2="0"><stop offset="0" stop-color="#FFC2DA"/><stop offset="1" stop-color="#E5508F"/></linearGradient>
+    <linearGradient id="lp2" x1="0" y1="-1" x2="0" y2="0"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#F7A1C4"/></linearGradient>
+    <radialGradient id="lc" cx=".35" cy=".3"><stop offset="0" stop-color="#FFE38A"/><stop offset="1" stop-color="#F59E00"/></radialGradient></defs>
+    <g class="outer">${outer}</g><g class="inner">${inner}</g>
+    <g class="core"><circle r="${small ? 34 : 38}" fill="url(#lc)" stroke="#fff" stroke-width="4"/>
+    <g transform="translate(-14 -16) scale(1.2)" fill="#1D1A3A"><rect x="8.5" y="2" width="7" height="13" rx="3.5"/><path d="M4.5 11a7.5 7.5 0 0 0 15 0" fill="none" stroke="#1D1A3A" stroke-width="2.4" stroke-linecap="round"/><path d="M12 18.5V22" stroke="#1D1A3A" stroke-width="2.4" stroke-linecap="round"/></g></g></svg>`;
+  return w.firstChild;
+}
+const PETALS = '<svg class="petals" viewBox="-50 -50 100 100" aria-hidden="true">' + [...Array(10)].map((_, i) => `<path transform="rotate(${i * 36})" d="M0 -49 C8 -41 8 -33 0 -28 C-8 -33 -8 -41 0 -49Z" fill="rgba(255,255,255,.42)"/>`).join('') + '</svg>';
+const FLOWER = '<svg viewBox="0 0 30 30" aria-hidden="true" fill="currentColor"><circle cx="9" cy="9" r="3"/>' + [...Array(5)].map((_, i) => `<ellipse transform="rotate(${i * 72} 9 9)" cx="9" cy="3.6" rx="2.6" ry="3.6"/>`).join('') + '<path d="M13 14c5 0 9 3 11 9-6 0-10-3-11-9z"/></svg>';
+function svgHTML(html){ const w = document.createElement('span'); w.innerHTML = html; return w.firstChild; }
+const NAV = [['home','home','var(--ink)','home'], ['talk','mic','var(--shapla)','talkT'], ['path','arrow','var(--her)','yourPath'], null,
+  ['lens','camera','var(--lens)','pLens'], ['share','land','var(--share)','pShare'], ['rehearse','chat','var(--rehearse)','pRehearse'], ['counter','ear','var(--counter)','pCounter'], ['witness','lock','var(--witness)','pWitness'], null,
+  ['file','book','#5B5784','fileT'], ['champion','person','#B0457A','champ'], ['more','grid','#5B5784','more']];
+function navs(key){
+  const rail = $('#rail');
+  fill(rail, h('a', {class:'logo', href:'#home'}, logo(), 'HerEvo'),
+    NAV.map((n) => n ? h('a', {class:'it' + (n[0] === key ? ' on' : ''), href:'#' + n[0], style:`--c:${n[2]}`}, h('i', null, icon(n[1])), t(n[3])) : h('div', {style:'height:10px'})),
+    h('span', {class:'sp'}), h('p', {class:'about'}, t('testNote')));
+  const tab = (k, ic, label, cls) => h('a', {class:(cls || '') + (k === key ? ' on' : ''), href:'#' + k}, ic, label);
+  fill($('#tabs'), tab('home', icon('home'), t('home')), tab('lens', icon('camera'), t('pLens')), tab('talk', lily(true), t('talkT'), 'talk'), tab('share', icon('land'), t('pShare')), tab('more', icon('grid'), t('more')));
+}
 function sheet(...content){
   const layer = $('#layer'); fill(layer);
   const close = () => fill(layer);
@@ -1039,14 +1134,14 @@ function openSOS(){
 }
 function quickExit(){ stopSpeech(); document.body.innerHTML = ''; try{ sessionStorage.clear(); }catch(e){} location.replace('https://www.google.com/search?q=weather'); }
 
-const VIEWS = {voice: VoiceCheck, talk: Talk, file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
+const VIEWS = {more: More, voice: VoiceCheck, talk: Talk, file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
 function route(){
   stopSpeech(); if (rec){ try{ rec.abort(); }catch(e){} rec = null; } stopLive();
   fill($('#layer'));
   document.documentElement.lang = S.lang;
   const [name, arg] = (location.hash.slice(1) || 'home').split('/');
   const key = VIEWS[name] ? name : 'home';
-  bar(key);
+  bar(key); navs(key);
   const v = h('div', {class:'view view-' + key}); v.append(VIEWS[key](arg));
   fill($('#view'), v);
   const app = $('#app'); if (app.scrollTop) app.scrollTop = 0; window.scrollTo(0, 0);
@@ -1054,19 +1149,15 @@ function route(){
 window.addEventListener('hashchange', route);
 
 /* ============================================================== home */
-function Home(){
+function More(){
   const tools = ['lens', 'share', 'rehearse', 'counter', 'witness'];
   const saved = store.get('path', null);
   const done = saved ? saved.done.filter(Boolean).length : 0;
   const radarSlot = h('div');
   api('/v1/radar/' + S.country, null, 20000, true).then((r) => { if (r.total) fill(radarSlot, h('a', {class:'radarstrip', href:'#counter'}, icon('alert'), h('span', null, t('radarStrip')(num(r.total))))); }).catch(() => {});
   return h('div', null,
-    h('p', {class:'eyebrow'}, t('hello')),
-    h('h1', {class:'display'}, t('tagline')),
-    tellBox(),
-    saved ? h('a', {class:'resume', href:'#path'}, h('span', {class:'pie', style:`--v:${Math.round(done / saved.plan.steps.length * 100)}`}, h('b', null, num(done) + '/' + num(saved.plan.steps.length))),
-      h('span', null, h('small', null, t('resume') + ' · ' + t('resumeOf')(num(done), num(saved.plan.steps.length))), h('strong', null, saved.plan.understood)), icon('arrow')) : null,
-    h('div', {class:'or'}, t('orPick')),
+    h('h1', {class:'title'}, t('moreH')),
+    h('p', {class:'sub'}, t('tagline')),
     h('div', {class:'bento'}, tools.map((id, i) =>
       h('a', {class:`tool tool-${id}${i === 0 ? ' wide' : ''}`, href:'#' + id, style:`--i:${i}`},
         h('div', {class:'top'}, h('span', {class:'moment'}, t(id + 'Moment')), i === 0 ? null : listenBtn(() => t(id) + '। ' + t(id + 'Desc'), 'listen')),
@@ -1091,11 +1182,11 @@ function Talk(){
   const status = h('p', {class:'tstatus', 'aria-live':'polite'});
   const capHer = h('p', {class:'cap her'}), capAi = h('p', {class:'cap ai'}), extra = h('div', {class:'tsteps'});
   const set = (st) => { state = st; root.dataset.state = st; status.textContent = t('talk_' + st); };
-  const orb = h('button', {class:'orb', type:'button', 'aria-label': t('talkT'), onclick: () => {
+  const orb = h('button', {class:'lilybtn', type:'button', 'aria-label': t('talkT'), onclick: () => {
     if (state === 'idle') listen();
     else if (state === 'listening'){ if (rec) rec.stop(); }
     else if (state === 'speaking'){ stopSpeech(); set('idle'); }
-  }});
+  }}, lily());
   function listen(){
     if (!canHear()){ micError('none'); return; }
     set('listening');
@@ -1241,6 +1332,56 @@ function Champion(){
     PROFILE ? h('button', {class:'btn ghost block', type:'button', style:'margin-top:14px', onclick: () => { useProfile(null); location.hash = '#home'; }}, t('champMe')) : null);
 }
 
+/* ============================================================== home */
+function beep(freq = 880, ms = 140){
+  try{ const AC = window.AudioContext || window.webkitAudioContext; const c = new AC(); const o = c.createOscillator(), g = c.createGain(); o.frequency.value = freq; o.connect(g); g.connect(c.destination); g.gain.setValueAtTime(.0001, c.currentTime); g.gain.exponentialRampToValueAtTime(.25, c.currentTime + .02); g.gain.exponentialRampToValueAtTime(.0001, c.currentTime + ms / 1000); o.start(); o.stop(c.currentTime + ms / 1000 + .05); setTimeout(() => c.close(), ms + 300); }catch(e){}
+}
+function Home(){
+  const saved = store.get('path', null);
+  const root = h('div', {'data-state':'idle'});
+  const state = h('p', {class:'hstate', 'aria-live':'polite'}, t('tapSpeak'));
+  const heard = h('p', {class:'hheard'});
+  const set = (st, text) => { root.dataset.state = st; state.textContent = text; };
+  const btn = h('button', {class:'lilybtn', type:'button', 'aria-label': t('tapSpeak'), onclick: () => {
+    if (rec){ rec.stop(); return; }
+    if (root.dataset.state === 'thinking') return;
+    stopSpeech(); beep(); heard.textContent = '';
+    set('listening', t('listenShort'));
+    hear(btn, (x) => { heard.textContent = '“' + x + '”'; }, (x) => {
+      if (x && x.trim().length > 2){ set('thinking', t('writeShort')); beep(660, 120); makePath(x.trim()); }
+      else set('idle', t('tapSpeak'));
+    });
+  }}, lily());
+  const ex = t('tellEx');
+  const tries = h('div', {class:'tries'}, [[t('tryA'), ex[0]], [t('tryB'), ex[1]], [t('tryC'), ex[3]]].map(([label, full]) =>
+    h('button', {type:'button', onclick: () => { heard.textContent = '“' + full + '”'; set('thinking', t('writeShort')); makePath(full); }}, icon('speaker'), label)));
+  const ta = h('textarea', {rows:'1', placeholder: t('tellPh')});
+  const typein = h('div', {class:'typein', hidden:true}, ta, h('button', {class:'send', type:'button', style:'background:var(--shapla)', 'aria-label': t('go'), onclick: () => { const v = ta.value.trim(); if (v.length > 2) makePath(v); }}, icon('send')));
+  const panel = (id, ic, label, i) => h('a', {class:'panel', href:'#' + id, style:`--c:var(--${id});--i:${i}`},
+    h('span', {class:'in'}, h('span', {class:'fl a'}, svgHTML(FLOWER)), h('span', {class:'fl b'}, svgHTML(FLOWER)),
+      h('span', {class:'medal'}, svgHTML(PETALS), h('span', null, icon(ic))), h('b', null, t(label)), h('small', null, t(id + 'Moment'))),
+    listenBtn(() => t(id) + '। ' + t(id + 'Desc'), 'listen'));
+  const done = saved ? saved.done.filter(Boolean).length : 0;
+  const radarSlot = h('div');
+  api('/v1/radar/' + S.country, null, 20000, true).then((r) => { if (r.total) fill(radarSlot, h('a', {class:'radarstrip', href:'#counter'}, icon('alert'), h('span', null, t('radarStrip')(num(r.total))))); }).catch(() => {});
+  fill(root,
+    h('section', {class:'hero'},
+      h('div', {class:'greet'}, t('hello'), listenBtn(() => t('homeHello'))),
+      (() => { const e = h('h1'); e.innerHTML = t('homeH'); return e; })(),
+      btn, state, heard, tries,
+      h('button', {class:'typebtn', type:'button', onclick: (e) => { typein.hidden = false; e.currentTarget.hidden = true; ta.focus(); }}, icon('keyboard'), t('typeInstead')), typein),
+    saved ? h('a', {class:'pathpanel', href:'#path'}, h('span', {class:'in'}, h('span', {class:'pie', style:`--v:${Math.round(done / saved.plan.steps.length * 100)}`}, h('b', null, num(done) + '/' + num(saved.plan.steps.length))),
+      h('span', {class:'t'}, h('strong', null, t('yourPath')), h('small', null, saved.plan.understood)), icon('arrow'))) : null,
+    h('div', {class:'panels'}, panel('lens', 'camera', 'pLens', 0), panel('share', 'land', 'pShare', 1), panel('rehearse', 'chat', 'pRehearse', 2), panel('counter', 'ear', 'pCounter', 3), panel('witness', 'lock', 'pWitness', 4)),
+    radarSlot,
+    h('div', {class:'homefoot'},
+      h('a', {class:'chip', href:'#champion', style:'text-decoration:none'}, icon('person'), t('champMode')),
+      h('a', {class:'chip', href:'#voice', style:'text-decoration:none'}, icon('mic'), t('vcLink')),
+      h('select', {class:'chip', 'aria-label': t('country'), onchange: (e) => { S.country = e.target.value; store.set('country', S.country); }},
+        ['BD', 'KE', 'MX'].map((c) => { const o = h('option', {value:c}, t('country') + ': ' + t('cc')[c]); if (c === S.country) o.selected = true; return o; }))));
+  return root;
+}
+
 /* ============================================================== just tell me + path */
 function tellBox(){
   const input = h('textarea', {rows:'2', placeholder: t('tellPh'), 'aria-label': t('tellH'), oninput: grow});
@@ -1262,7 +1403,7 @@ async function makePath(text){
     const plan = await api('/v1/plan', {session_id:S.sid, text, lang:S.lang, country:S.country}, 60000);
     store.set('path', {text, plan, lang:S.lang, done: plan.steps.map(() => false), at: Date.now()});
     pathPending = false; route();
-    if (S.voice) setTimeout(() => { const b = $('.view-path .listen'); speak(plan.say || plan.understood, b); }, 300);
+    if (S.voice) setTimeout(() => { const b = $('.view-path .listen'); const first = plan.steps[0] ? '। ' + t('firstStep') + ': ' + plan.steps[0].title : ''; speak((plan.say || plan.understood) + first, b); }, 300);
   }catch(e){ pathPending = false; location.hash = '#home'; }
 }
 const TOOL_STYLE = {share:['var(--share)','scale'], lens:['var(--lens)','camera'], rehearse:['var(--rehearse)','chat'], counter:['var(--counter)','speaker'], witness:['var(--witness)','book'], call:['var(--danger)','phone'], chat:['var(--ink)','chat']};
@@ -1304,7 +1445,7 @@ function Path(){
     plan.danger ? h('div', {class:'alert', style:'margin-bottom:16px'}, h('b', null, t('dangerH')), h('button', {class:'btn', type:'button', onclick: openSOS}, icon('shield'), t('dangerBtn'))) : null,
     plan.share && plan.share.her_land != null ? h('a', {class:'minishare', href:'#share', onclick: () => launch(plan.steps.findIndex((x) => x.tool === 'share'), {tool:'share'})},
       h('div', {style:'flex:1'}, h('small', null, t('shareMini')), h('b', null, fmt(plan.share.her_land) + ' ', h('small', {style:'display:inline;font-size:16px'}, t('unit') + ' · ' + num(plan.share.num) + '/' + num(plan.share.den))),
-        h('div', {class:'bar'}, h('i', {style:`width:${Math.max(4, plan.share.pct)}%`}))), icon('arrow')) : null,
+        h('div', {class:'sbar'}, h('i', {style:`width:${Math.max(4, plan.share.pct)}%`}))), icon('arrow')) : null,
     h('ol', {class:'stones'}, steps),
     plan.ask ? h('div', {class:'askq'}, h('b', null, t('pathAsk')), h('span', null, plan.ask),
       h('div', {class:'inrow'}, ans, h('button', {class:'send', type:'button', style:'background:var(--her);color:var(--ink)', 'aria-label': t('answer'), onclick: () => { const a = ans.value.trim(); if (a) makePath(saved.text + ' ' + a); }}, icon('send')))) : null,
