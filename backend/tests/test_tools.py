@@ -264,3 +264,40 @@ def test_plan_never_uses_bangladesh_law_for_kenya(ai):
     ai(error=ValueError("down"))
     r = client.post("/v1/plan", json={"session_id": SID, "lang": "en", "country": "KE", "text": "My husband died, 2 sons, his brothers want the land"}).json()
     assert r["share"] is None and "share" not in [s["tool"] for s in r["steps"]]
+
+
+def test_speech_to_text_endpoint(fake_speech):
+    import base64
+    audio = base64.b64encode(b"RIFF" + b"\0" * 400).decode()
+    r = client.post("/v1/stt", json={"session_id": SID, "audio": audio, "mime": "audio/wav", "lang": "bn"})
+    assert r.status_code == 200 and r.json()["text"].startswith("স্বামী মারা")
+    assert fake_speech.heard[-1].startswith(b"RIFF")
+    assert client.post("/v1/stt", json={"session_id": SID, "audio": audio, "mime": "video/mp4"}).status_code == 422
+
+
+def test_speech_to_text_unavailable(no_speech):
+    import base64
+    r = client.post("/v1/stt", json={"session_id": SID, "audio": base64.b64encode(b"x" * 200).decode()})
+    assert r.status_code == 503
+
+
+def test_gemini_transcribe_tries_next_model(monkeypatch):
+    from app import speech
+    calls = []
+
+    class R:
+        def __init__(self, code, body=None):
+            self.status_code, self._b = code, body
+        def raise_for_status(self):
+            pass
+        def json(self):
+            return self._b
+    def post(url, **k):
+        calls.append(url)
+        if "busy-model" in url:
+            return R(503)
+        assert k["json"]["contents"][0]["parts"][1]["inline_data"]["mime_type"] == "audio/wav"
+        return R(200, {"candidates": [{"content": {"parts": [{"text": " আমার জমি "}]}}]})
+    monkeypatch.setattr(speech.httpx, "post", post)
+    g = speech.GeminiSpeech("k", "busy-model", ("good-model",))
+    assert g.transcribe(b"RIFF", "bn", "audio/wav") == "আমার জমি" and len(calls) == 2

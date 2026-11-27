@@ -36,3 +36,8 @@ jobs:
           echo "== plan (Bangla, land)"; post /v1/plan plan.json
           echo "== plan (Kenya, English)"; post /v1/plan plan2.json
           echo "== radar"; curl -s --max-time 60 $B/v1/radar/BD; echo
+          echo "== voice round trip: HerEvo speaks Bangla, then the recording is written down again"
+          curl -s -o say.wav -w "TTS HTTP %{http_code}, %{size_download} bytes in %{time_total}s\n" --max-time 90 -H 'content-type: application/json' \
+            -d '{"text":"আমার স্বামী মারা গেছেন। দেবর জমির ভাগ দিচ্ছে না।","lang":"bn","session_id":"toolcheck-0002"}' $B/v1/tts
+          python3 -c "import base64,json; json.dump({'session_id':'toolcheck-0002','audio':base64.b64encode(open('say.wav','rb').read()).decode(),'mime':'audio/wav','lang':'bn'}, open('stt.json','w'))"
+          echo "== stt"; post /v1/stt stt.json

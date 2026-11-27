@@ -12,6 +12,7 @@
   POST /v1/counter                   whisper at the real desk: what is true, what to say
   POST /v1/statement                 Witness diary notes -> dated statement
   POST /v1/share                     exact inheritance shares (for the land picture)
+  POST /v1/stt                       her recorded voice -> text (any browser; audio never stored)
   POST /v1/plan                      "just tell me": her words -> a path through the tools
   POST /v1/minutes                   listen mode: the record of a meeting (who promised what)
   POST /v1/radar, GET /v1/radar/{cc} anonymous warnings (bribes, pressure to sign) and their counts
@@ -212,7 +213,7 @@ def tts(body: SpeakIn):
     from .speech import get_speech
     key = (body.lang, body.text)
     if key not in _tts_cache:
-        if rate_limited("tts:" + body.session_id):
+        if rate_limited("tts:" + body.session_id, 80):
             raise HTTPException(429, "Too many voice requests. Please wait a few minutes.")
         sp = get_speech()
         speak = getattr(sp, "speak_wav", None)
@@ -223,6 +224,35 @@ def tts(body: SpeakIn):
             _tts_cache.clear()
         _tts_cache[key] = wav
     return Response(_tts_cache[key], media_type="audio/wav", headers={"Cache-Control": "no-store"})
+
+
+class HearIn(BaseModel):
+    session_id: str = Field(min_length=8, max_length=100)
+    audio: str = Field(min_length=100, max_length=8_000_000)  # base64
+    mime: str = Field(default="audio/wav", pattern=r"^audio/(wav|ogg|webm|mp4|aac|mpeg)$")
+    lang: str = "bn"
+
+
+@app.post("/v1/stt")
+def speech_to_text(body: HearIn):
+    """Her voice, recorded in the page, turned into text. The audio is used once and never stored."""
+    import base64
+
+    from .speech import get_speech
+    if rate_limited("stt:" + body.session_id, 80):
+        raise HTTPException(429, "Too many voice messages. Please wait a few minutes.")
+    sp = get_speech()
+    if sp is None:
+        raise HTTPException(503, "Voice input is not available right now.")
+    try:
+        audio = base64.b64decode(body.audio.split(",", 1)[-1])
+    except ValueError:
+        raise HTTPException(422, "Bad audio")
+    try:
+        text = sp.transcribe(audio, body.lang, body.mime)
+    except TypeError:  # a speech service without the mime parameter
+        text = sp.transcribe(audio, body.lang)
+    return {"text": (text or "").strip()}
 
 
 @app.get("/v1/inbox/{session_id}")

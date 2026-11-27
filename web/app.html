@@ -417,6 +417,15 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 .remind span{flex:1}
 .remind small{display:block;font-weight:500;opacity:.8;font-size:13.5px}
 
+/* ---- voice check ---- */
+.vlist{display:grid;gap:8px}
+.vrow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
+.vl{flex:1;min-width:0}.vl b{display:block}.vl small{display:block;color:var(--muted);font-size:14px;word-break:break-word}
+.vst{flex:none;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;background:var(--line);color:var(--muted)}
+.vst.ok{background:var(--good);color:#fff}.vst.bad{background:var(--danger);color:#fff}.vst.wait{background:var(--warn-2);color:var(--warn);animation:pulse2 1s infinite}
+.vmeter{height:10px;border-radius:5px;background:var(--line);overflow:hidden}.vmeter i{display:block;height:100%;width:0;background:var(--good);transition:width .08s}
+.mic.busy,.bigmic.busy,.hearbig.busy .ear,.orb.busy{animation:pulse2 .9s infinite}
+
 /* ---- talk (voice call) ---- */
 .view-talk{margin:-6px -18px -140px;min-height:calc(100vh - 64px);min-height:calc(100dvh - 64px);background:radial-gradient(120% 80% at 50% 30%,#2A2038 0%,var(--night) 70%);color:#F4EEE3;padding:24px 22px 28px;display:flex;flex-direction:column}
 @media (min-width:980px){.view-talk{min-height:calc(860px - 22px - 64px)}}
@@ -573,7 +582,8 @@ bn:{
   ask:'অন্য যেকোনো প্রশ্ন? HerEvo-কে জিজ্ঞেস করুন', country:'দেশ',
   testNote:'পরীক্ষামূলক সংস্করণ: শুধু বানানো (নমুনা) তথ্য দিন',
   busy:'HerEvo এখন একটু ব্যস্ত। আবার চেষ্টা করুন।', offline:'ইন্টারনেট পাওয়া যাচ্ছে না।', waking:'সার্ভার জেগে উঠছে, এক মিনিট লাগতে পারে…',
-  noMic:'এই ব্রাউজারে কথা শোনা যায় না। লিখে দিন।', listening:'শুনছি…',
+  noMic:'এই ব্রাউজারে কথা শোনা যাচ্ছে না। Chrome-এ খুলুন, অথবা লিখে দিন।', listening:'শুনছি… বলা শেষ হলে একটু থামুন',
+  writing:'লিখে নিচ্ছি…', heardNothing:'কিছু শুনতে পাইনি। আবার বলুন।', micDenied:'মাইক্রোফোনের অনুমতি দিন: ঠিকানার পাশের 🔒 চিহ্নে চাপ দিন → Microphone → Allow।', micInApp:'এই অ্যাপের ভেতরের ব্রাউজারে মাইক চলে না। ⋮ মেনু থেকে "Chrome-এ খুলুন" বেছে নিন।', micNone:'ফোনে মাইক্রোফোন পাওয়া যাচ্ছে না।', noVoice:'এই ফোনে বাংলা কণ্ঠ নেই, আর HerEvo-র কণ্ঠ এখন পাওয়া যাচ্ছে না। লেখাটা পড়ে নিন।',
   // lens
   lensH:'কাগজটার ছবি তুলুন', lensSub:'দলিল, নোটিশ, কাবিননামা, ঋণের কাগজ: যেকোনো কাগজ। HerEvo পড়ে শোনাবে।',
   camera:'ছবি তুলুন', gallery:'ফোনের ছবি থেকে বাছুন', trySample:'অথবা নমুনা কাগজ দিয়ে দেখুন', sampleTag:'নমুনা',
@@ -620,6 +630,9 @@ bn:{
   sosH:'এখনই সাহায্য', helper:'একজন সহায়তাকর্মীর সঙ্গে কথা বলুন', helperSub:'প্রশিক্ষিত মানুষ, গোপনে', exit:'দ্রুত বের হোন', exitSub:'এই পাতা বন্ধ হয়ে আবহাওয়ার পাতা খুলবে',
   cc:{BD:'বাংলাদেশ',KE:'কেনিয়া',MX:'মেক্সিকো'},
   shareOnlyBD:'এই হিসাব বাংলাদেশে প্রযোজ্য মুসলিম উত্তরাধিকার আইন অনুযায়ী। কেনিয়া বা মেক্সিকোর আইন আলাদা: মহড়া অংশে সেই দেশের অনুশীলন আছে।',
+  vcT:'ভয়েস পরীক্ষা', vcLink:'ভয়েস কাজ করছে কি না পরীক্ষা করুন', vcH:'ভয়েস পরীক্ষা', vcSub:'এক চাপে দেখে নিন এই ফোনে HerEvo শুনতে ও বলতে পারছে কি না।', vcStart:'পরীক্ষা শুরু করুন', vcAgain:'আবার পরীক্ষা করুন',
+  vcSpeak:'HerEvo-র কণ্ঠ', vcSpeakOk:'শুনতে পেয়েছেন? (বাজানো হয়েছে)', vcMic:'মাইক্রোফোন', vcMicNow:'এখন বাংলায় কিছু বলুন, তারপর থামুন…', vcWrite:'কথা লিখে নেওয়া', vcPhoneVoice:'ফোনের নিজের বাংলা কণ্ঠ', vcBrowser:'ব্রাউজার',
+  vcYes:'আছে', vcNo:'নেই (সমস্যা নেই, HerEvo-র কণ্ঠ ব্যবহার হবে)', vcInApp:'অ্যাপের ভেতরের ব্রাউজার: মাইক চলবে না। Chrome-এ খুলুন।', vcFail:'কাজ করছে না', vcSample:'আমি HerEvo। আপনার কথা শুনতে পাচ্ছি।',
   talkT:'কথা বলুন', talkEntry:'শুধু কথা বলতে চাই, পড়তে হবে না', talk_idle:'বলটায় চাপ দিন, তারপর কথা বলুন', talk_listening:'শুনছি… বলা শেষ হলে একটু থামুন', talk_thinking:'ভাবছি…', talk_speaking:'বলছি… থামাতে বলটায় চাপ দিন',
   talkEnd:'কথা শেষ', talkType:'বা লিখুন', talkHelp:'একজন সহায়তাকর্মীকে জানানো হয়েছে।',
   listenAll:'পুরো সভা শুনুন', listenAllSub:'সালিশ বা অফিসে কথা চলার সময় ফোনটা পাশে রাখুন। সমস্যা হলেই কানে বলব, শেষে লিখে রাখব কে কী কথা দিল।', listeningLive:(n)=>`শুনছি… ${n}টি কথা`, stopListen:'থামান',
@@ -654,7 +667,8 @@ en:{
   ask:'Anything else? Ask HerEvo', country:'Country',
   testNote:'Test version: use made-up information only',
   busy:'HerEvo is busy right now. Please try again.', offline:'No internet connection.', waking:'The server is waking up; this can take a minute…',
-  noMic:"Voice input isn't available in this browser. Please type.", listening:'Listening…',
+  noMic:"Voice input isn't working in this browser. Open it in Chrome, or type.", listening:'Listening… pause when you finish',
+  writing:'Writing it down…', heardNothing:"I didn't hear anything. Please try again.", micDenied:'Allow the microphone: tap the 🔒 next to the address → Microphone → Allow.', micInApp:'The microphone does not work inside this app’s browser. Use the ⋮ menu → "Open in Chrome".', micNone:'No microphone found on this phone.', noVoice:"This phone has no voice for this language and HerEvo's voice is unavailable right now. Please read the text.",
   lensH:'Take a photo of the paper', lensSub:'A deed, a notice, a marriage contract, a loan paper: any paper. HerEvo reads it to you.',
   camera:'Take photo', gallery:'Choose from your photos', trySample:'Or try a sample paper', sampleTag:'Sample',
   reading:['Reading the paper…','Finding dates and amounts…','Checking it against your rights…','Almost done…'],
@@ -695,6 +709,9 @@ en:{
   sosH:'Help now', helper:'Talk to a trained helper', helperSub:'A real person, in confidence', exit:'Quick exit', exitSub:'This page closes and a weather page opens',
   cc:{BD:'Bangladesh',KE:'Kenya',MX:'Mexico'},
   shareOnlyBD:'This calculation follows Muslim inheritance law as applied in Bangladesh. Kenya and Mexico have different laws: practise those cases in Rehearsal.',
+  vcT:'Voice check', vcLink:'Check that voice works', vcH:'Voice check', vcSub:'One tap shows whether HerEvo can hear and speak on this phone.', vcStart:'Start the check', vcAgain:'Check again',
+  vcSpeak:"HerEvo's voice", vcSpeakOk:'Did you hear it? (it played)', vcMic:'Microphone', vcMicNow:'Now say something, then pause…', vcWrite:'Writing down what you said', vcPhoneVoice:"The phone's own voice for this language", vcBrowser:'Browser',
+  vcYes:'yes', vcNo:"no (that's fine, HerEvo's voice is used)", vcInApp:'In-app browser: the microphone will not work. Open in Chrome.', vcFail:'not working', vcSample:'I am HerEvo. I can hear you.',
   talkT:'Talk', talkEntry:"I just want to talk, I can't read", talk_idle:'Tap the circle, then speak', talk_listening:'Listening… pause when you finish', talk_thinking:'Thinking…', talk_speaking:'Speaking… tap the circle to stop',
   talkEnd:'End', talkType:'or type', talkHelp:'A trained helper has been told.',
   listenAll:'Listen to the whole meeting', listenAllSub:'Keep the phone beside you at the salish or office. I whisper only when something is wrong, and write down who promised what.', listeningLive:(n)=>`Listening… ${n} things heard`, stopListen:'Stop',
@@ -821,41 +838,178 @@ async function api(path, body, timeout = 60000, quiet = false){
 }
 
 /* ============================================================== voice */
+/* Listening: the page records her voice itself (works in almost every browser, including in-app browsers that
+   allow the microphone), notices when she stops talking, and HerEvo's server writes down what she said.
+   The browser's own speech recognition is only used when recording is impossible.
+   Speaking: one audio player, unlocked by her first tap, so phones (iPhones especially) don't block HerEvo's voice. */
 const VOICE = {bn:'bn-BD', en:'en-US', sw:'sw-KE', es:'es-MX'};
-let audio = null, speakingBtn = null;
-function hasVoice(lang){ try{ const p = lang.slice(0, 2); return speechSynthesis.getVoices().some((v) => (v.lang || '').toLowerCase().startsWith(p)); }catch(e){ return false; } }
-function stopSpeech(){ try{ speechSynthesis.cancel(); }catch(e){} if (audio){ audio.pause(); audio = null; } if (speakingBtn){ speakingBtn.classList.remove('playing'); speakingBtn = null; } }
+let speakingBtn = null, speakToken = 0;
+const player = new Audio(); player.preload = 'auto';
+const SILENT = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';
+let unlockedAudio = false;
+function unlockAudio(){
+  if (unlockedAudio) return; unlockedAudio = true;
+  try{ player.src = SILENT; const p = player.play(); if (p) p.catch(() => {}); }catch(e){}
+  try{ const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); }catch(e){}
+}
+['pointerdown', 'touchstart', 'keydown'].forEach((ev) => window.addEventListener(ev, unlockAudio, {capture:true, passive:true}));
+function hasVoice(lang){ try{ const p = lang.slice(0, 2); return speechSynthesis.getVoices().some((v) => (v.lang || '').toLowerCase().replace('_', '-').startsWith(p)); }catch(e){ return false; } }
+function stopSpeech(){
+  speakToken++;
+  try{ speechSynthesis.cancel(); }catch(e){}
+  try{ player.pause(); }catch(e){}
+  if (speakingBtn){ speakingBtn.classList.remove('playing'); speakingBtn = null; }
+}
+const ttsCache = new Map();
+let warnedNoVoice = false;
+async function serverVoice(text){
+  const key = S.lang + '|' + text;
+  if (ttsCache.has(key)) return ttsCache.get(key);
+  const r = await fetch('/v1/tts', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({text: text.slice(0, 1500), lang: S.lang, session_id: S.sid})});
+  if (!r.ok) throw new Error('tts ' + r.status);
+  const url = URL.createObjectURL(await r.blob());
+  if (ttsCache.size > 60) ttsCache.clear();
+  ttsCache.set(key, url); return url;
+}
 async function speak(text, btn, onEnd){
-  stopSpeech(); if (!text){ onEnd && onEnd(); return; }
+  stopSpeech();
+  const token = speakToken;
+  if (!text){ onEnd && onEnd(); return; }
   if (btn){ speakingBtn = btn; btn.classList.add('playing'); }
   let ended = false;
-  const done = () => { if (btn && speakingBtn === btn){ btn.classList.remove('playing'); speakingBtn = null; } if (!ended){ ended = true; onEnd && onEnd(); } };
-  if (S.lang !== 'en' && !hasVoice(S.lang)){
+  const done = () => { if (ended) return; ended = true; if (btn && speakingBtn === btn){ btn.classList.remove('playing'); speakingBtn = null; } if (token === speakToken || !onEnd) onEnd && onEnd(); };
+  const browserVoice = () => {
     try{
-      const r = await fetch('/v1/tts', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({text: text.slice(0, 1500), lang: S.lang, session_id: S.sid})});
-      if (r.ok){ const a = new Audio(URL.createObjectURL(await r.blob())); audio = a; a.onended = done; await a.play(); return; }
-    }catch(e){}
+      if (!('speechSynthesis' in window)) throw 0;
+      if (S.lang !== 'en' && !hasVoice(S.lang) && !warnedNoVoice){ warnedNoVoice = true; toast(t('noVoice')); }
+      const u = new SpeechSynthesisUtterance(text); u.lang = VOICE[S.lang]; u.rate = .95;
+      const v = speechSynthesis.getVoices().find((x) => (x.lang || '').toLowerCase().replace('_', '-').startsWith(S.lang)); if (v) u.voice = v;
+      u.onend = done; u.onerror = done; speechSynthesis.speak(u);
+      setTimeout(() => { if (!speechSynthesis.speaking && !ended) done(); }, 2500 + text.length * 120);
+    }catch(e){ done(); }
+  };
+  // Bangla (and Swahili): HerEvo's own voice first, because most phones and computers have no good voice for them.
+  if (S.lang !== 'en' && !(S.lang === 'es' && hasVoice('es'))){
+    try{
+      const url = await serverVoice(text);
+      if (token !== speakToken) return;  // she pressed stop or moved on while it loaded
+      player.onended = done; player.onerror = () => { if (!ended) browserVoice(); };
+      player.src = url;
+      await player.play();
+      return;
+    }catch(e){ if (token !== speakToken) return; }
   }
-  try{ const u = new SpeechSynthesisUtterance(text); u.lang = VOICE[S.lang]; u.rate = .95; u.onend = done; u.onerror = done; speechSynthesis.speak(u); }catch(e){ done(); }
+  browserVoice();
 }
 function listenBtn(text, cls){ const b = h('button', {class: cls || 'listen dark', type:'button', 'aria-label': t('listen'), onclick: (e) => { e.preventDefault(); e.stopPropagation(); if (b.classList.contains('playing')){ stopSpeech(); return; } speak(typeof text === 'function' ? text() : text, b); }}, icon('speaker')); return b; }
+
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const canRecord = () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && (window.AudioContext || window.webkitAudioContext));
+const canHear = () => canRecord() || !!SR;
+const inAppBrowser = () => /FBAN|FBAV|Instagram|Line\/|Telegram|WebView|; wv\)/i.test(navigator.userAgent);
+
+// Records until she stops talking. continuous=true keeps going and hands over each spoken piece (listen mode).
+function recorder({continuous = false, onSegment, onLevel, onStart, onError, maxSilentStart = 9000}){
+  let stream, ctx, src, proc, stopped = false;
+  const chunks = []; let speaking = false, lastLoud = 0, began = 0, floor = 0.004, noiseN = 0, segStart = 0;
+  async function start(){
+    try{ stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true, autoGainControl:true, channelCount:1}}); }
+    catch(e){ onError && onError(e.name === 'NotAllowedError' || e.name === 'SecurityError' ? 'denied' : e.name === 'NotFoundError' ? 'nomic' : 'failed'); return; }
+    if (stopped){ stream.getTracks().forEach((x) => x.stop()); return; }
+    const AC = window.AudioContext || window.webkitAudioContext;
+    ctx = new AC(); if (ctx.state === 'suspended') try{ await ctx.resume(); }catch(e){}
+    src = ctx.createMediaStreamSource(stream);
+    proc = ctx.createScriptProcessor(4096, 1, 1);
+    src.connect(proc); proc.connect(ctx.destination);
+    began = segStart = performance.now(); onStart && onStart();
+    proc.onaudioprocess = (e) => {
+      if (stopped) return;
+      const d = e.inputBuffer.getChannelData(0);
+      let sum = 0; for (let i = 0; i < d.length; i++) sum += d[i] * d[i];
+      const rms = Math.sqrt(sum / d.length), now = performance.now();
+      if (!speaking && noiseN < 6){ floor = (floor * noiseN + rms) / (noiseN + 1); noiseN++; }
+      const loud = rms > Math.max(0.012, floor * 3.2);
+      onLevel && onLevel(Math.min(1, rms * 12));
+      chunks.push(new Float32Array(d));
+      if (loud){ if (!speaking){ speaking = true; } lastLoud = now; }
+      if (!speaking){
+        if (chunks.length > 4) chunks.shift();  // keep a little audio from just before she starts
+        if (!continuous && now - began > maxSilentStart){ finish(false); }
+        return;
+      }
+      const pause = now - lastLoud, long = now - segStart > 28000;
+      if (pause > 1300 || long){
+        const wav = encodeWav(chunks.splice(0), ctx.sampleRate);
+        speaking = false; segStart = now;
+        onSegment && onSegment(wav);
+        if (!continuous) finish(true);
+      }
+    };
+  }
+  function finish(){ if (stopped) return; stopped = true; try{ proc && (proc.onaudioprocess = null); src && src.disconnect(); proc && proc.disconnect(); }catch(e){} try{ stream && stream.getTracks().forEach((x) => x.stop()); }catch(e){} try{ ctx && ctx.close(); }catch(e){} }
+  function stop(){  // she tapped stop: send what she said so far
+    if (stopped) return;
+    const had = speaking && chunks.length;
+    const wav = had ? encodeWav(chunks.splice(0), ctx.sampleRate) : null;
+    finish(); if (wav) onSegment && onSegment(wav); else onSegment && !continuous && onSegment(null);
+  }
+  start();
+  return {stop, abort: finish};
+}
+function encodeWav(chunks, rate){
+  const target = 16000, ratio = rate / target;
+  let total = 0; for (const c of chunks) total += c.length;
+  const flat = new Float32Array(total); let o = 0; for (const c of chunks){ flat.set(c, o); o += c.length; }
+  const n = Math.floor(total / ratio), pcm = new Int16Array(n);
+  for (let i = 0; i < n; i++){ const a = Math.floor(i * ratio), b = Math.min(total, Math.floor((i + 1) * ratio)); let s = 0; for (let j = a; j < b; j++) s += flat[j]; const v = Math.max(-1, Math.min(1, s / Math.max(1, b - a))); pcm[i] = v < 0 ? v * 0x8000 : v * 0x7fff; }
+  const buf = new ArrayBuffer(44 + pcm.length * 2), dv = new DataView(buf);
+  const w = (p, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(p + i, s.charCodeAt(i)); };
+  w(0, 'RIFF'); dv.setUint32(4, 36 + pcm.length * 2, true); w(8, 'WAVE'); w(12, 'fmt '); dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true);
+  dv.setUint32(24, target, true); dv.setUint32(28, target * 2, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true); w(36, 'data'); dv.setUint32(40, pcm.length * 2, true);
+  new Int16Array(buf, 44).set(pcm);
+  return new Blob([buf], {type:'audio/wav'});
+}
+async function transcribe(wav){
+  const b64 = await toB64(wav);
+  const r = await api('/v1/stt', {session_id:S.sid, audio:b64, mime:'audio/wav', lang:S.lang}, 45000);
+  return (r.text || '').trim();
+}
+function micError(kind){
+  toast(kind === 'denied' ? (inAppBrowser() ? t('micInApp') : t('micDenied')) : kind === 'nomic' ? t('micNone') : t('noMic'));
+}
 let rec = null;
+// One spoken answer: tap, speak, pause. onText gets what she said (once written down); onEnd(text) when done.
 function hear(btn, onText, onEnd){
-  if (!SR){ toast(t('noMic')); return; }
   if (rec){ rec.stop(); return; }
   stopSpeech();
+  if (!canRecord()){ return hearBrowser(btn, onText, onEnd); }
+  btn.classList.add('on'); if (location.hash !== '#talk') toast(t('listening'));
+  const r = recorder({
+    onSegment: async (wav) => {
+      rec = null; btn.classList.remove('on');
+      if (!wav){ onEnd && onEnd(''); return; }
+      btn.classList.add('busy'); toast(t('writing'));
+      try{ const text = await transcribe(wav); btn.classList.remove('busy'); if (!text){ toast(t('heardNothing')); onEnd && onEnd(''); return; } onText(text); onEnd && onEnd(text); }
+      catch(e){ btn.classList.remove('busy'); onEnd && onEnd(''); }
+    },
+    onError: (kind) => { rec = null; btn.classList.remove('on'); if (SR && kind !== 'denied') return hearBrowser(btn, onText, onEnd); micError(kind); onEnd && onEnd(''); },
+  });
+  rec = {stop: () => { const x = r; rec = null; x.stop(); }, abort: () => { rec = null; btn.classList.remove('on'); r.abort(); }};
+}
+function hearBrowser(btn, onText, onEnd){
+  if (!SR){ micError(inAppBrowser() ? 'denied' : 'none'); return; }
   const r = new SR(); r.lang = VOICE[S.lang]; r.interimResults = true; r.continuous = false;
   let said = '';
   r.onresult = (e) => { said = Array.from(e.results).map((x) => x[0].transcript).join(' '); onText(said); };
-  r.onerror = (e) => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') toast(t('noMic')); };
+  r.onerror = (e) => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') micError('denied'); else if (e.error === 'network') toast(t('noMic')); else if (e.error === 'no-speech') toast(t('heardNothing')); };
   r.onend = () => { rec = null; btn.classList.remove('on'); onEnd && onEnd(said); };
-  rec = r; btn.classList.add('on'); if (location.hash !== '#talk') toast(t('listening'));
+  rec = {stop: () => r.stop(), abort: () => { try{ r.abort(); }catch(e){} rec = null; btn.classList.remove('on'); }};
+  btn.classList.add('on'); toast(t('listening'));
   try{ r.start(); }catch(e){ rec = null; btn.classList.remove('on'); }
 }
 
 /* ============================================================== shell */
-const TITLES = {talk:'talkT', file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
+const TITLES = {voice:'vcT', talk:'talkT', file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
 function bar(name){
   const b = $('#bar'); fill(b);
   if (name === 'home'){
@@ -885,7 +1039,7 @@ function openSOS(){
 }
 function quickExit(){ stopSpeech(); document.body.innerHTML = ''; try{ sessionStorage.clear(); }catch(e){} location.replace('https://www.google.com/search?q=weather'); }
 
-const VIEWS = {talk: Talk, file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
+const VIEWS = {voice: VoiceCheck, talk: Talk, file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
 function route(){
   stopSpeech(); if (rec){ try{ rec.abort(); }catch(e){} rec = null; } stopLive();
   fill($('#layer'));
@@ -926,6 +1080,7 @@ function Home(){
       h('select', {class:'chip', 'aria-label': t('country'), onchange: (e) => { S.country = e.target.value; store.set('country', S.country); }},
         ['BD', 'KE', 'MX'].map((c) => { const o = h('option', {value:c}, t('country') + ': ' + t('cc')[c]); if (c === S.country) o.selected = true; return o; })),
       h('a', {class:'chip', href:'#champion'}, icon('person'), t('champMode')),
+      h('a', {class:'chip', href:'#voice'}, icon('mic'), t('vcLink')),
       h('p', {class:'test'}, h('i'), t('testNote'))));
 }
 
@@ -942,7 +1097,7 @@ function Talk(){
     else if (state === 'speaking'){ stopSpeech(); set('idle'); }
   }});
   function listen(){
-    if (!SR){ toast(t('noMic')); return; }
+    if (!canHear()){ micError('none'); return; }
     set('listening');
     hear(orb, (x) => { capHer.textContent = '“' + x + '”'; }, (x) => { if (!active) return; if (x && x.trim()) send(x.trim()); else set('idle'); });
   }
@@ -963,6 +1118,45 @@ function Talk(){
   set('idle');
   fill(root, orb, status, capHer, capAi, extra,
     h('div', {class:'ttype'}, typed, h('button', {class:'tend', type:'button', onclick: () => { active = false; stopSpeech(); location.hash = '#home'; }}, icon('phone'), t('talkEnd'))));
+  return root;
+}
+
+/* ============================================================== voice check */
+function VoiceCheck(){
+  const root = h('div');
+  const row = (label) => { const st = h('span', {class:'vst'}, '–'), info = h('small'); const el = h('div', {class:'vrow'}, h('span', {class:'vl'}, h('b', null, label), info), st); return {el, set: (ok, msg) => { st.textContent = ok === null ? '…' : ok ? '✓' : '✗'; st.className = 'vst ' + (ok === null ? 'wait' : ok ? 'ok' : 'bad'); if (msg != null) info.textContent = msg; }}; };
+  const ua = navigator.userAgent;
+  const browser = /SamsungBrowser/.test(ua) ? 'Samsung Internet' : /Edg\//.test(ua) ? 'Edge' : /Firefox|FxiOS/.test(ua) ? 'Firefox' : /CriOS|Chrome/.test(ua) ? 'Chrome' : /Safari/.test(ua) ? 'Safari' : 'Other';
+  const rB = row(t('vcBrowser')), rS = row(t('vcSpeak')), rM = row(t('vcMic')), rW = row(t('vcWrite')), rP = row(t('vcPhoneVoice'));
+  rB.set(!inAppBrowser() && isSecureContext, browser + (inAppBrowser() ? ' · ' + t('vcInApp') : '') + (isSecureContext ? '' : ' · not https'));
+  rP.set(hasVoice(S.lang), hasVoice(S.lang) ? t('vcYes') : t('vcNo'));
+  const meter = h('div', {class:'vmeter'}, h('i'));
+  const go = h('button', {class:'btn block', type:'button', onclick: run}, icon('mic'), t('vcStart'));
+  async function run(){
+    go.disabled = true;
+    rS.set(null, ''); rM.set(null, ''); rW.set(null, '');
+    try{ const url = await serverVoice(t('vcSample')); player.src = url; await player.play(); rS.set(true, t('vcSpeakOk')); await new Promise((ok) => { player.onended = ok; setTimeout(ok, 6000); }); }
+    catch(e){ rS.set(false, t('vcFail') + ' (' + (e.message || e.name) + ')'); }
+    if (!canRecord()){ rM.set(false, SR ? 'browser speech only' : t('noMic')); rW.set(false, ''); go.disabled = false; go.lastChild.textContent = t('vcAgain'); return; }
+    rM.set(null, t('vcMicNow'));
+    await new Promise((resolve) => {
+      let heardLevel = 0;
+      const r = recorder({maxSilentStart: 8000,
+        onStart: () => rM.set(null, t('vcMicNow')),
+        onLevel: (v) => { heardLevel = Math.max(heardLevel, v); meter.firstChild.style.width = Math.round(v * 100) + '%'; },
+        onError: (kind) => { rM.set(false, kind === 'denied' ? (inAppBrowser() ? t('micInApp') : t('micDenied')) : t('micNone')); rW.set(false, ''); resolve(); },
+        onSegment: async (wav) => {
+          meter.firstChild.style.width = '0%';
+          if (!wav){ rM.set(heardLevel > .05, t('heardNothing')); rW.set(false, ''); resolve(); return; }
+          rM.set(true, Math.round(wav.size / 1024) + ' KB'); rW.set(null, t('writing'));
+          try{ const text = await transcribe(wav); rW.set(!!text, text ? '“' + text + '”' : t('heardNothing')); }catch(e){ rW.set(false, t('vcFail')); }
+          resolve();
+        }});
+      setTimeout(() => { r.stop(); }, 15000);
+    });
+    go.disabled = false; go.lastChild.textContent = t('vcAgain');
+  }
+  fill(root, h('h1', {class:'title'}, t('vcH')), h('p', {class:'sub'}, t('vcSub')), h('div', {class:'vlist'}, rB.el, rS.el, rM.el, meter, rW.el, rP.el), h('div', {style:'margin-top:16px'}, go));
   return root;
 }
 
@@ -1433,7 +1627,7 @@ function Counter(arg){
       on ? h('div', {class:'live'}, h('i'), t('listeningLive')(num(heardAll.length))) : [h('b', {style:'font-family:var(--f-display);font-size:18px'}, t('listenAll')), h('p', null, t('listenAllSub'))],
       h('div', {class:'row'},
         on ? h('button', {class:'btn', type:'button', style:'background:var(--danger)', onclick: () => { stopLive(); drawLive(); }}, icon('stop'), t('stopListen'))
-           : h('button', {class:'btn', type:'button', style:'background:var(--counter)', onclick: () => { startLive((x) => { heardAll.push(x); input.value = x; ask(true); drawLive(); }); drawLive(); }}, icon('mic'), t('listenAll')),
+           : h('button', {class:'btn', type:'button', style:'background:var(--counter)', onclick: () => { startLive((x) => { heardAll.push(x); input.value = x; ask(true); drawLive(); }, drawLive); drawLive(); }}, icon('mic'), t('listenAll')),
         heardAll.length && !on ? h('button', {class:'btn ghost', type:'button', onclick: () => makeMinutes(place, heardAll.slice())}, icon('book'), t('makeMinutes')) : null));
   }
   async function ask(live){
@@ -1466,15 +1660,23 @@ function Counter(arg){
   return root;
 }
 let liveRec = null;
-function startLive(onLine){
-  if (!SR){ toast(t('noMic')); return; }
+// Listen mode: keeps recording through the meeting; every spoken piece is written down and checked.
+function startLive(onLine, onState){
   stopSpeech();
-  const r = new SR(); r.lang = VOICE[S.lang]; r.continuous = true; r.interimResults = false;
-  r.onresult = (e) => { for (let i = e.resultIndex; i < e.results.length; i++){ if (e.results[i].isFinal){ const x = e.results[i][0].transcript.trim(); if (x) onLine(x); } } };
-  r.onerror = (e) => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed'){ toast(t('noMic')); liveRec = null; } };
-  r.onend = () => { if (liveRec === r){ try{ r.start(); }catch(e){} } };  // keep listening through pauses
-  liveRec = r;
-  try{ r.start(); }catch(e){ liveRec = null; }
+  if (!canRecord()){
+    if (!SR){ micError('none'); return; }
+    const r = new SR(); r.lang = VOICE[S.lang]; r.continuous = true; r.interimResults = false;
+    r.onresult = (e) => { for (let i = e.resultIndex; i < e.results.length; i++){ if (e.results[i].isFinal){ const x = e.results[i][0].transcript.trim(); if (x) onLine(x); } } };
+    r.onerror = (e) => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed'){ micError('denied'); liveRec = null; onState && onState(); } };
+    r.onend = () => { if (liveRec && liveRec.sr === r){ try{ r.start(); }catch(e){} } };
+    liveRec = {sr: r, stop: () => { liveRec = null; try{ r.stop(); }catch(e){} }};
+    try{ r.start(); }catch(e){ liveRec = null; }
+    return;
+  }
+  const r = recorder({continuous:true,
+    onSegment: async (wav) => { if (!wav) return; try{ const x = await transcribe(wav); if (x) onLine(x); }catch(e){} },
+    onError: (kind) => { liveRec = null; micError(kind); onState && onState(); }});
+  liveRec = {stop: () => { liveRec = null; r.stop(); }};
 }
 function stopLive(){ const r = liveRec; liveRec = null; if (r){ try{ r.stop(); }catch(e){} } }
 async function makeMinutes(place, lines){

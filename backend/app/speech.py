@@ -64,24 +64,34 @@ class GeminiSpeech:
 
     URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
-    def __init__(self, api_key: str, model: str):
+    def __init__(self, api_key: str, model: str, backups: tuple[str, ...] = ()):
         self.key = api_key.strip()
         self.model = model
+        self.models = [model] + [m for m in backups if m and m != model]
 
-    def transcribe(self, audio: bytes, language: str) -> str | None:
+    LANG_HINT = {"bn": "Bangla (Bengali)", "en": "English", "sw": "Swahili", "es": "Spanish"}
+
+    def transcribe(self, audio: bytes, language: str, mime: str = "audio/ogg") -> str | None:
+        hint = self.LANG_HINT.get(language, "Bangla (Bengali)")
         body = {"contents": [{"role": "user", "parts": [
-            {"text": "Transcribe this voice message exactly, in the language it is spoken in (usually Bangla). "
-                     "Return only the transcript, nothing else."},
-            {"inline_data": {"mime_type": "audio/ogg", "data": base64.b64encode(audio).decode()}}]}],
+            {"text": f"Transcribe this voice recording exactly, in the language it is spoken in (most likely {hint}), "
+                     "in that language's own script. Return only the transcript, nothing else. If nobody speaks, "
+                     "return nothing."},
+            {"inline_data": {"mime_type": mime, "data": base64.b64encode(audio).decode()}}]}],
             "generationConfig": {"temperature": 0}}
-        try:
-            r = httpx.post(self.URL.format(model=self.model), headers={"x-goog-api-key": self.key}, json=body, timeout=30)
-            r.raise_for_status()
-            parts = r.json()["candidates"][0]["content"]["parts"]
-            return " ".join(p.get("text", "") for p in parts).strip() or None
-        except (httpx.HTTPError, KeyError, IndexError, ValueError) as exc:
-            log.error("gemini transcription failed: %s", exc)
-            return None
+        for model in self.models[:3]:  # an overloaded model often frees up on the next one
+            try:
+                r = httpx.post(self.URL.format(model=model), headers={"x-goog-api-key": self.key}, json=body, timeout=30)
+                if r.status_code in (429, 500, 503, 404):
+                    log.warning("gemini transcription HTTP %s on %s, trying the next model", r.status_code, model)
+                    continue
+                r.raise_for_status()
+                parts = r.json()["candidates"][0]["content"]["parts"]
+                text = " ".join(p.get("text", "") for p in parts).strip()
+                return text or None
+            except (httpx.HTTPError, KeyError, IndexError, ValueError) as exc:
+                log.error("gemini transcription failed on %s: %s", model, type(exc).__name__)
+        return None
 
     def synthesize(self, text: str, language: str) -> bytes | None:
         return None  # Telegram voice notes need OGG; in test mode they are answered with text
@@ -153,7 +163,8 @@ def get_speech() -> Speech | None:
     if not _checked:
         st = get_settings()
         if st.speech_provider == "gemini" and st.gemini_api_key:
-            _speech = GeminiSpeech(st.gemini_api_key, st.gemini_model)
+            _speech = GeminiSpeech(st.gemini_api_key, st.gemini_model,
+                                   tuple(m.strip() for m in st.gemini_backup_models.split(",")))
         elif st.speech_provider == "google" and st.google_api_key:
             _speech = GoogleSpeech(st.google_api_key)
         else:
