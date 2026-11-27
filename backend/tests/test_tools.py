@@ -337,9 +337,24 @@ def test_gemini_switches_thinking_off_for_speed(monkeypatch):
     def post(httpx, model, body, timeout):
         sent.append(body.get("generationConfig", {}).get("thinkingConfig"))
         if len(sent) == 1:
-            return R(400, {"error": {"status": "INVALID_ARGUMENT", "message": "Thinking budget is not supported"}})
+            return R(400, {"error": {"status": "INVALID_ARGUMENT", "message": "Invalid value at generation_config"}})
         return R(200, {"ok": 1})
     monkeypatch.setattr(g, "_post", post)
     import httpx
     assert g._run(httpx, {"generationConfig": {"temperature": 0}}) == {"ok": 1}
     assert sent == [{"thinkingBudget": 0}, None]  # tried fast first, then the normal way
+
+
+def test_tools_ask_the_lite_model_first(monkeypatch):
+    from app import llm as L
+    order = []
+
+    class R:
+        status_code = 200
+        def json(self):
+            return {"candidates": [{"content": {"parts": [{"functionCall": {"name": "t", "args": {"x": 1}}}]}}]}
+    g = L.GeminiLLM.__new__(L.GeminiLLM)
+    g.models, g._no_fast = ["gemini-flash-latest", "gemini-flash-lite-latest"], set()
+    monkeypatch.setattr(g, "_post", lambda httpx, model, body, timeout: order.append(model) or R())
+    assert g.generate("s", [{"text": "x"}], "t", {"type": "object", "properties": {}}) == {"x": 1}
+    assert order == ["gemini-flash-lite-latest"]

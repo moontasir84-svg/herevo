@@ -314,12 +314,14 @@ class GeminiLLM:
         gc = dict(body.get("generationConfig", {}), thinkingConfig={"thinkingBudget": 0})
         return dict(body, generationConfig=gc)
 
-    def _run(self, httpx, body: dict, seconds: float = 25) -> dict:
+    def _run(self, httpx, body: dict, seconds: float = 25, prefer_lite: bool = False) -> dict:
         """POST to the first model that answers, with retries on overload. She is waiting: give up after
-        `seconds` so the caller can use its checked fallback."""
+        `seconds` so the caller can use its checked fallback. prefer_lite: HerEvo's tools ask the lite model first
+        (answers in a few seconds and has a much larger free quota)."""
         data, notes = None, []
         deadline = time.monotonic() + seconds  # she is waiting: give up and use the checked fallback after 25 s
-        for model in self.models:
+        models = sorted(self.models, key=lambda m: 0 if "lite" in m else 1) if prefer_lite else self.models
+        for model in models:
             fast = self._fast(body, model)
             attempt = 0
             while attempt < 2:  # an overloaded model often answers on the second try
@@ -343,7 +345,7 @@ class GeminiLLM:
                     status, detail = "", r.text[:200]
                 notes.append(f"{model} HTTP {r.status_code} {status}".strip())
                 log.warning("Gemini HTTP %s (%s): %s: %s", r.status_code, model, status, detail)
-                if r.status_code == 400 and fast is not body and "thinking" in detail.lower():
+                if r.status_code == 400 and fast is not body:
                     self._no_fast.add(model)  # this model can't switch thinking off: ask it the normal way
                     fast = body
                     attempt -= 1
@@ -404,7 +406,7 @@ class GeminiLLM:
             "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames": [tool]}},
             "generationConfig": {"maxOutputTokens": 8192, "temperature": temperature},
         }
-        data = self._run(httpx, body, seconds)
+        data = self._run(httpx, body, seconds, prefer_lite=True)
         cand = (data.get("candidates") or [{}])[0]
         for part in (cand.get("content") or {}).get("parts") or []:
             call = part.get("functionCall")
