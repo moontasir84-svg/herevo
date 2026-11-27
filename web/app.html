@@ -417,6 +417,35 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 .remind span{flex:1}
 .remind small{display:block;font-weight:500;opacity:.8;font-size:13.5px}
 
+/* ---- talk (voice call) ---- */
+.view-talk{margin:-6px -18px -140px;min-height:calc(100vh - 64px);min-height:calc(100dvh - 64px);background:radial-gradient(120% 80% at 50% 30%,#2A2038 0%,var(--night) 70%);color:#F4EEE3;padding:24px 22px 28px;display:flex;flex-direction:column}
+@media (min-width:980px){.view-talk{min-height:calc(860px - 22px - 64px)}}
+.talk{flex:1;display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center}
+.orb{margin-top:24px;width:210px;height:210px;border-radius:50%;border:0;position:relative;background:radial-gradient(circle at 35% 30%,#FFD38A 0%,var(--her) 35%,#B8467E 75%,#5B2A7A 100%);box-shadow:0 0 60px rgba(242,158,46,.35),inset 0 -20px 40px rgba(0,0,0,.25);animation:breathe 4s ease-in-out infinite;transition:transform .3s}
+.orb::before,.orb::after{content:"";position:absolute;inset:-14px;border-radius:50%;border:2px solid rgba(242,158,46,.35);opacity:0}
+[data-state=listening] .orb{animation:none;transform:scale(1.04)}
+[data-state=listening] .orb::before,[data-state=listening] .orb::after{animation:ring 1.6s ease-out infinite;opacity:1}
+[data-state=listening] .orb::after{animation-delay:.8s}
+[data-state=thinking] .orb{animation:think 1.2s linear infinite;background:conic-gradient(from 0deg,var(--her),#B8467E,#5B2A7A,var(--her))}
+[data-state=speaking] .orb{animation:talkpulse .5s ease-in-out infinite alternate}
+@keyframes breathe{50%{transform:scale(.96)}}
+@keyframes ring{from{transform:scale(.95);opacity:.9}to{transform:scale(1.5);opacity:0}}
+@keyframes think{to{transform:rotate(360deg)}}
+@keyframes talkpulse{to{transform:scale(1.07);box-shadow:0 0 90px rgba(242,158,46,.55)}}
+.tstatus{font-family:var(--f-display);font-size:21px;font-weight:600;margin:6px 0 0;min-height:1.4em}
+.cap{margin:0;max-width:30em;font-size:16px;line-height:1.5}
+.cap.her{color:#BFB5A6;font-style:italic}
+.cap.ai{font-size:18px}
+.tsteps{display:grid;gap:6px;text-align:left;width:100%;max-width:30em}
+.tsteps div{background:rgba(244,238,227,.08);border-radius:14px;padding:10px 12px;font-size:15px}
+.ttype{display:flex;gap:8px;width:100%;margin-top:auto}
+.ttype input{flex:1;min-height:50px;border-radius:99px;border:0;background:rgba(244,238,227,.1);color:#fff;padding:0 18px;font-size:16px}
+.ttype input::placeholder{color:rgba(244,238,227,.5)}
+.tend{white-space:nowrap;flex:none;min-height:52px;padding:0 20px;border-radius:99px;border:0;background:var(--danger);color:#fff;font-weight:700;display:inline-flex;align-items:center;gap:8px}
+.tend svg{width:20px;height:20px}
+.talklink{margin-top:10px;width:100%;min-height:46px;border-radius:99px;border:1px solid rgba(244,238,227,.25);background:transparent;color:#F4EEE3;font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.talklink svg{width:18px;height:18px}
+
 /* ---- listen mode + file ---- */
 .livebox{margin-top:14px;border-radius:24px;border:2px dashed var(--counter);padding:14px;display:grid;gap:10px}
 .livebox p{margin:0;color:var(--muted);font-size:14.5px}
@@ -590,6 +619,8 @@ bn:{
   // sos
   sosH:'এখনই সাহায্য', helper:'একজন সহায়তাকর্মীর সঙ্গে কথা বলুন', helperSub:'প্রশিক্ষিত মানুষ, গোপনে', exit:'দ্রুত বের হোন', exitSub:'এই পাতা বন্ধ হয়ে আবহাওয়ার পাতা খুলবে',
   cc:{BD:'বাংলাদেশ',KE:'কেনিয়া',MX:'মেক্সিকো'},
+  talkT:'কথা বলুন', talkEntry:'শুধু কথা বলতে চাই, পড়তে হবে না', talk_idle:'বলটায় চাপ দিন, তারপর কথা বলুন', talk_listening:'শুনছি… বলা শেষ হলে একটু থামুন', talk_thinking:'ভাবছি…', talk_speaking:'বলছি… থামাতে বলটায় চাপ দিন',
+  talkEnd:'কথা শেষ', talkType:'বা লিখুন', talkHelp:'একজন সহায়তাকর্মীকে জানানো হয়েছে।',
   listenAll:'পুরো সভা শুনুন', listenAllSub:'সালিশ বা অফিসে কথা চলার সময় ফোনটা পাশে রাখুন। সমস্যা হলেই কানে বলব, শেষে লিখে রাখব কে কী কথা দিল।', listeningLive:(n)=>`শুনছি… ${n}টি কথা`, stopListen:'থামান',
   makeMinutes:'সভার রেকর্ড তৈরি করুন', minutesH:'সভার রেকর্ড', promisesH:'কে কী কথা দিল', warningsH:'সাবধান', nextH:'এরপর', heardLines:'যা শোনা গেছে', savedToFile:'আপনার ফাইলে রাখা হলো',
   fileT:'আমার ফাইল', myFile:'আমার ফাইল তৈরি করুন', fileH:'HerEvo ফাইল', fileSub:'আইনি সহায়তা বা অফিসে নিয়ে যান। নাম আর ঠিকানা নিজে হাতে লিখবেন।', fileSituation:'পরিস্থিতি', fileShare:'আইনে প্রাপ্য ভাগ', filePapers:'কাগজপত্র (HerEvo পড়েছে)',
@@ -662,6 +693,8 @@ en:{
   samples:[['SAMPLE: At night my husband got angry and pushed me. I hit the wall and my arm is bruised.',-21],['SAMPLE: He took my phone and locked the door. He does not let me visit my parents.',-14],['SAMPLE: He threatens divorce if I do not bring dowry money. The neighbour aunty heard it.',-3]],
   sosH:'Help now', helper:'Talk to a trained helper', helperSub:'A real person, in confidence', exit:'Quick exit', exitSub:'This page closes and a weather page opens',
   cc:{BD:'Bangladesh',KE:'Kenya',MX:'Mexico'},
+  talkT:'Talk', talkEntry:"I just want to talk, I can't read", talk_idle:'Tap the circle, then speak', talk_listening:'Listening… pause when you finish', talk_thinking:'Thinking…', talk_speaking:'Speaking… tap the circle to stop',
+  talkEnd:'End', talkType:'or type', talkHelp:'A trained helper has been told.',
   listenAll:'Listen to the whole meeting', listenAllSub:'Keep the phone beside you at the salish or office. I whisper only when something is wrong, and write down who promised what.', listeningLive:(n)=>`Listening… ${n} things heard`, stopListen:'Stop',
   makeMinutes:'Make the meeting record', minutesH:'Meeting record', promisesH:'Who promised what', warningsH:'Careful', nextH:'Next', heardLines:'What was heard', savedToFile:'Saved in your file',
   fileT:'My file', myFile:'Make my file', fileH:'HerEvo file', fileSub:'Take it to legal aid or the office. Write your name and address by hand.', fileSituation:'Situation', fileShare:'Lawful share', filePapers:'Papers (read by HerEvo)',
@@ -790,17 +823,18 @@ const VOICE = {bn:'bn-BD', en:'en-US', sw:'sw-KE', es:'es-MX'};
 let audio = null, speakingBtn = null;
 function hasVoice(lang){ try{ const p = lang.slice(0, 2); return speechSynthesis.getVoices().some((v) => (v.lang || '').toLowerCase().startsWith(p)); }catch(e){ return false; } }
 function stopSpeech(){ try{ speechSynthesis.cancel(); }catch(e){} if (audio){ audio.pause(); audio = null; } if (speakingBtn){ speakingBtn.classList.remove('playing'); speakingBtn = null; } }
-async function speak(text, btn){
-  stopSpeech(); if (!text) return;
+async function speak(text, btn, onEnd){
+  stopSpeech(); if (!text){ onEnd && onEnd(); return; }
   if (btn){ speakingBtn = btn; btn.classList.add('playing'); }
-  const done = () => { if (btn && speakingBtn === btn){ btn.classList.remove('playing'); speakingBtn = null; } };
+  let ended = false;
+  const done = () => { if (btn && speakingBtn === btn){ btn.classList.remove('playing'); speakingBtn = null; } if (!ended){ ended = true; onEnd && onEnd(); } };
   if (S.lang !== 'en' && !hasVoice(S.lang)){
     try{
       const r = await fetch('/v1/tts', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({text: text.slice(0, 1500), lang: S.lang, session_id: S.sid})});
       if (r.ok){ const a = new Audio(URL.createObjectURL(await r.blob())); audio = a; a.onended = done; await a.play(); return; }
     }catch(e){}
   }
-  try{ const u = new SpeechSynthesisUtterance(text); u.lang = VOICE[S.lang]; u.rate = .95; u.onend = done; speechSynthesis.speak(u); }catch(e){ done(); }
+  try{ const u = new SpeechSynthesisUtterance(text); u.lang = VOICE[S.lang]; u.rate = .95; u.onend = done; u.onerror = done; speechSynthesis.speak(u); }catch(e){ done(); }
 }
 function listenBtn(text, cls){ const b = h('button', {class: cls || 'listen dark', type:'button', 'aria-label': t('listen'), onclick: (e) => { e.preventDefault(); e.stopPropagation(); if (b.classList.contains('playing')){ stopSpeech(); return; } speak(typeof text === 'function' ? text() : text, b); }}, icon('speaker')); return b; }
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -814,12 +848,12 @@ function hear(btn, onText, onEnd){
   r.onresult = (e) => { said = Array.from(e.results).map((x) => x[0].transcript).join(' '); onText(said); };
   r.onerror = (e) => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') toast(t('noMic')); };
   r.onend = () => { rec = null; btn.classList.remove('on'); onEnd && onEnd(said); };
-  rec = r; btn.classList.add('on'); toast(t('listening'));
+  rec = r; btn.classList.add('on'); if (location.hash !== '#talk') toast(t('listening'));
   try{ r.start(); }catch(e){ rec = null; btn.classList.remove('on'); }
 }
 
 /* ============================================================== shell */
-const TITLES = {file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
+const TITLES = {talk:'talkT', file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
 function bar(name){
   const b = $('#bar'); fill(b);
   if (name === 'home'){
@@ -849,7 +883,7 @@ function openSOS(){
 }
 function quickExit(){ stopSpeech(); document.body.innerHTML = ''; try{ sessionStorage.clear(); }catch(e){} location.replace('https://www.google.com/search?q=weather'); }
 
-const VIEWS = {file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
+const VIEWS = {talk: Talk, file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
 function route(){
   stopSpeech(); if (rec){ try{ rec.abort(); }catch(e){} rec = null; } stopLive();
   fill($('#layer'));
@@ -891,6 +925,43 @@ function Home(){
         ['BD', 'KE', 'MX'].map((c) => { const o = h('option', {value:c}, t('country') + ': ' + t('cc')[c]); if (c === S.country) o.selected = true; return o; })),
       h('a', {class:'chip', href:'#champion'}, icon('person'), t('champMode')),
       h('p', {class:'test'}, h('i'), t('testNote'))));
+}
+
+/* ============================================================== talk: a voice call with HerEvo */
+function Talk(){
+  const root = h('div', {class:'talk', 'data-state':'idle'});
+  let state = 'idle', active = true;
+  const status = h('p', {class:'tstatus', 'aria-live':'polite'});
+  const capHer = h('p', {class:'cap her'}), capAi = h('p', {class:'cap ai'}), extra = h('div', {class:'tsteps'});
+  const set = (st) => { state = st; root.dataset.state = st; status.textContent = t('talk_' + st); };
+  const orb = h('button', {class:'orb', type:'button', 'aria-label': t('talkT'), onclick: () => {
+    if (state === 'idle') listen();
+    else if (state === 'listening'){ if (rec) rec.stop(); }
+    else if (state === 'speaking'){ stopSpeech(); set('idle'); }
+  }});
+  function listen(){
+    if (!SR){ toast(t('noMic')); return; }
+    set('listening');
+    hear(orb, (x) => { capHer.textContent = '“' + x + '”'; }, (x) => { if (!active) return; if (x && x.trim()) send(x.trim()); else set('idle'); });
+  }
+  async function send(x){
+    capHer.textContent = '“' + x + '”'; fill(extra); set('thinking');
+    try{
+      const r = await api('/v1/ask', {session_id:S.sid, text:x, country:S.country}, 60000);
+      capAi.textContent = r.reply;
+      fill(extra, (r.steps || []).map((st, i) => h('div', null, num(i + 1) + '. ' + st)),
+        r.escalation_id || r.helper_alerted ? h('div', {style:'background:var(--danger)'}, t('talkHelp')) : null);
+      set('speaking');
+      const say = [r.reply, ...(r.steps || []).map((st, i) => (i + 1) + '. ' + st)].join(' ');
+      speak(say, null, () => { if (active && state === 'speaking' && location.hash === '#talk') listen(); });
+    }catch(e){ set('idle'); }
+  }
+  const typed = h('input', {type:'text', placeholder: t('talkType'), onkeydown: (e) => { if (e.key === 'Enter' && typed.value.trim()){ const v = typed.value.trim(); typed.value = ''; send(v); } }});
+  window.addEventListener('hashchange', () => { active = false; }, {once:true});
+  set('idle');
+  fill(root, orb, status, capHer, capAi, extra,
+    h('div', {class:'ttype'}, typed, h('button', {class:'tend', type:'button', onclick: () => { active = false; stopSpeech(); location.hash = '#home'; }}, icon('phone'), t('talkEnd'))));
+  return root;
 }
 
 /* ============================================================== her file */
@@ -984,6 +1055,7 @@ function tellBox(){
     h('h2', null, t('tellH')), h('p', null, t('tellSub')),
     h('div', {class:'inrow'}, input, mic),
     h('button', {class:'go', type:'button', onclick: go}, t('tellGo'), icon('arrow')),
+    h('a', {class:'talklink', href:'#talk'}, icon('phone'), t('talkEntry')),
     h('div', {class:'ex'}, t('tellEx').map((x) => h('button', {type:'button', onclick: () => { input.value = x; grow(); go(); }}, x))));
 }
 let pathPending = false;
