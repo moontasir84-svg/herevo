@@ -417,6 +417,40 @@ select.chip{appearance:none;padding-right:30px;background:var(--surface) url("da
 .remind span{flex:1}
 .remind small{display:block;font-weight:500;opacity:.8;font-size:13.5px}
 
+/* ---- listen mode + file ---- */
+.livebox{margin-top:14px;border-radius:24px;border:2px dashed var(--counter);padding:14px;display:grid;gap:10px}
+.livebox p{margin:0;color:var(--muted);font-size:14.5px}
+.livebox.on{border-style:solid;background:var(--counter-2)}
+.livebox .live{display:flex;align-items:center;gap:10px;font-weight:700;color:#6B3A08}
+.livebox .live i{width:12px;height:12px;border-radius:50%;background:var(--danger);animation:pulse2 1s infinite}
+@keyframes pulse2{50%{opacity:.3}}
+.livebox .row .btn{flex:1}
+.whisper.calm{border-color:var(--line)}
+.whisper.calm .heard{background:var(--surface);color:var(--muted)}
+.mins{display:grid;gap:8px}
+.mins .pr{padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.mins .pr b{display:block;font-size:13px;color:var(--muted)}
+.filebtn{margin-top:22px;width:100%;min-height:56px;border-radius:20px;border:0;background:var(--ink);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none}
+.filebtn svg{width:22px;height:22px;color:var(--her)}
+.doc{background:#fff;border:1px solid var(--line);border-radius:6px;padding:22px 20px;box-shadow:0 10px 30px rgba(27,23,19,.08);font-size:15.5px;line-height:1.6}
+.doc h1{font-family:var(--f-display);font-size:24px;margin:0;display:flex;align-items:center;gap:10px}
+.doc h1 svg{width:28px;height:28px}
+.doc .meta{color:var(--muted);font-size:13px;margin:2px 0 14px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+.doc h2{font-family:var(--f-display);font-size:16.5px;margin:18px 0 6px;text-transform:none;display:flex;gap:8px;align-items:center}
+.doc h2::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--her)}
+.doc p{margin:0 0 6px}
+.doc ul{margin:0;padding-left:20px}
+.doc .pp{padding:8px 0;border-top:1px dashed var(--line)}
+.doc .pp b{display:block}
+.doc .tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+.doc .tag.do_not_sign{background:var(--danger-2);color:#8E1F16}.doc .tag.check_first{background:var(--warn-2);color:#6E4700}.doc .tag.keep_safe{background:var(--good-2);color:#0F5532}.doc .tag.unclear{background:var(--line)}
+.doc .letter{white-space:pre-wrap;font-family:'Tiro Bangla',var(--f-body);background:#FCFAF5;border:1px solid var(--line);padding:14px;border-radius:4px}
+@media print{
+  body{background:#fff!important}.pitch,.bar,.noprint,#layer,.toast{display:none!important}
+  .stage{display:block;padding:0}.device{border:0!important;box-shadow:none!important;height:auto!important;border-radius:0!important;overflow:visible!important}
+  .app{height:auto!important;overflow:visible!important;background:#fff}main{padding:0}.doc{border:0;box-shadow:none;padding:0}
+}
+
 /* ---- champion ---- */
 .forwho{max-width:150px;padding:0 12px 0 4px;text-decoration:none;gap:6px;border-width:2px}
 .forwho i{flex:none;width:30px;height:30px;border-radius:50%;color:#fff;font-style:normal;display:inline-flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:700;font-size:15px}
@@ -556,6 +590,12 @@ bn:{
   // sos
   sosH:'এখনই সাহায্য', helper:'একজন সহায়তাকর্মীর সঙ্গে কথা বলুন', helperSub:'প্রশিক্ষিত মানুষ, গোপনে', exit:'দ্রুত বের হোন', exitSub:'এই পাতা বন্ধ হয়ে আবহাওয়ার পাতা খুলবে',
   cc:{BD:'বাংলাদেশ',KE:'কেনিয়া',MX:'মেক্সিকো'},
+  listenAll:'পুরো সভা শুনুন', listenAllSub:'সালিশ বা অফিসে কথা চলার সময় ফোনটা পাশে রাখুন। সমস্যা হলেই কানে বলব, শেষে লিখে রাখব কে কী কথা দিল।', listeningLive:(n)=>`শুনছি… ${n}টি কথা`, stopListen:'থামান',
+  makeMinutes:'সভার রেকর্ড তৈরি করুন', minutesH:'সভার রেকর্ড', promisesH:'কে কী কথা দিল', warningsH:'সাবধান', nextH:'এরপর', heardLines:'যা শোনা গেছে', savedToFile:'আপনার ফাইলে রাখা হলো',
+  fileT:'আমার ফাইল', myFile:'আমার ফাইল তৈরি করুন', fileH:'HerEvo ফাইল', fileSub:'আইনি সহায়তা বা অফিসে নিয়ে যান। নাম আর ঠিকানা নিজে হাতে লিখবেন।', fileSituation:'পরিস্থিতি', fileShare:'আইনে প্রাপ্য ভাগ', filePapers:'কাগজপত্র (HerEvo পড়েছে)',
+  fileMeetings:'সভার রেকর্ড', fileSteps:'করণীয়', fileDiary:(n)=>`সাক্ষী ডায়েরিতে ${n}টি তারিখসহ, সিল করা লেখা আছে। বিবৃতি আলাদাভাবে তৈরি করা যায়।`, fileLetter:'আইনি সহায়তার আবেদন (খসড়া)', fileContacts:'যেখানে যাবেন',
+  print:'প্রিন্ট বা PDF', fileEmpty:'এখনো ফাইলে কিছু নেই। আগে বলুন কী হয়েছে, বা কোনো কাগজের ছবি তুলুন।', doneMark:'হয়েছে', todoMark:'বাকি',
+  letter:(o)=>`বরাবর\nজেলা লিগ্যাল এইড অফিসার\n[জেলা]\n\nবিষয়: বিনামূল্যে আইনি সহায়তার আবেদন।\n\nজনাব,\nআমি [নাম], [ঠিকানা]। ${o.situation}${o.share ? ' আইন অনুযায়ী আমার প্রাপ্য ভাগ ' + o.share + '।' : ''}${o.papers ? ' সংশ্লিষ্ট কাগজ: ' + o.papers + '।' : ''}\n\nআমি আর্থিকভাবে অসচ্ছল। তাই আমাকে বিনামূল্যে আইনি সহায়তা দেওয়ার জন্য বিনীত অনুরোধ করছি।\n\nনিবেদক\n[নাম ও স্বাক্ষর]\nতারিখ: ${o.date}`,
   champ:'চ্যাম্পিয়ন', champMode:'চ্যাম্পিয়ন মোড: অনেকের পাশে', champH:'আপনি যাঁদের পাশে আছেন', champSub:'একটি ফোনে অনেক নারীর পথ। প্রত্যেকের তথ্য আলাদা থাকে, শুধু এই ফোনে।',
   champWomen:'জন নারী', champSteps:'ধাপ বাকি', champDanger:'জন বিপদে', champToday:'আজ যাঁদের খোঁজ নেবেন', champAll:'সবাই', champAdd:'নতুন একজনের পাশে দাঁড়ান',
   champNamePh:'ডাকনাম (আসল নাম নয়)', champStart:'শুরু করুন', champNoPath:'এখনো কিছু বলেননি', champNext:'পরের ধাপ', champMe:'নিজের জন্য ব্যবহার করুন', champOpen:'খুলুন',
@@ -622,6 +662,12 @@ en:{
   samples:[['SAMPLE: At night my husband got angry and pushed me. I hit the wall and my arm is bruised.',-21],['SAMPLE: He took my phone and locked the door. He does not let me visit my parents.',-14],['SAMPLE: He threatens divorce if I do not bring dowry money. The neighbour aunty heard it.',-3]],
   sosH:'Help now', helper:'Talk to a trained helper', helperSub:'A real person, in confidence', exit:'Quick exit', exitSub:'This page closes and a weather page opens',
   cc:{BD:'Bangladesh',KE:'Kenya',MX:'Mexico'},
+  listenAll:'Listen to the whole meeting', listenAllSub:'Keep the phone beside you at the salish or office. I whisper only when something is wrong, and write down who promised what.', listeningLive:(n)=>`Listening… ${n} things heard`, stopListen:'Stop',
+  makeMinutes:'Make the meeting record', minutesH:'Meeting record', promisesH:'Who promised what', warningsH:'Careful', nextH:'Next', heardLines:'What was heard', savedToFile:'Saved in your file',
+  fileT:'My file', myFile:'Make my file', fileH:'HerEvo file', fileSub:'Take it to legal aid or the office. Write your name and address by hand.', fileSituation:'Situation', fileShare:'Lawful share', filePapers:'Papers (read by HerEvo)',
+  fileMeetings:'Meeting records', fileSteps:'Steps', fileDiary:(n)=>`The Witness diary has ${n} dated, sealed notes. A statement can be made from it separately.`, fileLetter:'Request for legal aid (draft)', fileContacts:'Where to go',
+  print:'Print or PDF', fileEmpty:'Nothing in your file yet. First tell HerEvo what is happening, or photograph a paper.', doneMark:'done', todoMark:'to do',
+  letter:(o)=>`To\nThe District Legal Aid Officer\n[District]\n\nSubject: Request for free legal aid.\n\nSir/Madam,\nI am [name], of [address]. ${o.situation}${o.share ? ' By law my share is ' + o.share + '.' : ''}${o.papers ? ' Related papers: ' + o.papers + '.' : ''}\n\nI cannot afford a lawyer, so I humbly request free legal aid.\n\nYours faithfully,\n[name and signature]\nDate: ${o.date}`,
   champ:'Champion', champMode:'Champion mode: helping many', champH:'The women you stand beside', champSub:'Many women’s paths on one phone. Each one’s data stays separate, and only on this phone.',
   champWomen:' women', champSteps:' steps left', champDanger:' in danger', champToday:'Check on today', champAll:'Everyone', champAdd:'Stand beside someone new',
   champNamePh:'A nickname (not her real name)', champStart:'Start', champNoPath:'Nothing told yet', champNext:'Next step', champMe:'Use it for myself', champOpen:'Open',
@@ -650,7 +696,7 @@ const HELP = {
 
 /* ============================================================== state */
 // In champion mode each woman she helps has her own path, family, diary and code on this phone.
-const SCOPED = new Set(['path', 'family', 'witness', 'pin', 'pinSkipped']);
+const SCOPED = new Set(['path', 'family', 'witness', 'pin', 'pinSkipped', 'papers', 'minutes']);
 let PROFILE = null;
 const skey = (k) => 'herevo.' + (SCOPED.has(k) && PROFILE ? 'p:' + PROFILE + '.' : '') + k;
 const store = {
@@ -773,7 +819,7 @@ function hear(btn, onText, onEnd){
 }
 
 /* ============================================================== shell */
-const TITLES = {champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
+const TITLES = {file:'fileT', champion:'champ', path:'resume', lens:'lens', share:'share', rehearse:'rehearse', counter:'counter', witness:'witness'};
 function bar(name){
   const b = $('#bar'); fill(b);
   if (name === 'home'){
@@ -782,7 +828,7 @@ function bar(name){
     b.append(h('a', {class:'back', href:'#home'}, icon('back'), t(TITLES[name] || 'back')));
   }
   const who = currentProfile();
-  b.append(h('span', {class:'sp'}),
+  fill(b, ...b.childNodes, h('span', {class:'sp'}),
     who ? h('a', {class:'chip forwho', href:'#champion', style:`border-color:${who.color}`}, h('i', {style:`background:${who.color}`}, initial(who.name)), who.name) : null,
     h('button', {class:'chip', type:'button', 'aria-label':'Language', onclick: () => { S.lang = S.lang === 'bn' ? 'en' : 'bn'; store.set('lang', S.lang); route(); }}, t('langBtn')),
     h('button', {class:'sos', type:'button', onclick: openSOS}, icon('shield'), t('sos')));
@@ -803,9 +849,9 @@ function openSOS(){
 }
 function quickExit(){ stopSpeech(); document.body.innerHTML = ''; try{ sessionStorage.clear(); }catch(e){} location.replace('https://www.google.com/search?q=weather'); }
 
-const VIEWS = {champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
+const VIEWS = {file: FileView, champion: Champion, home: Home, path: Path, lens: Lens, share: Share, rehearse: Rehearse, counter: Counter, witness: Witness};
 function route(){
-  stopSpeech(); if (rec){ try{ rec.abort(); }catch(e){} rec = null; }
+  stopSpeech(); if (rec){ try{ rec.abort(); }catch(e){} rec = null; } stopLive();
   fill($('#layer'));
   document.documentElement.lang = S.lang;
   const [name, arg] = (location.hash.slice(1) || 'home').split('/');
@@ -845,6 +891,51 @@ function Home(){
         ['BD', 'KE', 'MX'].map((c) => { const o = h('option', {value:c}, t('country') + ': ' + t('cc')[c]); if (c === S.country) o.selected = true; return o; })),
       h('a', {class:'chip', href:'#champion'}, icon('person'), t('champMode')),
       h('p', {class:'test'}, h('i'), t('testNote'))));
+}
+
+/* ============================================================== her file */
+function FileView(){
+  const root = h('div');
+  const path = store.get('path', null), papers = store.get('papers', []), mins = store.get('minutes', []), diary = store.get('witness', []), fam = store.get('family', null);
+  const who = currentProfile();
+  const today = new Date().toLocaleDateString(S.lang === 'bn' ? 'bn-BD' : 'en-GB', {day:'numeric', month:'long', year:'numeric'});
+  if (!path && !papers.length && !mins.length && !diary.length){ fill(root, h('h1', {class:'title'}, t('fileT')), h('p', {class:'empty'}, t('fileEmpty')), tellBox()); return root; }
+  const shareSlot = h('div');
+  const situation = path ? path.plan.understood : '';
+  const paperNames = papers.map((p) => p.title).filter(Boolean).slice(0, 4).join(', ');
+  const letterSlot = h('div', {class:'letter'});
+  const writeLetter = (shareText) => { letterSlot.textContent = t('letter')({situation, share: shareText, papers: paperNames, date: today}); };
+  writeLetter('');
+  if (fam){
+    const kids = fam.sons + fam.daughters > 0;
+    api('/v1/share', {deceased:fam.deceased, wives:fam.wives, husband:fam.husband, sons:fam.sons, daughters:fam.daughters, father:fam.father, mother:fam.mother, siblings: kids ? null : fam.siblings, land:fam.land, lang:S.lang}, 30000, true).then((r) => {
+      if (!r.ok) return;
+      const mine = r.shares.find((x) => x.heir === (fam.deceased === 'husband' ? 'wife' : 'daughter')); if (!mine) return;
+      const line = `${fmt(mine.land_each)} ${t('unit')} (${num(mine.num)}/${num(mine.den)}) / ${fmt(fam.land)} ${t('unit')}`;
+      fill(shareSlot, h('h2', null, t('fileShare')), h('p', null, h('b', null, line)),
+        h('ul', null, r.shares.map((x) => h('li', null, `${T[S.lang].heir[x.heir]}${x.count > 1 ? ' ×' + num(x.count) : ''}: ${num(x.num)}/${num(x.den)} · ${fmt(x.land_each)} ${t('unit')}`))),
+        h('p', {style:'font-size:13px;color:var(--muted)'}, r.disclaimer));
+      writeLetter(line);
+    }).catch(() => {});
+  }
+  const nums = HELP[S.country] || HELP.BD;
+  const doc = h('article', {class:'doc'},
+    h('h1', null, logo(), t('fileH')),
+    h('div', {class:'meta'}, (who ? who.name + ' · ' : '') + today + ' · ' + t('cc')[S.country]),
+    path ? [h('h2', null, t('fileSituation')), h('p', null, situation), h('p', {style:'color:var(--muted);font-style:italic'}, '“' + path.text + '”')] : null,
+    shareSlot,
+    papers.length ? [h('h2', null, t('filePapers')), papers.map((p) => h('div', {class:'pp'}, h('b', null, p.title, h('span', {class:'tag ' + p.verdict}, t('v_' + p.verdict))), h('p', null, p.summary),
+      p.facts.length ? h('ul', null, p.facts.map((f) => h('li', null, f.label + ': ' + f.value))) : null, p.dates.map((d) => h('p', null, '🗓 ' + d.what + ': ' + fmtDay(d.date) + (d.time ? ', ' + num(d.time) : '')))))] : null,
+    mins.length ? [h('h2', null, t('fileMeetings')), mins.map((m) => h('div', {class:'pp'}, h('b', null, new Date(m.at).toLocaleDateString(S.lang === 'bn' ? 'bn-BD' : 'en-GB')), h('p', null, m.summary),
+      m.promises.length ? h('ul', null, m.promises.map((p) => h('li', null, `${p.who}: ${p.what}${p.when ? ' (' + p.when + ')' : ''}`))) : null))] : null,
+    path ? [h('h2', null, t('fileSteps')), h('ul', null, path.plan.steps.map((st, i) => h('li', null, st.title + ' — ' + (path.done[i] ? t('doneMark') : t('todoMark')))))] : null,
+    diary.length ? h('p', {style:'margin-top:14px'}, '🔒 ' + t('fileDiary')(num(diary.length))) : null,
+    h('h2', null, t('fileLetter')), letterSlot,
+    h('h2', null, t('fileContacts')), h('ul', null, nums.map(([n, l]) => h('li', null, `${l[S.lang] || l.en}: ${num(n)}`))));
+  const copyB = h('button', {class:'btn ghost', type:'button', onclick: async () => { try{ await navigator.clipboard.writeText(doc.innerText); toast(t('copied')); }catch(e){} }}, icon('copy'), t('copy'));
+  fill(root, h('p', {class:'sub noprint'}, t('fileSub')), doc,
+    h('div', {class:'row noprint', style:'margin-top:16px'}, h('button', {class:'btn', type:'button', onclick: () => window.print()}, icon('book'), t('print')), copyB));
+  return root;
 }
 
 /* ============================================================== champion */
@@ -949,7 +1040,8 @@ function Path(){
     h('ol', {class:'stones'}, steps),
     plan.ask ? h('div', {class:'askq'}, h('b', null, t('pathAsk')), h('span', null, plan.ask),
       h('div', {class:'inrow'}, ans, h('button', {class:'send', type:'button', style:'background:var(--her);color:var(--ink)', 'aria-label': t('answer'), onclick: () => { const a = ans.value.trim(); if (a) makePath(saved.text + ' ' + a); }}, icon('send')))) : null,
-    h('button', {class:'btn ghost block', type:'button', style:'margin-top:22px', onclick: () => { store.del('path'); location.hash = '#home'; }}, t('newPath')),
+    h('a', {class:'filebtn', href:'#file'}, icon('book'), t('myFile')),
+    h('button', {class:'btn ghost block', type:'button', style:'margin-top:10px', onclick: () => { store.del('path'); location.hash = '#home'; }}, t('newPath')),
     plan.source === 'saved' ? h('p', {class:'src'}, t('saved')) : null);
 }
 function ics(d){
@@ -1023,6 +1115,7 @@ function Lens(){
       h('button', {class:'btn ghost block', type:'button', style:'margin-top:14px', onclick: intro}, icon('camera'), t('again')),
       res.source === 'saved' ? h('p', {class:'src'}, t('saved')) : null,
       h('p', {class:'fine'}, icon('lock'), t('privacy')));
+    if (res.source !== 'unavailable'){ const papers = store.get('papers', []); papers.unshift({at: Date.now(), title: res.title || res.doc_type, verdict: v, summary: res.summary, facts: (res.facts || []).map((f) => ({label:f.label, value:f.value})), dates: res.dates || [], sample: sample ? sample.id : null}); store.set('papers', papers.slice(0, 20)); }
     if (S.voice) setTimeout(() => speak(res.say || res.summary, sayBtn), 500);
   }
   intro();
@@ -1209,8 +1302,21 @@ function Counter(arg){
   const big = h('button', {class:'hearbig', type:'button', onclick: () => hear(big, (x) => { input.value = x; sendB.disabled = !x.trim(); }, (x) => { if (x && x.trim()) ask(); })},
     h('span', {class:'ear'}, icon('mic')), h('span', null, h('b', null, t('hearBig')), h('span', null, t('hearHint'))));
   scenarios().then((d) => { fill(placesRow, ...Object.entries(d.places).map(([k, v]) => { const b = h('button', {type:'button', 'aria-pressed': String(k === place), onclick: () => { place = k; [...placesRow.children].forEach((x) => x.setAttribute('aria-pressed', String(x === b))); }}, v); return b; })); }).catch(() => {});
-  async function ask(){
+  const heardAll = [];
+  const liveBox = h('div', {class:'livebox'});
+  function drawLive(){
+    const on = !!liveRec;
+    liveBox.classList.toggle('on', on);
+    fill(liveBox,
+      on ? h('div', {class:'live'}, h('i'), t('listeningLive')(num(heardAll.length))) : [h('b', {style:'font-family:var(--f-display);font-size:18px'}, t('listenAll')), h('p', null, t('listenAllSub'))],
+      h('div', {class:'row'},
+        on ? h('button', {class:'btn', type:'button', style:'background:var(--danger)', onclick: () => { stopLive(); drawLive(); }}, icon('stop'), t('stopListen'))
+           : h('button', {class:'btn', type:'button', style:'background:var(--counter)', onclick: () => { startLive((x) => { heardAll.push(x); input.value = x; ask(true); drawLive(); }); drawLive(); }}, icon('mic'), t('listenAll')),
+        heardAll.length && !on ? h('button', {class:'btn ghost', type:'button', onclick: () => makeMinutes(place, heardAll.slice())}, icon('book'), t('makeMinutes')) : null));
+  }
+  async function ask(live){
     const heard = input.value.trim(); if (!heard) return;
+    if (!live) heardAll.push(heard);
     input.value = ''; sendB.disabled = true;
     const card = h('div', {class:'whisper'}, h('div', {class:'heard'}, h('b', null, t('theySaid') + ': '), '“' + heard + '”'), h('div', {class:'body'}, h('span', {class:'dots'}, h('i'), h('i'), h('i'))));
     results.prepend(card);
@@ -1223,16 +1329,45 @@ function Counter(arg){
         r.truth ? h('div', {class:'truth'}, icon('check'), h('span', null, r.truth)) : null,
         r.ask_for ? h('span', {class:'askfor'}, t('askFor') + ': ' + r.ask_for) : null,
         r.red_flag ? warnOthers(place, heard, (sum) => drawRadar(radarBox, sum)) : null);
-      if (S.voice) speak(r.whisper, sayB);
+      if (!r.red_flag && live) card.classList.add('calm');
+      if (S.voice && (!live || r.red_flag)) speak(r.whisper, sayB);
+      drawLive();
     }catch(e){ card.remove(); input.value = heard; sendB.disabled = false; }
   }
   root.append(h('h1', {class:'title'}, t('counterH')), h('p', {class:'sub'}, t('counterSub')),
     h('h2', {class:'section', style:'margin-top:0'}, t('where')), placesRow, big,
     h('div', {class:'heardrow'}, input, sendB),
+    liveBox,
     h('div', {class:'examples'}, t('examples').map((x) => h('button', {type:'button', onclick: () => { input.value = x; ask(); }}, '“' + x + '”'))),
     results, radarBox);
-  loadRadar();
+  loadRadar(); drawLive();
   return root;
+}
+let liveRec = null;
+function startLive(onLine){
+  if (!SR){ toast(t('noMic')); return; }
+  stopSpeech();
+  const r = new SR(); r.lang = VOICE[S.lang]; r.continuous = true; r.interimResults = false;
+  r.onresult = (e) => { for (let i = e.resultIndex; i < e.results.length; i++){ if (e.results[i].isFinal){ const x = e.results[i][0].transcript.trim(); if (x) onLine(x); } } };
+  r.onerror = (e) => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed'){ toast(t('noMic')); liveRec = null; } };
+  r.onend = () => { if (liveRec === r){ try{ r.start(); }catch(e){} } };  // keep listening through pauses
+  liveRec = r;
+  try{ r.start(); }catch(e){ liveRec = null; }
+}
+function stopLive(){ const r = liveRec; liveRec = null; if (r){ try{ r.stop(); }catch(e){} } }
+async function makeMinutes(place, lines){
+  const close = sheet(h('h2', null, t('minutesH')), h('div', {class:'empty'}, h('span', {class:'spinner'})));
+  try{
+    const m = await api('/v1/minutes', {session_id:S.sid, place, lines, lang:S.lang, country:S.country}, 60000);
+    const all = store.get('minutes', []); all.unshift({at: Date.now(), place, ...m, lines}); store.set('minutes', all.slice(0, 10));
+    sheet(h('h2', null, t('minutesH')), h('p', null, m.summary),
+      m.promises.length ? [h('h2', {class:'section'}, t('promisesH')), h('div', {class:'mins'}, m.promises.map((p) => h('div', {class:'pr'}, h('b', null, p.who + (p.when ? ' · ' + p.when : '')), p.what)))] : null,
+      m.warnings.length ? [h('h2', {class:'section'}, t('warningsH')), h('div', {class:'flags'}, m.warnings.map((w) => h('div', {class:'flag danger'}, icon('alert'), h('span', null, w))))] : null,
+      m.next.length ? [h('h2', {class:'section'}, t('nextH')), h('ol', {class:'steps'}, m.next.map((x) => h('li', null, x)))] : null,
+      h('h2', {class:'section'}, t('heardLines')), h('ul', {style:'margin:0;padding-left:20px;color:var(--muted);font-size:14.5px'}, lines.map((x) => h('li', null, x))),
+      h('p', {class:'fine', style:'color:var(--good);font-weight:600'}, icon('check'), t('savedToFile')),
+      h('a', {class:'filebtn', href:'#file'}, icon('book'), t('fileT')));
+  }catch(e){ close(); }
 }
 function guessKind(text){ const x = text.toLowerCase(); if (/সই|টিপ|sign|thumb/.test(x)) return 'pressure'; if (/টাকা|taka|money|pay|fee|হাজার|thousand/.test(x)) return 'bribe'; if (/যৌতুক|dowry/.test(x)) return 'dowry'; if (/জমি|land/.test(x)) return 'land_grab'; return 'false_rule'; }
 function warnOthers(place, heard, onDone){

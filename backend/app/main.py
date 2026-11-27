@@ -13,6 +13,7 @@
   POST /v1/statement                 Witness diary notes -> dated statement
   POST /v1/share                     exact inheritance shares (for the land picture)
   POST /v1/plan                      "just tell me": her words -> a path through the tools
+  POST /v1/minutes                   listen mode: the record of a meeting (who promised what)
   POST /v1/radar, GET /v1/radar/{cc} anonymous warnings (bribes, pressure to sign) and their counts
   GET  / and /app                    HerEvo app: the five tools (web/app.html)
   GET  /chat                         the conversation with HerEvo (web/index.html), talking to this API
@@ -414,6 +415,22 @@ def make_plan(body: PlanIn):
     from . import tools
     lang = _tool_guard(body.session_id, body.lang)
     return tools.plan(body.text, lang, body.country.upper())
+
+
+class MinutesIn(BaseModel):
+    session_id: str = Field(min_length=8, max_length=100)
+    place: str = Field(default="union_parishad", max_length=40)
+    lines: list[str] = Field(min_length=1, max_length=120)
+    lang: str = "bn"
+    country: str = "BD"
+
+
+@app.post("/v1/minutes")
+def meeting_minutes(body: MinutesIn):
+    """Listen mode: the record of a meeting (promises, warnings, next steps). Not kept on the server."""
+    from . import tools
+    lang = _tool_guard(body.session_id, body.lang)
+    return tools.minutes(body.place, [x[:600] for x in body.lines if x.strip()], lang, body.country.upper())
 
 
 RADAR_KINDS = ("bribe", "pressure", "false_rule", "dowry", "land_grab", "other")

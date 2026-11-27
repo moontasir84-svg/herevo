@@ -906,6 +906,61 @@ def _saved_plan(text: str, lang: str, country: str, danger: bool) -> dict:
 
 
 # ---------------------------------------------------------------------------------------------------------
+# Listen mode: HerEvo heard a whole meeting; write down who promised what, so nobody can deny it later.
+
+MINUTES_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "summary": {"type": "string", "description": "2-3 plain sentences in her language: what happened in the meeting"},
+        "promises": {"type": "array", "description": "every promise or decision heard, up to 6",
+                     "items": {"type": "object", "properties": {
+                         "who": {"type": "string", "description": "who said it, as heard (e.g. 'the chairman'), her language"},
+                         "what": {"type": "string", "description": "what was promised or decided, her language"},
+                         "when": {"type": "string", "description": "by when, if said; else empty"}},
+                         "required": ["who", "what"]}},
+        "warnings": {"type": "array", "items": {"type": "string"},
+                     "description": "up to 3: bribes, false rules, pressure, in her language"},
+        "next": {"type": "array", "items": {"type": "string"}, "description": "up to 3 next steps, her language"},
+    },
+    "required": ["summary", "promises", "warnings", "next"],
+}
+
+MINUTES_SYSTEM = """A woman used HerEvo during a real meeting at {place}. Below are the lines HerEvo heard, in \
+order. Write the record she will keep, in {lang}: a short summary, every promise or decision (who, what, by when), \
+warnings (a bribe, a false rule, pressure to sign or give up a right) and next steps. Use ONLY what the lines say; \
+never invent names, amounts or dates. Laws, fees and numbers in warnings and next steps only from these checked facts:
+{facts}"""
+
+
+def minutes(place: str, lines: list[str], lang: str, country: str) -> dict:
+    pname = _pick(PLACES.get(place, {"en": place}), lang)
+    heard = "\n".join(f"{i}. {_clip(x, 500)}" for i, x in enumerate(lines[-80:], 1))
+    llm = get_llm()
+    reason = "no AI configured"
+    if llm is not None and hasattr(llm, "generate"):
+        try:
+            raw = llm.generate(MINUTES_SYSTEM.format(place=pname, lang=lang_name(lang), facts=facts_for(country)),
+                               [{"text": "Lines heard:\n" + heard}], "meeting_record", MINUTES_SCHEMA, seconds=30,
+                               temperature=0.2)
+            if raw.get("summary"):
+                return {"summary": _clip(raw["summary"], 600),
+                        "promises": [{"who": _clip(p.get("who"), 60), "what": _clip(p.get("what"), 200),
+                                      "when": _clip(p.get("when"), 60)}
+                                     for p in (raw.get("promises") or [])[:6] if isinstance(p, dict) and p.get("what")],
+                        "warnings": [_clip(w, 200) for w in (raw.get("warnings") or [])[:3]],
+                        "next": [_clip(n, 200) for n in (raw.get("next") or [])[:3]], "source": "ai"}
+            reason = "empty answer"
+        except Exception as exc:
+            reason = type(exc).__name__
+            log.warning("minutes AI failed: %s", exc)
+    bn = lang == "bn"
+    warn = [_saved_whisper(x, lang)["truth"] for x in lines if _saved_whisper(x, lang)["red_flag"]][:3]
+    return {"summary": (f"{pname}-এ সভায় {len(lines)}টি কথা শোনা গেছে। নিচে সব লেখা আছে।" if bn else
+                        f"{len(lines)} things were said at the {pname}. All are written below."),
+            "promises": [], "warnings": list(dict.fromkeys(warn)), "next": [], "lines": lines[-80:],
+            "source": "saved", "note": reason}
+
+# ---------------------------------------------------------------------------------------------------------
 
 def _load_samples() -> None:
     import json

@@ -241,3 +241,15 @@ def test_radar_rejects_unknown_and_floods():
     codes = [client.post("/v1/radar", json={"session_id": "radar-flood-01", "place": "police", "kind": "other"}).status_code
              for _ in range(6)]
     assert codes[:5] == [200] * 5 and codes[5] == 429
+
+
+def test_minutes_with_ai_and_saved(ai):
+    lines = ["Chairman: he will pay two thousand taka every month from January.", "Husband: give me five thousand for the paperwork."]
+    f = ai({"summary": "The chairman settled maintenance.", "promises": [{"who": "Chairman", "what": "Tk 2,000 a month", "when": "from January"}],
+            "warnings": ["Asking money for paperwork may be a bribe."], "next": ["Get it in writing."]})
+    r = client.post("/v1/minutes", json={"session_id": SID, "lines": lines, "lang": "en", "place": "union_parishad"}).json()
+    assert r["source"] == "ai" and r["promises"][0]["when"] == "from January"
+    assert "five thousand" in f.calls[0]["parts"][0]["text"] and "Union Parishad" in f.calls[0]["system"]
+    ai(error=ValueError("down"))
+    r = client.post("/v1/minutes", json={"session_id": SID, "lines": lines, "lang": "en"}).json()
+    assert r["source"] == "saved" and r["lines"] == lines and r["warnings"] and "2 things" in r["summary"]
